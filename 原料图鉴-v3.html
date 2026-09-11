@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="slInGpUDVC4kaWDH5kMp0n">
+<head data-page-node-id="O1vwSh0eXORitFHbTSdbVO">
+<meta charset="UTF-8" data-page-node-id="pdVHp70CzeoEonZevo0l4l">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="k3P2c9tXVsUSRmOgy7AQJe">
+<title>原料图鉴 v3 · 烟火小作坊</title>
+<style>
+  :root{
+    --bg:#0c0e13;
+    --card:#151922;
+    --card-hi:#1b2029;
+    --line:rgba(255,255,255,.08);
+    --line-hi:rgba(255,255,255,.18);
+    --text:#e9edf4;
+    --muted:#8b93a4;
+    --dim:#5f6779;
+    --amber:#ffb703;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 20px 80px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(600px 400px at 15% -5%, rgba(255,183,3,.10), transparent 70%),
+      radial-gradient(700px 450px at 85% 5%, rgba(167,139,250,.10), transparent 70%),
+      radial-gradient(600px 500px at 50% 110%, rgba(76,201,240,.07), transparent 70%);
+  }
+  .wrap{max-width:1180px;margin:0 auto;position:relative;z-index:1}
+
+  header{padding:56px 0 26px;text-align:center}
+  .kicker{
+    display:inline-block;font-size:12px;letter-spacing:.28em;
+    color:var(--amber);opacity:.85;margin-bottom:14px;
+    padding:5px 14px;border:1px solid rgba(255,183,3,.28);border-radius:999px;
+  }
+  h1{
+    font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:.02em;
+    background:linear-gradient(180deg,#fff 10%,#9aa4b8 130%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  h1 .v{
+    font-size:.42em;font-weight:700;vertical-align:middle;
+    margin-left:12px;padding:4px 12px;border-radius:999px;
+    background:rgba(255,183,3,.14);border:1px solid rgba(255,183,3,.45);
+    color:var(--amber);-webkit-text-fill-color:var(--amber);
+  }
+  .sub{margin-top:12px;color:var(--muted);font-size:14px}
+  .sub b{color:var(--text);font-weight:600}
+
+  /* 进度条 */
+  .progress{
+    max-width:320px;margin:18px auto 0;
+  }
+  .bar{
+    height:5px;border-radius:999px;background:rgba(255,255,255,.07);
+    overflow:hidden;
+  }
+  .bar span{
+    display:block;height:100%;border-radius:999px;
+    background:linear-gradient(90deg,#ffb703,#ff7b00);
+    transition:width .4s cubic-bezier(.2,.7,.3,1);
+  }
+  .progress .cap{margin-top:8px;font-size:11.5px;color:var(--dim);letter-spacing:.08em}
+
+  .filters{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    margin:30px 0 34px;
+  }
+  .chip{
+    appearance:none;cursor:pointer;
+    background:var(--card);border:1px solid var(--line);
+    color:var(--muted);font-size:13.5px;font-family:inherit;
+    padding:8px 16px;border-radius:999px;
+    transition:all .18s ease;
+  }
+  .chip:hover{border-color:var(--line-hi);color:var(--text)}
+  .chip.on{
+    background:rgba(255,183,3,.13);border-color:rgba(255,183,3,.5);
+    color:var(--amber);font-weight:600;
+  }
+  .chip .n{opacity:.55;margin-left:6px;font-size:12px}
+  .chip.empty{opacity:.32;cursor:not-allowed}
+  .chip.empty:hover{border-color:var(--line);color:var(--muted)}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(158px,1fr));
+    gap:14px;
+  }
+  .card{
+    position:relative;cursor:pointer;
+    background:linear-gradient(180deg,var(--card-hi),var(--card));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 14px 16px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    transition:transform .2s cubic-bezier(.2,.7,.3,1),border-color .2s,box-shadow .2s;
+    animation:in .35s both;
+  }
+  @keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .card:hover{
+    transform:translateY(-4px);
+    border-color:var(--c,#fff);
+    box-shadow:0 12px 30px -12px var(--glow,rgba(255,255,255,.25)),0 0 0 1px var(--c);
+  }
+  .icon{
+    width:96px;height:96px;margin-bottom:14px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+  }
+  .icon svg{width:100%;height:100%;display:block}
+  .name{font-size:15px;font-weight:600;letter-spacing:.01em}
+  .desc{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5;min-height:32px}
+  .meta{margin-top:11px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center}
+  .tag{
+    font-size:10.5px;padding:2.5px 8px;border-radius:999px;
+    border:1px solid var(--line);color:var(--dim);letter-spacing:.03em;
+  }
+  .tag.real{color:#7fe3a8;border-color:rgba(127,227,168,.28);background:rgba(127,227,168,.07)}
+  .tag.magic{color:#c4a8ff;border-color:rgba(196,168,255,.28);background:rgba(196,168,255,.07)}
+  .tag.v3{color:var(--amber);border-color:rgba(255,183,3,.4);background:rgba(255,183,3,.1)}
+  .tag.v1{color:#8b93a4;border-color:rgba(139,147,164,.42);background:rgba(139,147,164,.12)}
+  .stars{font-size:10px;letter-spacing:1px;color:var(--c,var(--amber))}
+
+  .modal{
+    position:fixed;inset:0;z-index:50;
+    display:none;align-items:center;justify-content:center;padding:24px;
+    background:rgba(6,8,12,.78);backdrop-filter:blur(6px);
+  }
+  .modal.on{display:flex;animation:fade .18s both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{
+    position:relative;width:100%;max-width:420px;
+    background:linear-gradient(180deg,#1b2029,#141821);
+    border:1px solid var(--line-hi);border-radius:22px;
+    padding:34px 28px 30px;text-align:center;
+    animation:pop .24s cubic-bezier(.2,.8,.3,1) both;
+    box-shadow:0 30px 80px -20px #000;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+  .sheet .halo{
+    width:130px;height:130px;margin:0 auto 18px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+  }
+  .sheet .halo svg{width:100%;height:100%}
+  .sheet h2{font-size:22px;font-weight:700}
+  .sheet .role{font-size:13px;color:var(--c,var(--amber));margin-top:7px;font-weight:500}
+  .sheet .fact{
+    margin-top:20px;padding:16px 18px;text-align:left;
+    background:rgba(255,255,255,.035);border:1px solid var(--line);
+    border-left:2px solid var(--c,var(--amber));
+    border-radius:12px;font-size:13.5px;line-height:1.75;color:#c8d0de;
+  }
+  .sheet .foot{
+    margin-top:18px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  }
+  .close{
+    position:absolute;top:14px;right:14px;
+    width:32px;height:32px;border-radius:50%;cursor:pointer;
+    background:rgba(255,255,255,.06);border:1px solid var(--line);
+    color:var(--muted);font-size:17px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    transition:.15s;
+  }
+  .close:hover{background:rgba(255,255,255,.12);color:#fff}
+
+  /* 大图预览模式 */
+  .toolbar{
+    display:flex;justify-content:center;gap:10px;margin:-18px 0 26px;
+  }
+  .tbtn{
+    appearance:none;cursor:pointer;font-family:inherit;
+    background:transparent;border:1px solid var(--line);
+    color:var(--dim);font-size:12px;padding:6px 14px;border-radius:999px;
+    transition:.15s;
+  }
+  .tbtn:hover{color:var(--text);border-color:var(--line-hi)}
+  .tbtn.on{color:var(--amber);border-color:rgba(255,183,3,.5);background:rgba(255,183,3,.1)}
+
+  footer{
+    margin-top:56px;text-align:center;color:var(--dim);font-size:12px;
+    letter-spacing:.06em;
+  }
+
+  @media (max-width:520px){
+    body{padding:0 14px 60px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:11px}
+    .icon{width:78px;height:78px}
+    .card{padding:16px 10px 14px}
+  }
+</style>
+</head>
+<body data-page-node-id="mmNt4UIcIa7i7ounDjbD41">
+<div class="wrap" data-page-node-id="32EClDtqZj0xLUIntzQXli">
+  <header data-page-node-id="MFZrWbCK3Xysnbq6Au5352">
+    <span class="kicker" data-page-node-id="FHyRGJfqekb69gczGTr1dr">FIREWORK INGREDIENTS · v3</span>
+    <h1 data-page-node-id="d0NCgEpG2fiUkM5aVcOSwF">原料图鉴<span class="v" data-page-node-id="M4LYCZsHL47lF0gcPxyDeP">v3 预览</span></h1>
+    <p class="sub" data-page-node-id="cFFU4HXZ1Drd34M1KJKhcT">已更新 <b id="doneN" data-page-node-id="XWy37Edtw74nPSk0WZuUIa">0</b> / <b data-page-node-id="cJafZJhJrmYvcSZvML8XGl">16</b> 种原料 · 分批增量预览</p>
+    <div class="progress" data-page-node-id="3Tpjz5OSulYLXjz8DK2U2i">
+      <div class="bar" data-page-node-id="3BYg990eEWHnAY2xebjmQL"><span id="barFill" style="width:0%" data-page-node-id="JJS3QQ8DDic1dbTGhW8dCA"></span></div>
+      <div class="cap" id="barCap" data-page-node-id="YaYVQDiraXNnAiTtDpSDdJ">等待下一批 SVG…</div>
+    </div>
+  </header>
+
+  <nav class="filters" id="filters" data-page-node-id="S1R0tOnH1djHUtVvKBIVhr"></nav>
+  <div class="toolbar" data-page-node-id="CGJwDxtkWmDEDg5UM9HG46">
+    <button class="tbtn" id="sizeBtn" type="button" data-page-node-id="Fi94i9oCxaQcaPZmvMOBBE">放大图标</button>
+  </div>
+  <main class="grid" id="grid" data-page-node-id="xxmBf8rlRcMGWZAeX2jl7N"></main>
+
+  <footer data-page-node-id="Uc7jG8W3WmfT2nWjlyeXlt">点击任意原料查看它的故事</footer>
+</div>
+
+<div class="modal" id="modal" data-page-node-id="JZSihMbc5SrgUirvX4tXlJ">
+  <div class="sheet" id="sheet" data-page-node-id="lH1J7JmojrmLaHBq3YAuwO">
+    <button class="close" id="close" aria-label="关闭" data-page-node-id="8jCTGQp7uyRJstw9DsCCRP">✕</button>
+    <div class="halo" id="mIcon" data-page-node-id="LpwnB6lF6FxfXUCYyfoAof"></div>
+    <h2 id="mName" data-page-node-id="ajy9D0qYvGciHq9oSYqsco"></h2>
+    <div class="role" id="mRole" data-page-node-id="n8I4umCkS2Mr9mxwfxAHEP"></div>
+    <div class="fact" id="mFact" data-page-node-id="eaY2YiLiqvZBs0mo1Z2vC6"></div>
+    <div class="foot" id="mFoot" data-page-node-id="miF0QC0ax5BXbZFJJQbEbr"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   v3 数据（增量追加区）
+   收到新一批 SVG 时，按原顺序插入到数组里即可，页面会自动更新进度。
+   ========================================================================= */
+var INGREDIENTS = [
+
+  // ================= 1. 硝酸钾：通透的米白结晶簇 =================
+  {
+    id: "saltpeter", name: "硝酸钾", type: "base", real: true, desc: "氧化剂 · 让配方真正烧起来", color: "#f5e9c8",
+    fact: "氧化剂：为燃烧提供氧气。没有它，混合物根本点不着。", power: 1,
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g-saltpeter" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#f5e9c8"/>
+        </linearGradient>
+        <filter id="glow-salt"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="32" cy="32" r="26" fill="#f5e9c8" opacity="0.1" filter="url(#glow-salt)"/>
+      <path d="M17.2 30 L23.2 34.8 L23.2 46 L17.2 50.4 L11.2 46 L11.2 34.8Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round"/>
+      <path d="M40.8 34.8 L46.8 30 L52.8 34.8 L52.8 46 L46.8 50.4 L40.8 46Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round"/>
+      <path d="M32 9.2 L41.2 17.2 L41.2 38.8 L32 46.8 L22.8 38.8 L22.8 17.2Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.9)" stroke-width="1.2" stroke-linejoin="round" filter="url(#glow-salt)"/>
+      <path d="M22.8 17.2 L32 24.4 L41.2 17.2 M32 24.4 V46.8" fill="none" stroke="rgba(180,160,120,0.4)" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M26.8 22.4 V35.6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+      <path d="M14.2 33 L14.2 42" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    </svg>`
+  },
+
+  // ================= 2. 硫磺：棱角分明的金黄矿石 =================
+  {
+    id: "sulfur", name: "硫磺", type: "base", real: true, desc: "燃料 · 爆裂与声响", color: "#ffd166",
+    fact: "燃料：与氧化剂剧烈反应，放出热与气体，产生升空和爆裂的推力。", power: 1, sound: true,
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g-sulfur" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#FFE082"/>
+          <stop offset="50%" stop-color="#FFD166"/>
+          <stop offset="100%" stop-color="#E9C46A"/>
+        </linearGradient>
+        <filter id="glow-sulfur"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="32" cy="32" r="26" fill="#ffd166" opacity="0.15" filter="url(#glow-sulfur)"/>
+      <path d="M19.2 41.6 L23.6 23.2 L39.2 16.8 L51.2 26.4 L50.8 40.8 L38 51.2 L25.2 49.6Z" fill="url(#g-sulfur)" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linejoin="round" filter="url(#glow-sulfur)"/>
+      <path d="M23.6 23.2 L36 33.2 L38 51.2 M36 33.2 L51.2 26.4 M36 33.2 L19.2 41.6" fill="none" stroke="rgba(180,130,40,0.5)" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M27.2 27.2 L30.8 41.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <path d="M40 28 L46 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    </svg>`
+  },
+
+  // ================= 3. 木炭粉：深炭块 + 阴燃火花 =================
+  {
+    id: "charcoal", name: "木炭粉", type: "base", real: true, desc: "燃料 · 金色火花", color: "#4a4e69",
+    fact: "黑火药三大件之一（硝酸钾+硫磺+木炭），决定燃烧速度。", power: .8,
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g-charcoal" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#5c607a"/>
+          <stop offset="100%" stop-color="#22223b"/>
+        </linearGradient>
+        <filter id="glow-spark"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="32" cy="32" r="26" fill="#4a4e69" opacity="0.1"/>
+      <path d="M19.2 40.8 L25.2 23.2 L41.2 18 L51.6 30.8 L46.8 45.2 L31.2 51.2Z" fill="url(#g-charcoal)" stroke="rgba(100,100,120,0.5)" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M25.2 23.2 L34.8 31.2 L46.8 45.2" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M28.8 37.2 L39.2 26.8" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="30" cy="34" r="1.5" fill="#1a1a24"/>
+      <circle cx="38" cy="38" r="2" fill="#1a1a24"/>
+      <circle cx="34" cy="44" r="1.2" fill="#1a1a24"/>
+      <circle cx="54" cy="16.4" r="3" fill="#f4a261" filter="url(#glow-spark)"/>
+      <circle cx="46" cy="10" r="2.2" fill="#ffd166" filter="url(#glow-spark)"/>
+      <circle cx="55.6" cy="26.4" r="1.8" fill="#ffd166" opacity="0.9" filter="url(#glow-spark)"/>
+      <circle cx="48" cy="20" r="1.2" fill="#ff7b00" filter="url(#glow-spark)"/>
+    </svg>`
+  },
+
+  // ================= 4. 铝粉：银白粉末堆 + 闪耀星芒 =================
+  {
+    id: "aluminum", name: "铝粉", type: "spark", real: true, desc: "闪光 · 银白星芒", color: "#ffffff",
+    fact: "铝粉/镁粉燃烧产生银白色闪光与拖尾，是烟花的“银花”。", rarity: 2, effect: "sparkle",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 粉末堆的金属质感渐变 -->
+        <linearGradient id="mg-alu" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="40%" stop-color="#e9ecef"/>
+          <stop offset="100%" stop-color="#adb5bd"/>
+        </linearGradient>
+        <!-- 星芒的强烈发光滤镜
+             注意：filter 默认滤镜区域只有 bbox 的 ±10%，小图元（如 r=2 的圆）套上
+             stdDeviation=2 的模糊会被硬裁出方形接缝 —— 必须把区域放宽。 -->
+        <filter id="glow-alu" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <!-- 整体微光背景（让白色粉末在深色底上也能浮起来） -->
+      <circle cx="32" cy="32" r="28" fill="#ffffff" opacity="0.12"/>
+      <!-- 粉末堆主体 -->
+      <path d="M16 46 C22 36, 28 34, 32 34 C36 34, 42 36, 48 46 L44 54 C36 58, 28 58, 20 54 Z"
+            fill="url(#mg-alu)"
+            stroke="rgba(255,255,255,0.9)"
+            stroke-width="1.2"
+            stroke-linejoin="round"/>
+      <!-- 粉末表面的颗粒纹理（暗示这是粉末而不是光滑的石头） -->
+      <circle cx="26" cy="44" r="1.2" fill="#fff" opacity="0.7"/>
+      <circle cx="34" cy="42" r="1" fill="#fff" opacity="0.6"/>
+      <circle cx="38" cy="48" r="1.5" fill="#fff" opacity="0.8"/>
+      <circle cx="28" cy="50" r="0.8" fill="#fff" opacity="0.5"/>
+      <path d="M24 48 Q28 46 32 48" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+      <!-- 核心大星芒（位于粉末堆正上方，强烈发光） -->
+      <path d="M32 12 L34 20 L42 22 L34 24 L32 32 L30 24 L22 22 L30 20 Z"
+            fill="#ffffff"
+            filter="url(#glow-alu)"/>
+      <!-- 左侧小星芒（错落分布，增加灵动感） -->
+      <path d="M18 28 L19 32 L23 33 L19 34 L18 38 L17 34 L13 33 L17 32 Z"
+            fill="#ffffff"
+            opacity="0.85"/>
+      <!-- 右侧微小闪光点 -->
+      <circle cx="46" cy="20" r="2" fill="#ffffff" filter="url(#glow-alu)"/>
+      <circle cx="42" cy="14" r="1" fill="#ffffff" opacity="0.7"/>
+    </svg>`
+  },
+
+  // ================= 5~8. 焰色反应：沿用 v1 的四个试管 =================
+  {
+    id: "strontium", name: "锶盐", type: "color", real: true, desc: "焰色反应 · 正红色", color: "#ff5d6c",
+    fact: "锶盐燃烧发出喜庆正红（约 605–680nm），是烟花的经典红。", rarity: 2, src: "v1",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tube-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-red"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 32 L39 32 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#ff5d6c" filter="url(#glow-red)"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  },
+  {
+    id: "barium", name: "钡盐", type: "color", real: true, desc: "焰色反应 · 翠绿色", color: "#51d88a",
+    fact: "钡盐燃烧呈翠绿（约 505–535nm），春意盎然的绿。", rarity: 2, src: "v1",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tube-g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-green"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g2)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g2)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 36 L39 36 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#51d88a" filter="url(#glow-green)"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  },
+  {
+    id: "copper", name: "铜盐", type: "color", real: true, desc: "焰色反应 · 梦幻蓝（难做）", color: "#4cc9f0",
+    fact: "蓝色最难做：铜盐需要极窄的燃烧温度窗口，偏差一点就变绿或发白。", rarity: 3, fragile: true, src: "v1",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tube-g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-blue"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g3)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g3)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 28 L39 28 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#4cc9f0" filter="url(#glow-blue)"/><circle cx="30" cy="40" r="1.5" fill="#fff" opacity="0.8"/><circle cx="34" cy="46" r="1" fill="#fff" opacity="0.6"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  },
+  {
+    id: "sodium", name: "钠盐", type: "color", real: true, desc: "焰色反应 · 金黄（太亮会盖色）", color: "#ffd60a",
+    fact: "钠盐燃烧呈金黄（589nm），过于明亮，配方里常要控制用量，否则会盖住别的颜色。", rarity: 2, loud: true, src: "v1",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tube-g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-yellow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g4)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g4)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 30 L39 30 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#ffd60a" filter="url(#glow-yellow)"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  },
+
+  // ================= 魔法原料：无容器直接展示 =================
+
+  // 9. 月光花瓣：花朵形状带拖尾
+  {
+    id: "moonpetal", name: "月光花瓣", type: "shape", real: false, shape: "willow", color: "#cfe3ff", desc: "魔法 · 垂柳拖尾",
+    fact: "想象原料：采自月圆之夜的昙花，能让星体缓缓垂落成柳条。", rarity: 2, effect: "trail",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+        <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+        </radialGradient>
+        <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+        <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="55%" stop-color="#e2edff"/>
+          <stop offset="100%" stop-color="#b7cffb"/>
+        </linearGradient>
+        <!-- 花心：径向高亮 -->
+        <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#cfe3ff"/>
+        </radialGradient>
+        <!-- 拖尾：越往下越透明，模拟消散。
+             必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+             用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+        <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58">
+          <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9"/>
+          <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+        </linearGradient>
+        <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+        <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="1.6" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <circle cx="32" cy="32" r="28" fill="url(#mg-moon-amb)"/>
+
+      <!-- 垂落的拖尾：起笔藏在花瓣底下，从花底轮廓处自然垂出（避免断口和划痕感） -->
+      <g fill="none" stroke="url(#mg-moon-trail)" stroke-linecap="round" filter="url(#glow-moon)">
+        <path d="M28 30 C24 38, 21 48, 22 58" stroke-width="2.2"/>
+        <path d="M36 30 C40 38, 43 48, 42 58" stroke-width="1.9"/>
+        <path d="M32 28 C32 41, 32 51, 32 58" stroke-width="1.5"/>
+      </g>
+
+      <!-- 花朵：五片花瓣绕花心均分 -->
+      <g transform="translate(32,21)" filter="url(#glow-moon)">
+        <g fill="url(#mg-moon-petal)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round">
+          <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(0)"/>
+          <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(72)"/>
+          <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(144)"/>
+          <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(216)"/>
+          <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(288)"/>
+        </g>
+        <!-- 花心 + 高光 -->
+        <circle cx="0" cy="0" r="3.9" fill="url(#mg-moon-core)"/>
+        <circle cx="0" cy="0" r="1.5" fill="#fff"/>
+      </g>
+
+      <!-- 花瓣高光点缀（短、贴边，避免读成划痕） -->
+      <path d="M28.5 14 C27.8 15.2, 27.5 16.4, 27.8 17.6" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity="0.85"/>
+      <circle cx="26" cy="29" r="1.2" fill="#fff" opacity="0.7"/>
+      <circle cx="38" cy="13" r="1" fill="#fff" opacity="0.55"/>
+    </svg>`
+  },
+
+  // 10. 龙鳞粉：优化交叠鳞片
+  {
+    id: "dragonscale", name: "龙鳞粉", type: "shape", real: false, shape: "double", color: "#ffb703", desc: "魔法 · 二次绽放",
+    fact: "想象原料：研磨自龙蜕下的鳞片，点火时会有第二重惊喜。", rarity: 3, effect: "double",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 环境光晕：同色径向渐变 -->
+        <radialGradient id="mg-scale-amb" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffb703" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#ffb703" stop-opacity="0"/>
+        </radialGradient>
+        <!-- 鳞片本体：金光渐变（亮金 → 金 → 橙金），光从左上打下来 -->
+        <linearGradient id="mg-scale" x1="0" y1="0" x2="0.75" y2="1">
+          <stop offset="0%" stop-color="#fff3c4"/>
+          <stop offset="35%" stop-color="#ffd166"/>
+          <stop offset="72%" stop-color="#ffb703"/>
+          <stop offset="100%" stop-color="#e07b00"/>
+        </linearGradient>
+        <!-- 边缘发光（滤镜区域放宽，避免小图元被裁出方形接缝） -->
+        <filter id="glow-scale" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="1.7" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <circle cx="32" cy="32" r="28" fill="url(#mg-scale-amb)"/>
+
+      <!-- 三片菱形鳞片：下二上一，主片压在最前 -->
+      <g filter="url(#glow-scale)">
+        <!-- 左下鳞片 -->
+        <g transform="translate(23.5,39.5) scale(0.76)">
+          <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>
+        <!-- 右下鳞片 -->
+        <g transform="translate(40.5,39.5) scale(0.76)">
+          <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>
+        <!-- 主鳞片 -->
+        <g transform="translate(32,28)">
+          <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linejoin="round"/>
+        </g>
+      </g>
+
+      <!-- 极简：不加纹理线，靠渐变 + 白描边 + 发光表达体积 -->
+    </svg>`
+  },
+
+  // 11. 凤羽灰：羽毛形状
+  {
+    id: "phoenix", name: "凤羽灰", type: "shape", real: false, shape: "star", color: "#ff7b00", desc: "魔法 · 星形绽放",
+    fact: "想象原料：凤凰落羽烧成的灰，能在空中画出星星。", rarity: 3, effect: "crackle",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 环境光晕：同色径向渐变 -->
+        <radialGradient id="mg-plume-amb" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ff7b00" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#ff7b00" stop-opacity="0"/>
+        </radialGradient>
+        <!-- 金光渐变：走 1024 原视图坐标（羽身两层共用一套，避免分层处颜色断层） -->
+        <linearGradient id="mg-plume" gradientUnits="userSpaceOnUse" x1="150" y1="60" x2="880" y2="1010">
+          <stop offset="0%" stop-color="#fff6d0"/>
+          <stop offset="30%" stop-color="#ffd60a"/>
+          <stop offset="65%" stop-color="#ffa400"/>
+          <stop offset="100%" stop-color="#f26b00"/>
+        </linearGradient>
+        <!-- 自发光（滤镜区域放宽，避免模糊被裁出硬边） -->
+        <filter id="glow-plume" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="1.8" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <circle cx="32" cy="32" r="28" fill="url(#mg-plume-amb)"/>
+
+      <!-- 羽身：经典凤羽剪影（沿用 1024 原坐标，整体缩放进 64 画布居中） -->
+      <g filter="url(#glow-plume)">
+        <g transform="translate(10.16,8.99) scale(0.044)" stroke="rgba(255,255,255,0.8)" stroke-width="20" stroke-linejoin="round">
+          <!-- 内层细羽枝：深金垫底 -->
+          <path fill="#e07b00" d="M4.27 1024a2457.83 2457.83 0 0 1 385.3-563.31A1869.47 1869.47 0 0 1 888.15 63.06a3983.61 3983.61 0 0 0-331.36 269.71C259.34 595.16 70.16 985.86 70.16 985.86z"/>
+          <!-- 主羽片：金光渐变 -->
+          <path fill="url(#mg-plume)" d="M732.87 90.42a162.98 162.98 0 0 0-45.08 49.7 182.25 182.25 0 0 0-19.26 54.33V122.4a1425.61 1425.61 0 0 0-303.23 209.22l-31.21 30.44c-12.33 11.94-16.95 109.43-16.95 109.43s-16.95-73.98-22.35-67.81c-200.36 220.39-186.87 374.9-151.81 427.3 60.49-115.59 131.77-258.54 250.06-367.58C745.2 138.97 914.35 60.37 917.05 59.21a4199.77 4199.77 0 0 0-346.77 283.58c-162.6 145.64-293.21 359.48-377.21 520.15 59.72 21.96 167.61-5.01 272.41-91.32 95.17-77.06 245.05-318.64 245.05-318.64l-167.99 33.14a1025.67 1025.67 0 0 1 125.61-70.51c44.69-20.04 90.55-25.43 92.09-30.82 14.26-45.08 12.71-72.82 98.25-200.36A1341.61 1341.61 0 0 1 987.94 22.99s-83.61-13.49-255.07 67.43z"/>
+        </g>
+      </g>
+    </svg>`
+  },
+
+  // 12. 独角兽螺旋角：螺旋角
+  {
+    id: "unicorn", name: "独角兽螺旋角", type: "shape", real: false, shape: "rainbow", color: "#e0aaff", desc: "魔法 · 彩虹变色",
+    fact: "想象原料：独角兽额上那根螺旋角磨成的粉，让烟花在空中不断变色。", rarity: 4, effect: "rainbow",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 彩虹渐变：粉 → 淡紫 → 紫，光从左上打下来 -->
+        <linearGradient id="mg-horn" x1="0" y1="0" x2="0.9" y2="1">
+          <stop offset="0%" stop-color="#ffd6ec"/>
+          <stop offset="45%" stop-color="#e0aaff"/>
+          <stop offset="100%" stop-color="#a78bfa"/>
+        </linearGradient>
+        <!-- 环境光晕：同色径向渐变 -->
+        <radialGradient id="mg-horn-amb" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#e0aaff" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="glow-horn" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <circle cx="32" cy="32" r="28" fill="url(#mg-horn-amb)"/>
+
+      <!-- 整体逆时针旋转 20°；再左移 3 单位，让旋转后的重心回到画布中心 -->
+      <g transform="translate(-3,0) rotate(-20 32 32)">
+        <path d="M32 8 L42 52 C42 54, 38 56, 32 56 C26 56, 22 54, 22 52 Z" fill="url(#mg-horn)" stroke="rgba(255,255,255,0.85)" stroke-width="1.1" stroke-linejoin="round" filter="url(#glow-horn)"/>
+        <path d="M24 44 Q32 40 40 44 M26 36 Q32 32 38 36 M28 28 Q32 24 36 28 M30 20 Q32 18 34 20" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="32" cy="10" r="2.5" fill="#fff" filter="url(#glow-horn)"/>
+      </g>
+    </svg>`
+  },
+
+  // 13. 星尘：光环形状
+  {
+    id: "stardust", name: "星尘", type: "shape", real: false, shape: "ring", color: "#fff1a8", desc: "魔法 · 光环绽放",
+    fact: "想象原料：陨星坠落时蹭落的尘埃，会聚成一圈光晕。", rarity: 4, effect: "glitter",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="mg-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fff1a8"/></linearGradient>
+        <filter id="glow-ring"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="32" cy="32" r="28" fill="#fff1a8" opacity="0.15"/>
+      <ellipse cx="32" cy="34" rx="20" ry="8" fill="none" stroke="url(#mg-ring)" stroke-width="2.5" filter="url(#glow-ring)" transform="rotate(-15 32 34)"/>
+      <circle cx="32" cy="34" r="4" fill="#fff" filter="url(#glow-ring)"/>
+      <circle cx="16" cy="30" r="1.5" fill="#fff" opacity="0.8"/>
+      <circle cx="48" cy="38" r="2" fill="#fff" opacity="0.9"/>
+      <circle cx="24" cy="42" r="1" fill="#fff" opacity="0.6"/>
+      <circle cx="40" cy="26" r="1.2" fill="#fff" opacity="0.7"/>
+    </svg>`
+  },
+
+  // 14. 妖精之泪：紫色水滴
+  {
+    id: "fairytear", name: "妖精之泪", type: "shape", real: false, shape: "comet", color: "#a78bfa", desc: "魔法 · 流星尾迹",
+    fact: "想象原料：妖精哭过的眼泪，会拖出长长的蓝色尾迹。", rarity: 4, effect: "trail2",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="mg-tear" cx="40%" cy="30%" r="60%"><stop offset="0%" stop-color="#e0d4ff"/><stop offset="100%" stop-color="#a78bfa"/></radialGradient>
+        <filter id="glow-tear"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="32" cy="32" r="28" fill="#a78bfa" opacity="0.15"/>
+      <path d="M32 12 C42 24, 46 32, 46 40 C46 48, 40 54, 32 54 C24 54, 18 48, 18 40 C18 32, 22 24, 32 12 Z" fill="url(#mg-tear)" stroke="rgba(255,255,255,0.8)" stroke-width="1" filter="url(#glow-tear)"/>
+      <path d="M26 34 C26 28, 30 22, 32 18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+      <circle cx="26" cy="42" r="2" fill="#fff" opacity="0.6"/>
+      <path d="M32 54 V60" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" opacity="0.5" filter="url(#glow-tear)"/>
+    </svg>`
+  },
+
+  // 15. 雷鸟羽毛：参考图片重绘版
+  {
+    id: "thunderbird", name: "雷鸟羽毛", type: "shape", real: false, shape: "chrys", color: "#b388ff", desc: "魔法 · 雷鸣菊花",
+    fact: "想象原料：雷鸟的翎羽，爆裂时伴有雷鸣与细密银丝。", rarity: 4, effect: "thunder",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- 主羽毛的紫色渐变 -->
+<linearGradient id="mg-feather-main" x1="0" y1="1" x2="1" y2="0">
+<stop offset="0%" stop-color="#7b2cbf"/>
+<stop offset="50%" stop-color="#9d4edd"/>
+<stop offset="100%" stop-color="#e0aaff"/>
+</linearGradient>
+<!-- 小羽毛的淡紫/白色渐变 -->
+<linearGradient id="mg-feather-small" x1="0" y1="1" x2="1" y2="0">
+<stop offset="0%" stop-color="#c77dff"/>
+<stop offset="100%" stop-color="#ffffff"/>
+</linearGradient>
+<!-- 顶部弧线的渐变 -->
+<linearGradient id="mg-arc" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#e0aaff"/>
+<stop offset="100%" stop-color="#7b2cbf"/>
+</linearGradient>
+<!-- 发光滤镜 -->
+<filter id="glow-purple">
+<feGaussianBlur stdDeviation="1.5" result="blur"/>
+<feMerge>
+<feMergeNode in="blur"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+</defs>
+<!-- 整体环境光晕 -->
+<circle cx="32" cy="32" r="28" fill="#9d4edd" opacity="0.15"/>
+<!-- 1. 顶部弯月弧线 -->
+<path d="M18 12 C28 6, 42 8, 52 16 C42 12, 28 10, 18 12 Z" fill="url(#mg-arc)" opacity="0.9"/>
+<!-- 2. 右侧小羽毛（后层） -->
+<path d="M36 42 C42 36, 48 32, 50 26 C46 32, 40 38, 36 42 Z" fill="url(#mg-feather-small)" opacity="0.8"/>
+<!-- 3. 右侧小羽毛（前层） -->
+<path d="M34 46 C40 42, 46 40, 48 34 C44 40, 38 44, 34 46 Z" fill="url(#mg-feather-small)"/>
+<!-- 4. 主羽毛主体（向左弯曲的大羽毛） -->
+<path d="M34 54 C20 50, 10 36, 14 18 C20 26, 28 32, 34 38 C32 44, 32 50, 34 54 Z"
+fill="url(#mg-feather-main)"
+stroke="rgba(255,255,255,0.5)"
+stroke-width="0.5"/>
+<!-- 5. 主羽毛上的深色条纹（增加层次感） -->
+<path d="M16 24 C22 28, 26 30, 30 32" fill="none" stroke="#5a189a" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+<path d="M14 32 C20 36, 24 38, 28 40" fill="none" stroke="#5a189a" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+<!-- 6. 主羽毛中间的白色发光纹理（核心视觉） -->
+<path d="M32 48 C26 40, 22 32, 26 22"
+fill="none"
+stroke="#ffffff"
+stroke-width="2"
+stroke-linecap="round"
+filter="url(#glow-purple)"/>
+<!-- 7. 发光纹理上的四角星 -->
+<path d="M28 30 L29 33 L32 34 L29 35 L28 38 L27 35 L24 34 L27 33 Z"
+fill="#ffffff"
+filter="url(#glow-purple)"/>
+<!-- 8. 羽毛根部的汇聚点 -->
+<circle cx="34" cy="54" r="2" fill="#e0aaff" filter="url(#glow-purple)"/>
+</svg>`
+  },
+
+  // 16. 影猫：猫猫头
+  {
+    id: "shadowcat", name: "影猫皮毛", type: "shape", real: false, shape: "mystery", color: "#8d99ae", desc: "魔法 · 神秘双爆",
+    fact: "想象原料：午夜影猫换下的毛，结果连老师傅也说不准。", rarity: 5, effect: "mystery",
+    svg: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 环境光晕：同色径向渐变 -->
+        <radialGradient id="mg-cat-amb" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#8d99ae" stop-opacity="0.24"/>
+          <stop offset="100%" stop-color="#8d99ae" stop-opacity="0"/>
+        </radialGradient>
+        <!-- 猫头渐变：冷灰，光从左上打下来 -->
+        <linearGradient id="mg-cat" x1="0" y1="0" x2="0.85" y2="1">
+          <stop offset="0%" stop-color="#939eb3"/>
+          <stop offset="52%" stop-color="#565d72"/>
+          <stop offset="100%" stop-color="#2b2d42"/>
+        </linearGradient>
+        <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+        <filter id="glow-cat" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="1.8" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <circle cx="32" cy="32" r="28" fill="url(#mg-cat-amb)"/>
+
+      <!-- 猫头剪影：沿用 32 视图原坐标，整体 ×2 放进 64 画布 -->
+      <g filter="url(#glow-cat)">
+        <g transform="translate(0,0.8) scale(2)">
+          <!-- 头部轮廓（去黑边，改半透明白） -->
+          <path d="M7.2 12.4 6.4 4 13.4 8.2a13 13 0 0 1 5.2 0L25.6 4l-.8 8.4c.8 1.4 1.2 3 1.2 4.6 0 6-4.6 10.2-10 10.2S6 23 6 17c0-1.6.4-3.2 1.2-4.6Z" fill="url(#mg-cat)" stroke="rgba(255,255,255,0.75)" stroke-width="0.6" stroke-linejoin="round"/>
+          <!-- 左脸高光 -->
+          <path d="M9.6 11.6c-.9 2-1.2 4.3-.7 6.6" fill="none" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.35"/>
+          <!-- 眼睛：原黑色在深底上不可见，改自发光冷白；纵向拉长 1.2 倍更接近猫眼 -->
+          <g transform="translate(0,17.6) scale(1,1.2) translate(0,-17.6)">
+            <path d="M10.6 17.6c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Zm6.8 0c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Z" fill="#e6edfb"/>
+          </g>
+        </g>
+      </g>
+    </svg>`
+  }
+
+  // 16 / 16 全部到齐，无待补项
+];
+
+/* ============ 分类配置 ============ */
+var TOTAL = 16;
+var TYPES = [
+  { key: "all",   label: "全部" },
+  { key: "base",  label: "基础原料" },
+  { key: "spark", label: "闪光原料" },
+  { key: "color", label: "焰色原料" },
+  { key: "shape", label: "魔法原料" }
+];
+var RARITY_NAME = { 2: "稀有", 3: "珍贵", 4: "史诗", 5: "传说" };
+
+/* ============ 工具函数 ============ */
+function hexA(hex, a) {
+  var h = hex.replace("#", "");
+  if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  var n = parseInt(h, 16);
+  return "rgba(" + ((n>>16)&255) + "," + ((n>>8)&255) + "," + (n&255) + "," + a + ")";
+}
+function typeLabel(t) {
+  for (var i=0;i<TYPES.length;i++) if (TYPES[i].key === t) return TYPES[i].label;
+  return t;
+}
+
+/* ============ 进度 ============ */
+(function(){
+  var n = INGREDIENTS.length;
+  var v1n = INGREDIENTS.filter(function(x){ return x.src === "v1" }).length;
+  document.getElementById("doneN").textContent = n;
+  document.getElementById("barFill").style.width = Math.round(n / TOTAL * 100) + "%";
+  document.getElementById("barCap").textContent =
+    (n >= TOTAL ? "全部 " + TOTAL + " 种已更新完成" : "还差 " + (TOTAL - n) + " 种 · 等待下一批 SVG") +
+    "　|　v3 新画 " + (n - v1n) + " · v1 沿用 " + v1n;
+})();
+
+/* ============ 渲染筛选 ============ */
+var current = "all";
+var filtersEl = document.getElementById("filters");
+TYPES.forEach(function(t){
+  var n = t.key === "all" ? INGREDIENTS.length : INGREDIENTS.filter(function(x){return x.type===t.key}).length;
+  var b = document.createElement("button");
+  b.className = "chip" + (t.key === "all" ? " on" : "") + (n === 0 ? " empty" : "");
+  b.dataset.key = t.key;
+  b.innerHTML = t.label + '<span class="n">' + n + "</span>";
+  b.onclick = function(){
+    if (n === 0) return;
+    current = t.key;
+    [].forEach.call(filtersEl.children, function(c){ c.classList.remove("on") });
+    b.classList.add("on");
+    render();
+  };
+  filtersEl.appendChild(b);
+});
+
+/* ============ 渲染网格 ============ */
+var gridEl = document.getElementById("grid");
+var modal = document.getElementById("modal");
+
+function render() {
+  var list = INGREDIENTS.filter(function(x){ return current === "all" || x.type === current });
+  gridEl.innerHTML = "";
+  list.forEach(function(item, i){
+    var card = document.createElement("div");
+    card.className = "card";
+    card.style.setProperty("--c", item.color);
+    card.style.setProperty("--glow", hexA(item.color, .35));
+    card.style.animationDelay = (i * 22) + "ms";
+
+    var tags = '<span class="tag ' + (item.real ? "real" : "magic") + '">' + (item.real ? "真实" : "幻想") + "</span>";
+    tags += (item.src === "v1")
+      ? '<span class="tag v1">v1 试管</span>'
+      : '<span class="tag v3">v3</span>';
+    var stars = item.rarity
+      ? '<span class="stars">' + "★".repeat(item.rarity) + "</span>"
+      : "";
+
+    card.innerHTML =
+      '<div class="icon" style="background:radial-gradient(circle,' + hexA(item.color,.22) + ' 0%,transparent 72%)">' + item.svg + "</div>" +
+      '<div class="name">' + item.name + "</div>" +
+      '<div class="desc">' + item.desc + "</div>" +
+      '<div class="meta">' + tags + stars + "</div>";
+
+    card.onclick = function(){ openSheet(item) };
+    gridEl.appendChild(card);
+  });
+}
+
+/* 放大图标切换 */
+var big = false;
+document.getElementById("sizeBtn").onclick = function(){
+  big = !big;
+  this.classList.toggle("on", big);
+  this.textContent = big ? "还原大小" : "放大图标";
+  document.querySelector(".grid").style.gridTemplateColumns =
+    big ? "repeat(auto-fill,minmax(220px,1fr))" : "";
+  [].forEach.call(document.querySelectorAll(".icon"), function(el){
+    el.style.width = big ? "150px" : "";
+    el.style.height = big ? "150px" : "";
+  });
+};
+
+/* ============ 详情弹层 ============ */
+function openSheet(item) {
+  var sheet = document.getElementById("sheet");
+  sheet.style.setProperty("--c", item.color);
+  document.getElementById("mIcon").innerHTML = item.svg;
+  document.getElementById("mIcon").style.background =
+    "radial-gradient(circle," + hexA(item.color,.25) + " 0%,transparent 72%)";
+  document.getElementById("mName").textContent = item.name;
+  document.getElementById("mRole").textContent = typeLabel(item.type) + " · " + item.desc;
+  document.getElementById("mFact").textContent = item.fact;
+
+  var foot = document.getElementById("mFoot");
+  foot.innerHTML = '<span class="tag ' + (item.real ? "real" : "magic") + '">' + (item.real ? "真实化学" : "幻想魔法") + "</span>";
+  foot.innerHTML += (item.src === "v1")
+    ? '<span class="tag v1">沿用 v1 · 试管</span>'
+    : '<span class="tag v3">v3 重绘</span>';
+  if (item.rarity) foot.innerHTML += '<span class="tag" style="color:' + item.color + ';border-color:' + hexA(item.color,.35) + '">' + RARITY_NAME[item.rarity] + " · " + "★".repeat(item.rarity) + "</span>";
+
+  modal.classList.add("on");
+}
+function closeSheet(){ modal.classList.remove("on") }
+document.getElementById("close").onclick = closeSheet;
+modal.onclick = function(e){ if (e.target === modal) closeSheet() };
+document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeSheet() });
+
+render();
+</script>
+</body>
+</html>

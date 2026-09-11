@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="zUpSoTRu1iRlcAxRprTw1Z">
+<head data-page-node-id="UAcYwofPLXjUZs1cwiRsgE">
+<meta charset="UTF-8" data-page-node-id="wwgORMSFWt0EyUYUCPtLeo">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="YKXzh7L1FRLDgGolmNWBiH">
+<title>夜色琉璃 · 从 v3 原料图标反推的 UI 设计语言</title>
+<style>
+  :root{
+    /* 夜色阶（取自游戏天空 + 图标深色系） */
+    --bg-0:#070b22; --bg-1:#101a45; --bg-2:#1b2a63;
+    /* 玻璃表面（对应瓶身 rgba(255,255,255,.5→.1)） */
+    --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.09);
+    /* 半透明白描边（去黑边原则；UI 取 .12/.22 两档） */
+    --line:rgba(255,255,255,.12); --line-strong:rgba(255,255,255,.22);
+    /* 文字阶（对应图标白 .9/.6/.3 的分级） */
+    --ink:rgba(255,255,255,.92); --ink-2:rgba(255,255,255,.62); --ink-3:rgba(255,255,255,.40);
+    /* 强调色 */
+    --amber:#ffd166; --amber-deep:#ffb703; --amber-ink:#3a2a08;
+    --magic:#b388ff; --magic-soft:#e0aaff;
+    /* 焰色四相（实测自锶/钡/铜/钠试管） */
+    --flame-red:#ff5d6c; --flame-green:#51d88a; --flame-blue:#4cc9f0; --flame-yellow:#ffd60a;
+    /* 结构色 */
+    --wood:#8b5a2b; --danger:#ff5d6c; --ok:#51d88a;
+    /* 圆角（沿用游戏 10/18/26） */
+    --r-sm:10px; --r-md:18px; --r-lg:26px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:
+      radial-gradient(1100px 520px at 18% -8%, rgba(27,42,99,.55), transparent 62%),
+      radial-gradient(900px 480px at 88% 4%, rgba(179,136,255,.10), transparent 60%),
+      var(--bg-0);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.6; padding:0 20px 90px;
+  }
+  .wrap{max-width:1060px;margin:0 auto}
+
+  /* ===== 顶部 ===== */
+  .hero{padding:64px 0 40px;text-align:center}
+  .hero .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:.18em;color:var(--magic-soft);
+    border:1px solid rgba(179,136,255,.35);border-radius:999px;
+    padding:5px 14px;background:rgba(179,136,255,.08);
+  }
+  .hero h1{
+    margin:22px 0 10px;font-size:40px;letter-spacing:.06em;font-weight:700;
+    background:linear-gradient(135deg,#fff 10%,var(--magic-soft) 55%,var(--amber) 95%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .hero p{color:var(--ink-2);max-width:560px;margin:0 auto;font-size:15px}
+  .hero .ico-row{display:flex;justify-content:center;gap:18px;margin-top:26px}
+  .hero .ico-row .ico{width:40px;height:40px;filter:drop-shadow(0 0 10px rgba(255,255,255,.15))}
+
+  /* ===== 分区标题 ===== */
+  section{margin-top:64px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+  .sec-head .no{
+    font-size:13px;color:var(--amber);letter-spacing:.14em;
+    font-variant-numeric:tabular-nums;
+  }
+  .sec-head h2{font-size:22px;font-weight:650}
+  .sec-desc{color:var(--ink-2);font-size:14px;margin-bottom:26px}
+
+  /* ===== 原则卡 ===== */
+  .principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .principle{
+    position:relative;border:1px solid var(--line);border-radius:var(--r-md);
+    background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+    padding:20px 20px 18px;overflow:hidden;
+  }
+  /* 高光点缀：顶部 1px 内高光（对应瓶身光斑） */
+  .principle::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:1px;
+    background:linear-gradient(90deg,transparent 8%,rgba(255,255,255,.28) 50%,transparent 92%);
+  }
+  .principle h3{font-size:15px;margin-bottom:4px}
+  .principle h3 em{font-style:normal;color:var(--amber);font-size:12px;margin-right:8px;letter-spacing:.1em}
+  .principle .from{font-size:12px;color:var(--ink-3);margin-bottom:12px}
+  .principle .from code{color:var(--ink-2);font-size:11px;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:5px}
+  .demo{margin-top:14px;display:flex;align-items:center;gap:12px;min-height:44px}
+
+  /* 单条原则的现场演示件 */
+  .d-line{width:120px;height:44px;border-radius:12px;background:var(--surface);position:relative}
+  .d-line.hairline{border:1px solid var(--line-strong)}
+  .d-line.hardline{border:2px solid #000}
+  .d-grad{width:120px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .d-grad.tl{background:linear-gradient(135deg,#ffe29a,#ffb703);color:var(--amber-ink)}
+  .d-grad.flat{background:#ffb703;color:var(--amber-ink)}
+  .d-glow{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line)}
+  .d-glow.on{border-color:rgba(179,136,255,.6);box-shadow:0 0 22px rgba(179,136,255,.45),inset 0 0 12px rgba(179,136,255,.18)}
+  .d-glow .ico{width:32px;height:32px}
+  .d-hl{width:120px;height:44px;border-radius:12px;background:var(--surface);border:1px solid var(--line);position:relative}
+  .d-hl::after{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)}
+  .d-halo{position:relative;width:56px;height:56px;display:flex;align-items:center;justify-content:center}
+  .d-halo::before{content:"";position:absolute;inset:-14px;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(255,209,102,.28),transparent)}
+  .d-halo .ico{width:32px;height:32px;position:relative}
+  .d-grid{display:flex;gap:6px}
+  .d-grid i{width:14px;height:14px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line)}
+  .d-grid i.f{background:rgba(255,209,102,.35);border-color:rgba(255,209,102,.5)}
+
+  /* ===== 色板 ===== */
+  .swatch-group{margin-bottom:22px}
+  .swatch-group h4{font-size:13px;color:var(--ink-2);font-weight:550;margin-bottom:10px;letter-spacing:.06em}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+  .swatch{
+    border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;
+    background:var(--surface);
+  }
+  .swatch .chip{height:52px;position:relative}
+  .swatch .chip::after{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:rgba(255,255,255,.25)}
+  .swatch .meta{padding:8px 10px}
+  .swatch .meta b{display:block;font-size:12.5px;font-weight:600}
+  .swatch .meta span{font-size:11px;color:var(--ink-3);font-family:ui-monospace,Consolas,monospace}
+
+  /* ===== 组件区 ===== */
+  .comp-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+  @media (max-width:820px){.comp-grid{grid-template-columns:1fr}}
+  .panel{
+    border:1px solid var(--line);border-radius:var(--r-lg);
+    background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));
+    padding:24px;position:relative;overflow:hidden;
+  }
+  .panel::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+    background:linear-gradient(90deg,transparent 6%,rgba(255,255,255,.3) 50%,transparent 94%)}
+  .panel h4{font-size:13px;color:var(--ink-2);font-weight:550;letter-spacing:.08em;margin-bottom:18px}
+
+  /* 按钮 */
+  .btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .btn{
+    -webkit-appearance:none;border:none;cursor:pointer;font:inherit;
+    border-radius:14px;padding:11px 22px;font-size:14.5px;font-weight:650;
+    color:var(--ink);background:none;position:relative;
+    transition:transform .12s ease, box-shadow .2s ease;
+  }
+  .btn:active{transform:translateY(1px) scale(.98)}
+  /* 主按钮 = 魔法原料待遇：135° 渐变 + 自发光 */
+  .btn.primary{
+    color:var(--amber-ink);
+    background:linear-gradient(135deg,#ffe9ad 0%,#ffd166 45%,#ffb703 100%);
+    box-shadow:0 0 22px rgba(255,183,3,.4),0 4px 14px rgba(0,0,0,.35),
+               inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 6px rgba(122,79,0,.25);
+  }
+  .btn.primary:hover{box-shadow:0 0 32px rgba(255,183,3,.55),0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.55)}
+  /* 玻璃按钮 = 瓶身待遇 */
+  .btn.glass{
+    background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+    border:1px solid var(--line-strong);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .btn.glass:hover{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.06))}
+  /* 幽灵按钮 */
+  .btn.ghost{color:var(--ink-2);border:1px solid var(--line)}
+  .btn.ghost:hover{color:var(--ink);border-color:var(--line-strong)}
+  /* 危险 = 锶红焰色 */
+  .btn.danger{
+    color:#fff;background:linear-gradient(135deg,#ff8a96,#ff5d6c);
+    box-shadow:0 0 18px rgba(255,93,108,.35),inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .btn .ico{width:17px;height:17px;vertical-align:-3px;margin-right:6px}
+
+  /* 原料卡（真实 vs 魔法 / 默认 vs 选中） */
+  .ing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .ing-card{
+    position:relative;cursor:pointer;user-select:none;
+    border:1px solid var(--line);border-radius:var(--r-md);
+    background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    padding:18px 14px 14px;text-align:center;
+    transition:border-color .18s, box-shadow .25s, transform .18s;
+  }
+  .ing-card:active{transform:scale(.97)}
+  .ing-card .ico{width:44px;height:44px}
+  .ing-card b{display:block;font-size:14px;margin-top:8px}
+  .ing-card small{display:block;font-size:11px;color:var(--ink-3);margin-top:2px;letter-spacing:.05em}
+  /* 魔法原料：自发光 + 环境光晕（feGaussianBlur+radial 的 CSS 等价） */
+  .ing-card.magic .ico{filter:drop-shadow(0 0 8px rgba(179,136,255,.55))}
+  .ing-card.magic b{color:var(--magic-soft)}
+  .ing-card.magic::before{
+    content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(90px 60px at 50% 0%,rgba(179,136,255,.16),transparent 70%);
+  }
+  /* 选中态：琥珀描边 + 顶部环境光 + 稀有角标 */
+  .ing-card.sel{
+    border-color:rgba(255,209,102,.65);
+    box-shadow:0 0 0 1px rgba(255,209,102,.25),0 0 26px rgba(255,209,102,.18),
+               inset 0 1px 0 rgba(255,255,255,.2);
+    background:linear-gradient(150deg,rgba(255,209,102,.10),rgba(255,209,102,.03));
+  }
+  .ing-card.sel::after{
+    content:"已选";position:absolute;top:10px;right:10px;
+    font-size:10px;color:var(--amber-ink);font-weight:700;
+    background:linear-gradient(135deg,#ffe29a,#ffb703);
+    border-radius:999px;padding:2px 8px;
+    box-shadow:0 0 10px rgba(255,183,3,.5);
+  }
+  .hint{font-size:12px;color:var(--ink-3);margin-top:14px}
+
+  /* chips */
+  .chip-row{display:flex;flex-wrap:wrap;gap:10px}
+  .tag{
+    font-size:12.5px;padding:6px 14px;border-radius:999px;
+    border:1px solid var(--line);color:var(--ink-2);background:var(--surface);
+    cursor:pointer;transition:all .15s;
+  }
+  .tag:hover{border-color:var(--line-strong);color:var(--ink)}
+  .tag.on{
+    color:var(--amber);border-color:rgba(255,209,102,.55);
+    background:rgba(255,209,102,.10);
+    box-shadow:0 0 14px rgba(255,209,102,.22),inset 0 1px 0 rgba(255,255,255,.15);
+  }
+  .tag .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px;
+    box-shadow:0 0 6px currentColor}
+
+  /* 输入框 + 进度 */
+  .field{
+    width:100%;padding:12px 16px;font:inherit;font-size:14px;color:var(--ink);
+    background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px;
+    outline:none;transition:border-color .18s, box-shadow .25s;
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.3);
+  }
+  .field::placeholder{color:var(--ink-3)}
+  .field:focus{
+    border-color:rgba(179,136,255,.6);
+    box-shadow:0 0 0 3px rgba(179,136,255,.14),0 0 20px rgba(179,136,255,.22),inset 0 2px 6px rgba(0,0,0,.3);
+  }
+  .prog{margin-top:22px}
+  .prog .lab{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:8px}
+  .prog .track{height:10px;border-radius:999px;background:rgba(0,0,0,.35);border:1px solid var(--line);overflow:hidden}
+  .prog .fill{
+    height:100%;width:68%;border-radius:999px;
+    background:linear-gradient(90deg,#ffb703,#ffd166);
+    box-shadow:0 0 12px rgba(255,209,102,.6);
+    position:relative;
+  }
+  .prog .fill::after{content:"";position:absolute;right:0;top:-3px;bottom:-3px;width:6px;
+    background:#fff3c4;border-radius:3px;filter:blur(2px);box-shadow:0 0 10px #ffd166}
+
+  /* toast / 弹层卡 */
+  .toast{
+    display:flex;gap:14px;align-items:center;
+    border:1px solid rgba(255,209,102,.4);border-radius:var(--r-md);
+    background:linear-gradient(135deg,rgba(43,33,8,.92),rgba(16,26,69,.92));
+    padding:14px 18px;
+    box-shadow:0 0 28px rgba(255,209,102,.16),0 12px 32px rgba(0,0,0,.5),
+               inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .toast .ico{width:34px;height:34px;flex:none;filter:drop-shadow(0 0 8px rgba(255,209,102,.4))}
+  .toast b{font-size:14px;display:block}
+  .toast small{font-size:12px;color:var(--ink-2)}
+
+  /* ===== 换算表 ===== */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{ text-align:left;font-size:12px;color:var(--ink-3);font-weight:550;letter-spacing:.08em;
+      padding:10px 14px;border-bottom:1px solid var(--line)}
+  td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top;color:var(--ink-2)}
+  td code{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--magic-soft);
+    background:rgba(179,136,255,.08);padding:2px 7px;border-radius:6px;word-break:break-all}
+  td:first-child{color:var(--ink);white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+
+  footer{margin-top:70px;text-align:center;color:var(--ink-3);font-size:12px;letter-spacing:.1em}
+  .ico{display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body data-page-node-id="W3w04GBzMuHcP8rzkBKwtV">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false" data-page-node-id="lHYBp31R0iBRfzZIDOetB1">
+  <defs data-page-node-id="hTGbUUfoJGJvcRENYmxkOC">
+    <!-- saltpeter -->
+    <linearGradient id="g-saltpeter" x1="0" y1="0" x2="1" y2="1" data-page-node-id="s9wfflFEVyNvBEuW7EOucD">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="guw6TkViuAn0LkQPVwQc0T"/>
+    <stop offset="100%" stop-color="#f5e9c8" data-page-node-id="rPEkwP0m4Qug44gZE7dpnE"/>
+    </linearGradient>
+    <filter id="glow-salt" data-page-node-id="wgqm990rjdammDudAcGzp4"><feGaussianBlur stdDeviation="1.5" result="blur" data-page-node-id="qKyndt34CVbbVc86xrgmP2"/><feMerge data-page-node-id="ozLElbHm6Hf8Ufyvy0CtS2"><feMergeNode in="blur" data-page-node-id="xTSJBDqNnexF1phBi8XlwA"/><feMergeNode in="SourceGraphic" data-page-node-id="3I8FxDGT0DbDXosJ4g5bZQ"/></feMerge></filter>
+    <!-- saltpeter -->
+    <linearGradient id="g-saltpeter" x1="0" y1="0" x2="1" y2="1" data-page-node-id="nCdBl6bLnUnUIc0Eaf3XrQ">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="qvGwuRQW6NB2XZpA4Ol98a"/>
+    <stop offset="100%" stop-color="#f5e9c8" data-page-node-id="PZ46Ap7TAQUUmf8Qo9auCL"/>
+    </linearGradient>
+    <filter id="glow-salt" data-page-node-id="gJxeon9WdBBvTZxIcgMXog"><feGaussianBlur stdDeviation="1.5" result="blur" data-page-node-id="4btTHWl9ltGa3pZaV63NV1"/><feMerge data-page-node-id="b79bhlDQezV90G9jf4hlsI"><feMergeNode in="blur" data-page-node-id="6aZPIHTqMwEGOat3fmXyb5"/><feMergeNode in="SourceGraphic" data-page-node-id="ZdushPXVxvbBFNIVeRy2Mp"/></feMerge></filter>
+    <!-- sulfur -->
+    <linearGradient id="g-sulfur" x1="0" y1="0" x2="1" y2="1" data-page-node-id="gD10Zfjos5BOq3HjwQgC6J">
+    <stop offset="0%" stop-color="#FFE082" data-page-node-id="RtFlQf6QcjTUM6BxLdWaDi"/>
+    <stop offset="50%" stop-color="#FFD166" data-page-node-id="N9v9MWjp8znPRm7QTMGhXX"/>
+    <stop offset="100%" stop-color="#E9C46A" data-page-node-id="pbs2qLA2Wj0Mc4PEdiG8Rp"/>
+    </linearGradient>
+    <filter id="glow-sulfur" data-page-node-id="KySOopzGj6j4qay57iZ1f7"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="UT4G1yAkHXtkpkKU6Jj4IZ"/><feMerge data-page-node-id="OnUm4b5J14vZxQPyusA8pC"><feMergeNode in="blur" data-page-node-id="R6Jx3HUTHKrN19NxCh2x81"/><feMergeNode in="SourceGraphic" data-page-node-id="eSARZHrs3V8MYGUgAvWAkI"/></feMerge></filter>
+    <!-- sulfur -->
+    <linearGradient id="g-sulfur" x1="0" y1="0" x2="1" y2="1" data-page-node-id="cVHoNAlnb3kgfZTB5xAnfh">
+    <stop offset="0%" stop-color="#FFE082" data-page-node-id="XqeHOzFLyk45KWjh2rFK0c"/>
+    <stop offset="50%" stop-color="#FFD166" data-page-node-id="zpQZYOxBujcPa61882o8Bq"/>
+    <stop offset="100%" stop-color="#E9C46A" data-page-node-id="gfJ0jJ5UzTdzSfoMbMkEI1"/>
+    </linearGradient>
+    <filter id="glow-sulfur" data-page-node-id="AeRPsILZTPbC6FNrs8zcp7"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="K7zj6v6houBns5zO6FPbaG"/><feMerge data-page-node-id="XYjLfWuGAMa8JizwLeEwWz"><feMergeNode in="blur" data-page-node-id="N4rcVCj078PDKs5EBgCbwU"/><feMergeNode in="SourceGraphic" data-page-node-id="GLeL9d7MJYn9V9zFnL3bKR"/></feMerge></filter>
+    <!-- charcoal -->
+    <linearGradient id="g-charcoal" x1="0" y1="0" x2="1" y2="1" data-page-node-id="0AzMVatjuZbnknadG7vPFj">
+    <stop offset="0%" stop-color="#5c607a" data-page-node-id="itTSFIZIiLW1XdN7oFOfDC"/>
+    <stop offset="100%" stop-color="#22223b" data-page-node-id="98FFDDyAsUK5W4ZVjN5r5k"/>
+    </linearGradient>
+    <filter id="glow-spark" data-page-node-id="NmyuneYItdOT1tpSY3dFBo"><feGaussianBlur stdDeviation="1.5" result="blur" data-page-node-id="VhaQPBKeps3IRVZiAKNnpA"/><feMerge data-page-node-id="Cc1byERlyIMtUHnlrZzSMU"><feMergeNode in="blur" data-page-node-id="AGSb8Tkfk5yDkUVrprk3Ux"/><feMergeNode in="SourceGraphic" data-page-node-id="pU0CpHhoELwjIDKKUT1JhD"/></feMerge></filter>
+    <!-- charcoal -->
+    <linearGradient id="g-charcoal" x1="0" y1="0" x2="1" y2="1" data-page-node-id="xltpDwLZOMiLVjTCBA2GF1">
+    <stop offset="0%" stop-color="#5c607a" data-page-node-id="GvwgBKn0evZGk19h25b2Oe"/>
+    <stop offset="100%" stop-color="#22223b" data-page-node-id="xk4fx1mSnYrChCDsUPytb0"/>
+    </linearGradient>
+    <filter id="glow-spark" data-page-node-id="T6OV89JpxeMiYy2OzBA5TI"><feGaussianBlur stdDeviation="1.5" result="blur" data-page-node-id="lHZpyspJSGjm5AxmEIlpjY"/><feMerge data-page-node-id="NIfoloABwpZ6S9eMqQcQHO"><feMergeNode in="blur" data-page-node-id="EFkOz8oIpPYdpE7vwdjreE"/><feMergeNode in="SourceGraphic" data-page-node-id="TvoQA5SD0nhDoIoJPRdALr"/></feMerge></filter>
+    <!-- aluminum -->
+    <!-- 粉末堆的金属质感渐变 -->
+    <linearGradient id="mg-alu" x1="0" y1="0" x2="0" y2="1" data-page-node-id="s3MorjV5TE0XUPCsZ9rGuG">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="elIREeAO0BX9TD3U1Exbih"/>
+    <stop offset="40%" stop-color="#e9ecef" data-page-node-id="gYG3k6s2l6vVQaK9OBjhMf"/>
+    <stop offset="100%" stop-color="#adb5bd" data-page-node-id="zLUVHsDmFCzMENbmYEyTmM"/>
+    </linearGradient>
+    <!-- 星芒的强烈发光滤镜
+    注意：filter 默认滤镜区域只有 bbox 的 ±10%，小图元（如 r=2 的圆）套上
+    stdDeviation=2 的模糊会被硬裁出方形接缝 —— 必须把区域放宽。 -->
+    <filter id="glow-alu" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="nkS2GDHD1hfF92NgjHreRf">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="QvUGXoJzue4qVNxxaFeENc"/>
+    <feMerge data-page-node-id="JNriKi9eJlBwK5hx0Tj2XH">
+    <feMergeNode in="blur" data-page-node-id="RAIYDBSoyAGAqyVDabFBlq"/>
+    <feMergeNode in="SourceGraphic" data-page-node-id="eQGlZ3fzdDPqUUDFe1qTxd"/>
+    </feMerge>
+    </filter>
+    <!-- aluminum -->
+    <!-- 粉末堆的金属质感渐变 -->
+    <linearGradient id="mg-alu" x1="0" y1="0" x2="0" y2="1" data-page-node-id="lLm73QhKKWxVjtqEWCpkmC">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="ysWudf6h2Rt0l6cH2ajUvN"/>
+    <stop offset="40%" stop-color="#e9ecef" data-page-node-id="L6v2CfGij8bfofhIDTQpPD"/>
+    <stop offset="100%" stop-color="#adb5bd" data-page-node-id="vqt3xZEfnbNmb05252pEYj"/>
+    </linearGradient>
+    <!-- 星芒的强烈发光滤镜
+    注意：filter 默认滤镜区域只有 bbox 的 ±10%，小图元（如 r=2 的圆）套上
+    stdDeviation=2 的模糊会被硬裁出方形接缝 —— 必须把区域放宽。 -->
+    <filter id="glow-alu" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="r2iFr9RKWs7MXtq1sq9NmT">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="mHcGoSfHviK8GAfGnnCVGK"/>
+    <feMerge data-page-node-id="85MI45siS1TuGlGi678kPZ">
+    <feMergeNode in="blur" data-page-node-id="b5BsuBMgWQCQtovgCZ55Vt"/>
+    <feMergeNode in="SourceGraphic" data-page-node-id="uf8lBhrSC6BLSLHEL5e6uT"/>
+    </feMerge>
+    </filter>
+    <!-- strontium -->
+    <linearGradient id="tube-g" x1="0" y1="0" x2="1" y2="0" data-page-node-id="4Y6mMNkEgd8QoipzKHZBbS"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="NpLD6yZyfhkODUsUy4SeJX"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="ivoBA7MPJRvwlcaZkTT8GH"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="wBDpAIjCFG0BmtdnxSYXzV"/></linearGradient><filter id="glow-red" data-page-node-id="oepiaDRFDVnwjPF3mrqQpR"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="ZIPHsBQN0VyoFIEyFn866N"/><feMerge data-page-node-id="1vmIXQMdICuaZudqsrNKeV"><feMergeNode in="blur" data-page-node-id="wtqYJyHt2CkBe2Bq4ViSBs"/><feMergeNode in="SourceGraphic" data-page-node-id="niqfgrLBzRtDRojrhsqG5G"/></feMerge></filter>
+    <!-- strontium -->
+    <linearGradient id="tube-g" x1="0" y1="0" x2="1" y2="0" data-page-node-id="cUcL0um4hREAsOtyGXPWsI"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="xRvvoaaQN7AV6CNgDAWNAW"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="yRi1a1aVwh5fBNe8mjn2Ak"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="4IlWl1FadRRtzKB46igAcd"/></linearGradient><filter id="glow-red" data-page-node-id="gOpxHS7CGh29ZAYC53Sc3i"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="MfD1HWmyECGPWAh2ed0zvm"/><feMerge data-page-node-id="LilnKzeJpFWlbkPO22v8GY"><feMergeNode in="blur" data-page-node-id="FG3nEBPtBAn9KydDfhv0G5"/><feMergeNode in="SourceGraphic" data-page-node-id="dzWoBG7q031lFj8PHf0bsG"/></feMerge></filter>
+    <!-- barium -->
+    <linearGradient id="tube-g2" x1="0" y1="0" x2="1" y2="0" data-page-node-id="dxdlS0gyTN0RlnFDxg6WEB"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="QQlAWDbAGAdQH3zPBqovcu"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="ul3h2sQJm6C6t6mkBj65Ea"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="hmELnNjLUaJGjU1yqN7llw"/></linearGradient><filter id="glow-green" data-page-node-id="kuCJcTS0xTR0CGp8fNTAAU"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="PQal0ffXGFzqaejAQbqOuP"/><feMerge data-page-node-id="jJsNL0EGghv9VyISqFJOoi"><feMergeNode in="blur" data-page-node-id="5Mvu1ZIqrNAI8chdg2SYPd"/><feMergeNode in="SourceGraphic" data-page-node-id="Dfn9CBivVDGUR2i8LTD0z3"/></feMerge></filter>
+    <!-- barium -->
+    <linearGradient id="tube-g2" x1="0" y1="0" x2="1" y2="0" data-page-node-id="ZLaCIEpPMQ7GQAJCPcPxUK"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="WhynC7cgo1i4yW0boyty3P"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="fZcrusANv7sK5pCYLVpB69"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="d2mswXyWkiybVRmQYisIEk"/></linearGradient><filter id="glow-green" data-page-node-id="5IG6d0eLYzKwuvrbAPHqRF"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="p6aIgBuFuWK3e3yGlmlNOB"/><feMerge data-page-node-id="R4gpYHSBSWSRU3sqWsi8TG"><feMergeNode in="blur" data-page-node-id="vntoZw82GGTQaFEqQREoRT"/><feMergeNode in="SourceGraphic" data-page-node-id="bfJAddPQzAX2dALM5GPjSw"/></feMerge></filter>
+    <!-- copper -->
+    <linearGradient id="tube-g3" x1="0" y1="0" x2="1" y2="0" data-page-node-id="Mk2HJlJe1OTHz9w0CH2MwB"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="F9nxqb78F6WpH28KzThbm1"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="E6AF5wqnqippnrT5LWkqQS"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="gyqOvmCM6545XV0N4p8ABr"/></linearGradient><filter id="glow-blue" data-page-node-id="fCBqjVbB5KIDKN5qMsBHKl"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="BU9hgmQT4gQpO9Ch7G14rL"/><feMerge data-page-node-id="EL53mYFsq87DqFGizlNERL"><feMergeNode in="blur" data-page-node-id="TeeyfYEeFqcg3hB8KmDEQi"/><feMergeNode in="SourceGraphic" data-page-node-id="tT1iBUDBYl3TeAuvweQqjB"/></feMerge></filter>
+    <!-- copper -->
+    <linearGradient id="tube-g3" x1="0" y1="0" x2="1" y2="0" data-page-node-id="K2ldvAigU5FLHRyCh2U47o"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="379oHbpKs5CiQQ8ZVAAwtM"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="8815y1oDDM7zJfj7Qjzgzi"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="CBaXpDCWbotQX6ZlN30FCB"/></linearGradient><filter id="glow-blue" data-page-node-id="6lEpjM6EiuelAda7PxEnpx"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="z3gGklw25mWnEoTtkgi19V"/><feMerge data-page-node-id="8MY7sKmFbFEDzZfTraYoLt"><feMergeNode in="blur" data-page-node-id="S1EEkILH2OabtGdBSDYar7"/><feMergeNode in="SourceGraphic" data-page-node-id="dhuYTEASs3q1iRy4NLGGTW"/></feMerge></filter>
+    <!-- sodium -->
+    <linearGradient id="tube-g4" x1="0" y1="0" x2="1" y2="0" data-page-node-id="uCMEj1LJv12F7RtLIKW1kx"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="iVDBFWmAKv0cUd3z1VW4Er"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="8L6Uo8WAt2X9TeDImgza74"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="PKpMVl7tn7Qh6ZpSR29My9"/></linearGradient><filter id="glow-yellow" data-page-node-id="s7lD2OMemKfv6IHQAIwwtZ"><feGaussianBlur stdDeviation="2.5" result="blur" data-page-node-id="apB30OAyQkiOsIAXEjKxy6"/><feMerge data-page-node-id="EuFS2E3ERBbocMDhhfLatK"><feMergeNode in="blur" data-page-node-id="7AMVQ82LKTAW1GqS3njJVS"/><feMergeNode in="SourceGraphic" data-page-node-id="sEJDzqEAKHLbCk7aMNbkL9"/></feMerge></filter>
+    <!-- sodium -->
+    <linearGradient id="tube-g4" x1="0" y1="0" x2="1" y2="0" data-page-node-id="DLh9Ej5XopJbuFFEXjDrtj"><stop offset="0%" stop-color="rgba(255,255,255,0.5)" data-page-node-id="L9BGv0w1HI0bEvorzNkclo"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)" data-page-node-id="ErXdGlDWoDdd0f08XwrAuJ"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)" data-page-node-id="L8bOy2kL29lf8dhKme9NIE"/></linearGradient><filter id="glow-yellow" data-page-node-id="BRI7JekpeZkQ0opDxqnKWt"><feGaussianBlur stdDeviation="2.5" result="blur" data-page-node-id="bNbb8IWGBXcF1IftDD5zQ6"/><feMerge data-page-node-id="AmgHiQr49zI4Ea8c1LyvGv"><feMergeNode in="blur" data-page-node-id="eG9y4EkWkskE5jEdLDiRgq"/><feMergeNode in="SourceGraphic" data-page-node-id="cbjdpOgknXR9yg0KnDsW3v"/></feMerge></filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%" data-page-node-id="9Gha4Hof5FN5AevgvUExRl">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22" data-page-node-id="MkhixM1Z5dRoOFJDCjRBPG"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="TbQ5pZ2ZRhNAnfaCUQnTB5"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1" data-page-node-id="P4fs3e21FjE5ywXh1TlQgn">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="28iVDBDq3QOavaP30U976o"/>
+    <stop offset="55%" stop-color="#e2edff" data-page-node-id="dlCDjLMkouPb0JpsnhbHNw"/>
+    <stop offset="100%" stop-color="#b7cffb" data-page-node-id="B32sFeshngoqSR38EXDEvn"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%" data-page-node-id="d0VQCyGg9S2oLBoIJy7KDi">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="erdPfcTUTi6IJ4GqED4Lvu"/>
+    <stop offset="100%" stop-color="#cfe3ff" data-page-node-id="rfvgDuKJ0X8r8cpegBeBfs"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58" data-page-node-id="Ovr8bCK7nvfMU1JMZOSrAL">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9" data-page-node-id="wespcZzgGJjiMAFtkMVbtw"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5" data-page-node-id="zPRD3Gh3ryiTa0ECY1ZWqk"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="t4AfSecRGu3Em9TSSXCVrA"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="bcER7BESAJcqMqgxVdUWVo">
+    <feGaussianBlur stdDeviation="1.6" result="blur" data-page-node-id="d6j1Z8XNgbSQ6MmmZowrPK"/>
+    <feMerge data-page-node-id="sQeOWgkvGv9iYVKA7qBZpa"><feMergeNode in="blur" data-page-node-id="eLpkJjZuFaLBn3qQrklTUW"/><feMergeNode in="SourceGraphic" data-page-node-id="xgGe77vRgae2VGEIuG1SHq"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%" data-page-node-id="clpT9DK1cKSbNbyzGTJz8p">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22" data-page-node-id="C8o8Oxl37kpxMoOZL0wUEQ"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="NmArIX7d1a5RJZt1CEEyPm"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1" data-page-node-id="rYbzR96UNY5t5kG0vXiE4G">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="YyJfcPTJ56tFSdZwVlrqi5"/>
+    <stop offset="55%" stop-color="#e2edff" data-page-node-id="RTGjxMbq2DfsnwfFwjCUtq"/>
+    <stop offset="100%" stop-color="#b7cffb" data-page-node-id="fDCnNqBZDxXk8nOfjkYHcy"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%" data-page-node-id="fEHOGSxmZDM9oXKDfJDzSa">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="oIFaB4TyGc25EuIIMLKjgN"/>
+    <stop offset="100%" stop-color="#cfe3ff" data-page-node-id="g1SBWVqVlTLRdP12UZfcJJ"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58" data-page-node-id="qG2beCuwdMFBtyS3opNf4r">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9" data-page-node-id="F3FUiD8fVcurj5dXBqKJQJ"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5" data-page-node-id="CPOBKdEhDvqFS6pYkD0lem"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="1X1UEa658tIvSYM4izFFO8"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="e78mBHEx6teKXWigFCMQ39">
+    <feGaussianBlur stdDeviation="1.6" result="blur" data-page-node-id="kO9on3e9RwpG9DAnCjizn2"/>
+    <feMerge data-page-node-id="5rpIAqfoGq46JinqN99RTt"><feMergeNode in="blur" data-page-node-id="0m6trKsdgM3rJytDp898OF"/><feMergeNode in="SourceGraphic" data-page-node-id="vxClhGgUgIVnreM0ydFxX2"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%" data-page-node-id="5PYbDAVGBQ5gaqPE4k1AR4">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22" data-page-node-id="sOoUMGO2xLOF6jNyKsxzVJ"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="jHk4x7dAXWSxVPNfASl8BZ"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1" data-page-node-id="wO6eo3KgDIxaD7HOdIYk4G">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="UqV5OWqFjz3KNhzlr8fOUz"/>
+    <stop offset="55%" stop-color="#e2edff" data-page-node-id="rOxXtUjjcRgNx5dXZ6IoSp"/>
+    <stop offset="100%" stop-color="#b7cffb" data-page-node-id="G8dRIkrJWL8DepvOpeWZeJ"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%" data-page-node-id="qKAS9iIAsxLb2JXEsSKVLW">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="qdMCDr9iR5atAErqn7VY5H"/>
+    <stop offset="100%" stop-color="#cfe3ff" data-page-node-id="TF0LI3Fu40m0W1qxMhqyPD"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58" data-page-node-id="UNWNEjZmlRDs4BLbYzcKt5">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9" data-page-node-id="mnGZfdHJkLAdCx4hpnmtEf"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5" data-page-node-id="hBC8qCZXtAuhpUKqCzNqjK"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="L8dspZrq3FbtXcVT8yzlct"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="FnFIuq9UBKGyJkNhApIBLN">
+    <feGaussianBlur stdDeviation="1.6" result="blur" data-page-node-id="Hc70le6nBHRwDgE0JK6ynb"/>
+    <feMerge data-page-node-id="AotYQhPaCIMYA8vM86zloC"><feMergeNode in="blur" data-page-node-id="ZbJ71OrRpE6QnrPn4GFzjj"/><feMergeNode in="SourceGraphic" data-page-node-id="bo45WVFiwrndeHntiCkZNQ"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%" data-page-node-id="E0K4PwBBSiQHXsgPR8p4Ig">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22" data-page-node-id="aWVyM0BNtb6nIhokClIXpR"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="VOWvFKMbQgZvQQrVwnVvGT"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1" data-page-node-id="Zq0HwyZE3NT08D3fiavqK6">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="g3GnG7VyZTkAbDPKamHhHP"/>
+    <stop offset="55%" stop-color="#e2edff" data-page-node-id="LEKpQBUi4FL5eZojHvqRQ1"/>
+    <stop offset="100%" stop-color="#b7cffb" data-page-node-id="mEpqpZq2lEU4Okur1AifPi"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%" data-page-node-id="hLXMoTwM0GRBoUygA6dS30">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="xW5egN0R1xaPMNQqnSydXm"/>
+    <stop offset="100%" stop-color="#cfe3ff" data-page-node-id="QUhpE7SB5Hb3s9aun2TEwT"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58" data-page-node-id="1UmCZ27Eki0hrSpllhsxHp">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9" data-page-node-id="HXqB8M9tZGvI5Dz7g8nFJH"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5" data-page-node-id="251VZICF8QRHf7HCFFoTvT"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="UbCa8wThLQKtB9tijRccYb"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="ME0DH3ayneS4MWSgVQdvvV">
+    <feGaussianBlur stdDeviation="1.6" result="blur" data-page-node-id="MrqG5kv2lhAIjxpyXkdWHC"/>
+    <feMerge data-page-node-id="PXrrwOEAgtVp7q4TwvIqtC"><feMergeNode in="blur" data-page-node-id="OjkwVnb7vCYbYgwci3czDV"/><feMergeNode in="SourceGraphic" data-page-node-id="Ad2fpYT8SdrAIerB6cV8jB"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%" data-page-node-id="BkRljOi4HrnwDBESt7LouF">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22" data-page-node-id="TGbm4HViSEtPAOogflnwf9"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="HP3SkBWOafnfrgAmlwCTn4"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1" data-page-node-id="iSQupLxj4BhDKQJuCIUXCr">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="oh3uUEMLeqNXNAVf2z4KKl"/>
+    <stop offset="55%" stop-color="#e2edff" data-page-node-id="91b4aUpBsLVCkNct7TEgyj"/>
+    <stop offset="100%" stop-color="#b7cffb" data-page-node-id="bO6T6QZVMcF9oaqbQhkzLb"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%" data-page-node-id="rfHSOH5b2vomGzKblciL7j">
+    <stop offset="0%" stop-color="#ffffff" data-page-node-id="v2EgFGwEnbkiXSIiCfS6Jy"/>
+    <stop offset="100%" stop-color="#cfe3ff" data-page-node-id="hLPSSD6ISEzgzR8hONFhYF"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58" data-page-node-id="XtlVztvpeR8QFAMpkW5mBL">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9" data-page-node-id="W4jEtgg7HbsvMzXlGUeTeV"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5" data-page-node-id="hjjMjN9A811fjo9vX9BKBK"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0" data-page-node-id="6nlTiHjFcrZNadYUGPnlsF"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="mIY8TZby65Go2QqhRfGg5r">
+    <feGaussianBlur stdDeviation="1.6" result="blur" data-page-node-id="DxpAoSGUPhzpKieaEFxY5C"/>
+    <feMerge data-page-node-id="l01a0bawxiC9dl7xX3pHW0"><feMergeNode in="blur" data-page-node-id="DyvzUcj80IG5wsIv6AV5HY"/><feMergeNode in="SourceGraphic" data-page-node-id="81j6ZzvKckneIyseaFMhLd"/></feMerge>
+    </filter>
+    <!-- dragonscale -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-scale-amb" cx="50%" cy="50%" r="50%" data-page-node-id="KIZ5MoU7Tqu9xVGKlYLMHP">
+    <stop offset="0%" stop-color="#ffb703" stop-opacity="0.22" data-page-node-id="un0IauxdCAhemSiHIY1rNy"/>
+    <stop offset="100%" stop-color="#ffb703" stop-opacity="0" data-page-node-id="qw3nwGM3xs5A4GnmLEHkeC"/>
+    </radialGradient>
+    <!-- 鳞片本体：金光渐变（亮金 → 金 → 橙金），光从左上打下来 -->
+    <linearGradient id="mg-scale" x1="0" y1="0" x2="0.75" y2="1" data-page-node-id="lbbiN1IcanozFUBAQ0RRvO">
+    <stop offset="0%" stop-color="#fff3c4" data-page-node-id="W232wqq3ClN1lGAK84ExHC"/>
+    <stop offset="35%" stop-color="#ffd166" data-page-node-id="gsf9vFNg3zPl3EnsJ2fNv2"/>
+    <stop offset="72%" stop-color="#ffb703" data-page-node-id="m7G1UX1PvCIeSPS0ruhJfU"/>
+    <stop offset="100%" stop-color="#e07b00" data-page-node-id="KtVPftuUPm9nYU8PLCOfy6"/>
+    </linearGradient>
+    <!-- 边缘发光（滤镜区域放宽，避免小图元被裁出方形接缝） -->
+    <filter id="glow-scale" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="plz5xk18GCtTODEtxUgC60">
+    <feGaussianBlur stdDeviation="1.7" result="blur" data-page-node-id="e5MzOwCejJ4HbPweN0bRxG"/>
+    <feMerge data-page-node-id="BZBf9fhwbQqVu38dT4nRfz"><feMergeNode in="blur" data-page-node-id="EPnwpEc46weES0qUlDcaPC"/><feMergeNode in="SourceGraphic" data-page-node-id="fgg6zM3py4SCfGwcELA77f"/></feMerge>
+    </filter>
+    <!-- dragonscale -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-scale-amb" cx="50%" cy="50%" r="50%" data-page-node-id="Z7v3VXpc73YGRPRK5SfZgf">
+    <stop offset="0%" stop-color="#ffb703" stop-opacity="0.22" data-page-node-id="U8uha6Zd7cmTNoN4HEgu4G"/>
+    <stop offset="100%" stop-color="#ffb703" stop-opacity="0" data-page-node-id="b4KMQX6MIBGMJCHOIFC5qk"/>
+    </radialGradient>
+    <!-- 鳞片本体：金光渐变（亮金 → 金 → 橙金），光从左上打下来 -->
+    <linearGradient id="mg-scale" x1="0" y1="0" x2="0.75" y2="1" data-page-node-id="rR2ZMFImfNQp5Gpc7mXo2p">
+    <stop offset="0%" stop-color="#fff3c4" data-page-node-id="uctrt47wah6nLQiioHEcVB"/>
+    <stop offset="35%" stop-color="#ffd166" data-page-node-id="yae7xXamXOXpvLIXcVmu4h"/>
+    <stop offset="72%" stop-color="#ffb703" data-page-node-id="AYUVTnGcAdRdgG198IpnZH"/>
+    <stop offset="100%" stop-color="#e07b00" data-page-node-id="GhBcgOd3XHevNUlofv1hpT"/>
+    </linearGradient>
+    <!-- 边缘发光（滤镜区域放宽，避免小图元被裁出方形接缝） -->
+    <filter id="glow-scale" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="bGuEP5TJGkmWKqirkb63Ka">
+    <feGaussianBlur stdDeviation="1.7" result="blur" data-page-node-id="ro6rYmD1RUaDcPlShnEan8"/>
+    <feMerge data-page-node-id="PR0mxaBsuMtLC72pGOUGu9"><feMergeNode in="blur" data-page-node-id="KlN1aElIN220ePrYnQLlMQ"/><feMergeNode in="SourceGraphic" data-page-node-id="D3zyGjeMDuEjiJC1PsHSAf"/></feMerge>
+    </filter>
+    <!-- dragonscale -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-scale-amb" cx="50%" cy="50%" r="50%" data-page-node-id="F2eq0TxcQ81ZWOqZk9D9F7">
+    <stop offset="0%" stop-color="#ffb703" stop-opacity="0.22" data-page-node-id="m7YSRQDfoANDq7DPz77vtL"/>
+    <stop offset="100%" stop-color="#ffb703" stop-opacity="0" data-page-node-id="ztBxQEjxjlEWRa5iTmZKZA"/>
+    </radialGradient>
+    <!-- 鳞片本体：金光渐变（亮金 → 金 → 橙金），光从左上打下来 -->
+    <linearGradient id="mg-scale" x1="0" y1="0" x2="0.75" y2="1" data-page-node-id="TfUF4T4oR4HXt2h1C3mNRf">
+    <stop offset="0%" stop-color="#fff3c4" data-page-node-id="GYDORgFonCNB0PqRVesqQJ"/>
+    <stop offset="35%" stop-color="#ffd166" data-page-node-id="NlB5scIuDwIJtuBUPsaPKY"/>
+    <stop offset="72%" stop-color="#ffb703" data-page-node-id="jycSYIpYk6avXOTKEmCizi"/>
+    <stop offset="100%" stop-color="#e07b00" data-page-node-id="zVejgGRhmiOEwujEpmwVkw"/>
+    </linearGradient>
+    <!-- 边缘发光（滤镜区域放宽，避免小图元被裁出方形接缝） -->
+    <filter id="glow-scale" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="jPafBdq3msqh3F9pphuB8A">
+    <feGaussianBlur stdDeviation="1.7" result="blur" data-page-node-id="e3ALEEy9p9N3STqVsJMdjP"/>
+    <feMerge data-page-node-id="PO2zpborsRAVWz7lmYtKdx"><feMergeNode in="blur" data-page-node-id="2DFqNVqtlmJqyA1i13fii2"/><feMergeNode in="SourceGraphic" data-page-node-id="95jAwGCjAJMU3D4SfpMFa8"/></feMerge>
+    </filter>
+    <!-- phoenix -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-plume-amb" cx="50%" cy="50%" r="50%" data-page-node-id="SHFXNR5ChogHktjOeqDB1U">
+    <stop offset="0%" stop-color="#ff7b00" stop-opacity="0.2" data-page-node-id="eDGYnqPOxkaEBIACnII30q"/>
+    <stop offset="100%" stop-color="#ff7b00" stop-opacity="0" data-page-node-id="mu5nEL9CAUFdLzkXijpeU9"/>
+    </radialGradient>
+    <!-- 金光渐变：走 1024 原视图坐标（羽身两层共用一套，避免分层处颜色断层） -->
+    <linearGradient id="mg-plume" gradientUnits="userSpaceOnUse" x1="150" y1="60" x2="880" y2="1010" data-page-node-id="HxtLj1c3cj8ZtPI9WwWnvG">
+    <stop offset="0%" stop-color="#fff6d0" data-page-node-id="jWZ2qH7JARtBHyivBoAet2"/>
+    <stop offset="30%" stop-color="#ffd60a" data-page-node-id="LvCcErs0PJPFI3M4LPn7vY"/>
+    <stop offset="65%" stop-color="#ffa400" data-page-node-id="E75AG6Vi1aDZHJmx6rNybm"/>
+    <stop offset="100%" stop-color="#f26b00" data-page-node-id="TtxOCdmPjeNeyuCQln5P3I"/>
+    </linearGradient>
+    <!-- 自发光（滤镜区域放宽，避免模糊被裁出硬边） -->
+    <filter id="glow-plume" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="7BBWKAmynwZFU8aK4jZXEs">
+    <feGaussianBlur stdDeviation="1.8" result="blur" data-page-node-id="HN7N5QJXzZUAGtAtSHmygz"/>
+    <feMerge data-page-node-id="HujYBf8i40Pb4LEUTETF9B"><feMergeNode in="blur" data-page-node-id="UM9UFQq8gKCTynXyjUWSko"/><feMergeNode in="SourceGraphic" data-page-node-id="9c8uYt70e5oBFqg7vFeaE0"/></feMerge>
+    </filter>
+    <!-- phoenix -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-plume-amb" cx="50%" cy="50%" r="50%" data-page-node-id="sxMM2Uje3NTKSPOcKSP9xK">
+    <stop offset="0%" stop-color="#ff7b00" stop-opacity="0.2" data-page-node-id="hAMxKq8Brl2TO3mnK5mfel"/>
+    <stop offset="100%" stop-color="#ff7b00" stop-opacity="0" data-page-node-id="7njX1wt1iba980BhJrE6xs"/>
+    </radialGradient>
+    <!-- 金光渐变：走 1024 原视图坐标（羽身两层共用一套，避免分层处颜色断层） -->
+    <linearGradient id="mg-plume" gradientUnits="userSpaceOnUse" x1="150" y1="60" x2="880" y2="1010" data-page-node-id="8FYKaSZzKRK7ndpPwLbfXf">
+    <stop offset="0%" stop-color="#fff6d0" data-page-node-id="4AtXCKcdvp0VGAPrZMg5IH"/>
+    <stop offset="30%" stop-color="#ffd60a" data-page-node-id="KpmURtOEOzVeuFkbk4lwki"/>
+    <stop offset="65%" stop-color="#ffa400" data-page-node-id="e446dFpHVShtfqeVfUvkjq"/>
+    <stop offset="100%" stop-color="#f26b00" data-page-node-id="5NgXBlna98A9KDsWaxkqZ1"/>
+    </linearGradient>
+    <!-- 自发光（滤镜区域放宽，避免模糊被裁出硬边） -->
+    <filter id="glow-plume" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="i7uPKyxcDsTNwhOzwrTUDF">
+    <feGaussianBlur stdDeviation="1.8" result="blur" data-page-node-id="eC9Q9yfzIJj2LGretOu4Og"/>
+    <feMerge data-page-node-id="Jt6VEU9V4qaECnWznuc3uD"><feMergeNode in="blur" data-page-node-id="CKilVht6t3bz6yRc5omtFd"/><feMergeNode in="SourceGraphic" data-page-node-id="EQXmyvVRq0SzP5hEqtyu25"/></feMerge>
+    </filter>
+    <!-- phoenix -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-plume-amb" cx="50%" cy="50%" r="50%" data-page-node-id="yyXHxGZflPhKr8oVfGBpBv">
+    <stop offset="0%" stop-color="#ff7b00" stop-opacity="0.2" data-page-node-id="NVVW1a6mAuQdiNHFzyrQ0B"/>
+    <stop offset="100%" stop-color="#ff7b00" stop-opacity="0" data-page-node-id="sODeYDaYLf2y9D49KhpFmV"/>
+    </radialGradient>
+    <!-- 金光渐变：走 1024 原视图坐标（羽身两层共用一套，避免分层处颜色断层） -->
+    <linearGradient id="mg-plume" gradientUnits="userSpaceOnUse" x1="150" y1="60" x2="880" y2="1010" data-page-node-id="2gdu4Db8kN2HRlEH8DUerY">
+    <stop offset="0%" stop-color="#fff6d0" data-page-node-id="AFuY7UsIVOTAumukmHhPOv"/>
+    <stop offset="30%" stop-color="#ffd60a" data-page-node-id="7olqQaSIn0NrKzO2Io04fH"/>
+    <stop offset="65%" stop-color="#ffa400" data-page-node-id="bDV39an2ODOU2nLTO87s0y"/>
+    <stop offset="100%" stop-color="#f26b00" data-page-node-id="qhfik2yXWfa4bJMMoXuSPk"/>
+    </linearGradient>
+    <!-- 自发光（滤镜区域放宽，避免模糊被裁出硬边） -->
+    <filter id="glow-plume" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="o34x3hBF3AtumQI9JrxGaG">
+    <feGaussianBlur stdDeviation="1.8" result="blur" data-page-node-id="pmLiZBFSERi6RyLFQci6tJ"/>
+    <feMerge data-page-node-id="SY6Stw8b5gWs5kEFBVnmDI"><feMergeNode in="blur" data-page-node-id="tdZfAbbF5EfaJUvgu2L76G"/><feMergeNode in="SourceGraphic" data-page-node-id="DftlJa2uQ5ei39QttuiZVg"/></feMerge>
+    </filter>
+    <!-- unicorn -->
+    <!-- 彩虹渐变：粉 → 淡紫 → 紫，光从左上打下来 -->
+    <linearGradient id="mg-horn" x1="0" y1="0" x2="0.9" y2="1" data-page-node-id="Te9KcAcEEHFk9l1antZ2Ti">
+    <stop offset="0%" stop-color="#ffd6ec" data-page-node-id="H4GmCdotpFHoCjaMJrXHee"/>
+    <stop offset="45%" stop-color="#e0aaff" data-page-node-id="hlb2jtiHTGtLrIB6fqEBEG"/>
+    <stop offset="100%" stop-color="#a78bfa" data-page-node-id="oWMaZjdpEREaNMaKB2ZiJg"/>
+    </linearGradient>
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-horn-amb" cx="50%" cy="50%" r="50%" data-page-node-id="7tBNRqhBtnufC9IjTpmcJA">
+    <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.22" data-page-node-id="cMsb9D3Z5sSRjDsxUKuHfG"/>
+    <stop offset="100%" stop-color="#e0aaff" stop-opacity="0" data-page-node-id="io2OMQJoXKSTAuphd4VeQZ"/>
+    </radialGradient>
+    <filter id="glow-horn" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="aGYNGMpHRCmDIpCheUa8Qs">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="wSJ9RAEknxfK6qaUiW9OeS"/>
+    <feMerge data-page-node-id="1HeBJSSSqey8kau2FMd7jE"><feMergeNode in="blur" data-page-node-id="5Pa5v5ClnafcnXSJnRq3gv"/><feMergeNode in="SourceGraphic" data-page-node-id="qOIiRrxxIANMow27dBH76A"/></feMerge>
+    </filter>
+    <!-- unicorn -->
+    <!-- 彩虹渐变：粉 → 淡紫 → 紫，光从左上打下来 -->
+    <linearGradient id="mg-horn" x1="0" y1="0" x2="0.9" y2="1" data-page-node-id="wdjpQ3WMpGBI6f1eFjGxwz">
+    <stop offset="0%" stop-color="#ffd6ec" data-page-node-id="VvjGWl5g2BusqLQ5kMWKcI"/>
+    <stop offset="45%" stop-color="#e0aaff" data-page-node-id="trsW2ejmDNbh26t6MPJMRG"/>
+    <stop offset="100%" stop-color="#a78bfa" data-page-node-id="S3C5NTtKXnYw4HttKhAH8T"/>
+    </linearGradient>
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-horn-amb" cx="50%" cy="50%" r="50%" data-page-node-id="6Ul6n6IVWbaAmcxIJFJGXe">
+    <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.22" data-page-node-id="dlAcBrQyYsoMXUfMVK60G0"/>
+    <stop offset="100%" stop-color="#e0aaff" stop-opacity="0" data-page-node-id="YFraIZ2B0wA2xVbmIq62rL"/>
+    </radialGradient>
+    <filter id="glow-horn" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="IV65EUVlr9tduEDJqpaYt0">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="dPWQuYuvmdysNeb82iy6Vi"/>
+    <feMerge data-page-node-id="vCVWiCXVLYtLKwWtSB6FBo"><feMergeNode in="blur" data-page-node-id="4AYMmwHhCiLZceIBAEdDWa"/><feMergeNode in="SourceGraphic" data-page-node-id="GlBy3ko3IkP3GKA39fGiE9"/></feMerge>
+    </filter>
+    <!-- unicorn -->
+    <!-- 彩虹渐变：粉 → 淡紫 → 紫，光从左上打下来 -->
+    <linearGradient id="mg-horn" x1="0" y1="0" x2="0.9" y2="1" data-page-node-id="Yt3APVGfVHTUNAvsBsjhJF">
+    <stop offset="0%" stop-color="#ffd6ec" data-page-node-id="3Af4CW1tG1UDADBCICcF0H"/>
+    <stop offset="45%" stop-color="#e0aaff" data-page-node-id="16dw54LApysOl1c1BDjLep"/>
+    <stop offset="100%" stop-color="#a78bfa" data-page-node-id="yFWQxtxalfuvDkGVIqAQuF"/>
+    </linearGradient>
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-horn-amb" cx="50%" cy="50%" r="50%" data-page-node-id="RVhfLC5ihGKfo5btBC06x3">
+    <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.22" data-page-node-id="HQaQyxDtfgCoecpV2E5sFA"/>
+    <stop offset="100%" stop-color="#e0aaff" stop-opacity="0" data-page-node-id="dZQEDHv8LF2i6bvABpsRui"/>
+    </radialGradient>
+    <filter id="glow-horn" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="NWB9F2daoqDyXcOkGspmDL">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="qYWCS9985pmEexiI1p5UF3"/>
+    <feMerge data-page-node-id="2piT7pyJnn1wAEEhhtICcj"><feMergeNode in="blur" data-page-node-id="vLIiB1MyAPDR7iPyEz47uG"/><feMergeNode in="SourceGraphic" data-page-node-id="BJ7JIHPB3qHin10LA6LWsw"/></feMerge>
+    </filter>
+    <!-- stardust -->
+    <linearGradient id="mg-ring" x1="0" y1="0" x2="1" y2="1" data-page-node-id="6RHFNJEDMP3NwwcWsS5Rab"><stop offset="0%" stop-color="#ffffff" data-page-node-id="ObNJYd8AkRW5Numm7FJh6A"/><stop offset="100%" stop-color="#fff1a8" data-page-node-id="rIA2H9duiDSp5cPbhmgIrW"/></linearGradient>
+    <filter id="glow-ring" data-page-node-id="29U8vcK4QL1rYnhopcNDqk"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="JxT5V0etyNTQKnO7eGamgF"/><feMerge data-page-node-id="1LS8FxawB7KJ0Na8mpMP1z"><feMergeNode in="blur" data-page-node-id="Zw19ZuP9BOHieB6QUbOB7b"/><feMergeNode in="SourceGraphic" data-page-node-id="QXkHWX2nsZDkf1tMJmSrMb"/></feMerge></filter>
+    <!-- stardust -->
+    <linearGradient id="mg-ring" x1="0" y1="0" x2="1" y2="1" data-page-node-id="4LoiNN1GzMQ6QqcOEUhVKw"><stop offset="0%" stop-color="#ffffff" data-page-node-id="QoJFHUBjEyirtZ9SqnsYn1"/><stop offset="100%" stop-color="#fff1a8" data-page-node-id="rkeN0SRqYAU9tFj5qNPmja"/></linearGradient>
+    <filter id="glow-ring" data-page-node-id="3cRssTrYdz3mzkz3y93eRx"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="KEIqS00rWgUrlb4lQn6G6g"/><feMerge data-page-node-id="KILQB84EHZZ2eEnNQ0zvrM"><feMergeNode in="blur" data-page-node-id="6HPR3GDdzZ7QHCde4masFA"/><feMergeNode in="SourceGraphic" data-page-node-id="tHpdEiX167lioKFjRk4Qri"/></feMerge></filter>
+    <!-- fairytear -->
+    <radialGradient id="mg-tear" cx="40%" cy="30%" r="60%" data-page-node-id="DoQ11PzQnKy3aRpmuFy7bk"><stop offset="0%" stop-color="#e0d4ff" data-page-node-id="jROC24yFYP53FmykzqoRDH"/><stop offset="100%" stop-color="#a78bfa" data-page-node-id="Lhp0odfnqhXbCNrsQxYpn2"/></radialGradient>
+    <filter id="glow-tear" data-page-node-id="0TmQAXOERUNU1GJUetlLhU"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="jV1klwF6zYBj2KRjVNyMqb"/><feMerge data-page-node-id="hGiBlEUqWk6vQgSCQqMZ65"><feMergeNode in="blur" data-page-node-id="Boyvxms7fijidpgaxX57yF"/><feMergeNode in="SourceGraphic" data-page-node-id="nyjJPyAvoi5xo9v0H1sfRx"/></feMerge></filter>
+    <!-- fairytear -->
+    <radialGradient id="mg-tear" cx="40%" cy="30%" r="60%" data-page-node-id="HhKQNtfaHsVYWFyjYwkDoS"><stop offset="0%" stop-color="#e0d4ff" data-page-node-id="P2rcohO9JHS2SGNaamsGwf"/><stop offset="100%" stop-color="#a78bfa" data-page-node-id="F79QDdN0gm8UVUHP7jWZ8h"/></radialGradient>
+    <filter id="glow-tear" data-page-node-id="9rpKLohJPLZYjeJ3oCsBLs"><feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="47NeYxUAbmKNdyCvbjaBsz"/><feMerge data-page-node-id="F1obR9JiiUVQ6cAbx8kBCa"><feMergeNode in="blur" data-page-node-id="iR5OztsHOM7oV6uNpM0d6B"/><feMergeNode in="SourceGraphic" data-page-node-id="F5clTiS30iFMM0qEUDGTM4"/></feMerge></filter>
+    <!-- thunderbird -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-bolt-amb" cx="50%" cy="50%" r="50%" data-page-node-id="1P3iHzyxNmJ8izrUaqbKXg">
+    <stop offset="0%" stop-color="#b388ff" stop-opacity="0.24" data-page-node-id="FJqFWa9ol4UGFGTCmLhgYP"/>
+    <stop offset="100%" stop-color="#b388ff" stop-opacity="0" data-page-node-id="BvaiNuaOFeJQqSJDFSQMUW"/>
+    </radialGradient>
+    <!-- 紫电渐变：亮紫 → 紫 → 深紫，光从左上打下来 -->
+    <linearGradient id="mg-lightning" x1="0" y1="0" x2="0.8" y2="1" data-page-node-id="dhwW1dRoxOpisXZMddYOQA">
+    <stop offset="0%" stop-color="#f2ecff" data-page-node-id="YmPTroyPVkPj14AwD7Dh1X"/>
+    <stop offset="35%" stop-color="#c9a8ff" data-page-node-id="qz9OualwSGxDpIXGFAmUGW"/>
+    <stop offset="72%" stop-color="#b388ff" data-page-node-id="vxFRDC214HFcP5oanvD9qR"/>
+    <stop offset="100%" stop-color="#7b2cbf" data-page-node-id="7G7K0rPDOZf7uOwY6qZHgh"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-lightning" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="SsmGUJy4h9B9U9w82T9cDV">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="eQgq0DQCfKsfIfZNw35HRZ"/>
+    <feMerge data-page-node-id="XF5AwV50AyhNswxMQxdUeV"><feMergeNode in="blur" data-page-node-id="yufDtByjnUVxpFtkb9saAQ"/><feMergeNode in="SourceGraphic" data-page-node-id="d4egDdhyDN6JZhMCDqG3Og"/></feMerge>
+    </filter>
+    <!-- thunderbird -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-bolt-amb" cx="50%" cy="50%" r="50%" data-page-node-id="eBOzCYwgbLCK7jB7NkPVWk">
+    <stop offset="0%" stop-color="#b388ff" stop-opacity="0.24" data-page-node-id="ktzPkzRvvEsnrGE0xkX7Q1"/>
+    <stop offset="100%" stop-color="#b388ff" stop-opacity="0" data-page-node-id="x8LeYgxRR2AKx4NLDBrYgO"/>
+    </radialGradient>
+    <!-- 紫电渐变：亮紫 → 紫 → 深紫，光从左上打下来 -->
+    <linearGradient id="mg-lightning" x1="0" y1="0" x2="0.8" y2="1" data-page-node-id="IdAbcSkgXUjXZPytIAfz8H">
+    <stop offset="0%" stop-color="#f2ecff" data-page-node-id="rgMRpVE0nJsO0Cu3vaWcjt"/>
+    <stop offset="35%" stop-color="#c9a8ff" data-page-node-id="gg0ePDuk3RblsJBzKAOYy0"/>
+    <stop offset="72%" stop-color="#b388ff" data-page-node-id="46Ta9GRNJXeRPS7m6giHKf"/>
+    <stop offset="100%" stop-color="#7b2cbf" data-page-node-id="x0dViFfvl0VSc0U1DfG1jU"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-lightning" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="gtEFVh2ryr1evFZiuvUETK">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="x2qvBsfIxIUA8GdEawDxjJ"/>
+    <feMerge data-page-node-id="fR82oE3y90C8M5kRRBM0nI"><feMergeNode in="blur" data-page-node-id="my2Ib0JN7qADtutJEJID5M"/><feMergeNode in="SourceGraphic" data-page-node-id="r3RB6rEDtUxkgJTebpBlEM"/></feMerge>
+    </filter>
+    <!-- thunderbird -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-bolt-amb" cx="50%" cy="50%" r="50%" data-page-node-id="j1LJBecQAu1TmPgwgrTtoa">
+    <stop offset="0%" stop-color="#b388ff" stop-opacity="0.24" data-page-node-id="EHsp0lKVzJ33esNsUVpA5L"/>
+    <stop offset="100%" stop-color="#b388ff" stop-opacity="0" data-page-node-id="Tho8htAs8zq9rJ0DFvfzVG"/>
+    </radialGradient>
+    <!-- 紫电渐变：亮紫 → 紫 → 深紫，光从左上打下来 -->
+    <linearGradient id="mg-lightning" x1="0" y1="0" x2="0.8" y2="1" data-page-node-id="segMy8zabBAuYMgawHu5I6">
+    <stop offset="0%" stop-color="#f2ecff" data-page-node-id="EyrH28sH44XN1Rmktx64PV"/>
+    <stop offset="35%" stop-color="#c9a8ff" data-page-node-id="mEvCO90Bc2ezDkcz1vQT2n"/>
+    <stop offset="72%" stop-color="#b388ff" data-page-node-id="DDOiIFSACQ8j4xtaE8xGXb"/>
+    <stop offset="100%" stop-color="#7b2cbf" data-page-node-id="NhfwGB8Zxj4ca5Oa8r3UKj"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-lightning" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="QT7MwMBQappJxLHqr0KjF0">
+    <feGaussianBlur stdDeviation="2" result="blur" data-page-node-id="U0GRLBXLjLqQbREPMI1iEu"/>
+    <feMerge data-page-node-id="BNxHbbp1BNeDA7i9DvQ9VA"><feMergeNode in="blur" data-page-node-id="prWHLIMYfEXCwkl2UOnEmE"/><feMergeNode in="SourceGraphic" data-page-node-id="U7JqROgjjdHt8EU8tDrBu5"/></feMerge>
+    </filter>
+    <!-- shadowcat -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-cat-amb" cx="50%" cy="50%" r="50%" data-page-node-id="t1J89iP0bXOOUdT2OQRNkp">
+    <stop offset="0%" stop-color="#8d99ae" stop-opacity="0.24" data-page-node-id="4a3IDMDQ72r42F9ZGjBVWy"/>
+    <stop offset="100%" stop-color="#8d99ae" stop-opacity="0" data-page-node-id="mM5qZrLzdYSf13FyMwR92t"/>
+    </radialGradient>
+    <!-- 猫头渐变：冷灰，光从左上打下来 -->
+    <linearGradient id="mg-cat" x1="0" y1="0" x2="0.85" y2="1" data-page-node-id="mXFb2mthw03770TeZlZvZC">
+    <stop offset="0%" stop-color="#939eb3" data-page-node-id="IHM5uMyxCX26aPxi4DKgpU"/>
+    <stop offset="52%" stop-color="#565d72" data-page-node-id="LkosacuQRjzo8YzT0lvu7G"/>
+    <stop offset="100%" stop-color="#2b2d42" data-page-node-id="NC1tNvBsIvtM9gPQJcgNTH"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-cat" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="K5Ne8GS9ljktqPhLkIyMrM">
+    <feGaussianBlur stdDeviation="1.8" result="blur" data-page-node-id="gYv9cM21qnNc6RVsHeEGc2"/>
+    <feMerge data-page-node-id="TvSCIrngok0aXRohHQzpgN"><feMergeNode in="blur" data-page-node-id="fycEL6fVaEKI4xhFTFeBDK"/><feMergeNode in="SourceGraphic" data-page-node-id="oa6EWFkaCOFHY0N9Y9M9rp"/></feMerge>
+    </filter>
+    <!-- shadowcat -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-cat-amb" cx="50%" cy="50%" r="50%" data-page-node-id="RubwIO1mwF317gHlJ4vaDb">
+    <stop offset="0%" stop-color="#8d99ae" stop-opacity="0.24" data-page-node-id="Rw09Fq3ofzW4SHsvA9ouWB"/>
+    <stop offset="100%" stop-color="#8d99ae" stop-opacity="0" data-page-node-id="MSDSlLUN4OJWVpwajicpSO"/>
+    </radialGradient>
+    <!-- 猫头渐变：冷灰，光从左上打下来 -->
+    <linearGradient id="mg-cat" x1="0" y1="0" x2="0.85" y2="1" data-page-node-id="hKDKQeCl51jCTOMrZUr9Ar">
+    <stop offset="0%" stop-color="#939eb3" data-page-node-id="lCgDlmCu7i00aAd5KIG3rY"/>
+    <stop offset="52%" stop-color="#565d72" data-page-node-id="SmYCYijxHdBPE6MMeI4THs"/>
+    <stop offset="100%" stop-color="#2b2d42" data-page-node-id="xKBwGOSqaeIglbFGQBBnHz"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-cat" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="WrxPnIoJZOV2o4KsRdfgsY">
+    <feGaussianBlur stdDeviation="1.8" result="blur" data-page-node-id="q5lD6hTVJcKIwMPrqiwqYw"/>
+    <feMerge data-page-node-id="5uGpkZqn2whV0hfRs7Tmi3"><feMergeNode in="blur" data-page-node-id="xdeFevFHCHp9007ljZmSbD"/><feMergeNode in="SourceGraphic" data-page-node-id="jN3zkTPHeTlHG1BoXyzRl4"/></feMerge>
+    </filter>
+    <!-- shadowcat -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-cat-amb" cx="50%" cy="50%" r="50%" data-page-node-id="4bKOQD607aoGlZAVbC9lyH">
+    <stop offset="0%" stop-color="#8d99ae" stop-opacity="0.24" data-page-node-id="sga9iZbABzyV1JMjATvKBc"/>
+    <stop offset="100%" stop-color="#8d99ae" stop-opacity="0" data-page-node-id="KnUieeFGoBdbFKi4TdRNcU"/>
+    </radialGradient>
+    <!-- 猫头渐变：冷灰，光从左上打下来 -->
+    <linearGradient id="mg-cat" x1="0" y1="0" x2="0.85" y2="1" data-page-node-id="vZ06j9Isw56Jri2SI97eNH">
+    <stop offset="0%" stop-color="#939eb3" data-page-node-id="d3jZwJrJEeoTTif6d7glto"/>
+    <stop offset="52%" stop-color="#565d72" data-page-node-id="0OUQIeIPv7cVAafXbgaCzz"/>
+    <stop offset="100%" stop-color="#2b2d42" data-page-node-id="Fd5PWC9dTuHsGRpElexLBH"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-cat" x="-100%" y="-100%" width="300%" height="300%" data-page-node-id="aUvmlJi7HvBJy7H66r1ePc">
+    <feGaussianBlur stdDeviation="1.8" result="blur" data-page-node-id="HFPnufa36HxyegUySgSFXZ"/>
+    <feMerge data-page-node-id="GQNlMBs8xbkUIQBSkUzeky"><feMergeNode in="blur" data-page-node-id="Jvwe8joN8tkt9IyFbm1oC6"/><feMergeNode in="SourceGraphic" data-page-node-id="aO45Lboo2914BtVhXN4urm"/></feMerge>
+    </filter>
+  </defs>
+
+    <!-- 硝酸钾（saltpeter，v3）主体 42x41 → 归一化 ×1.143 -->
+    <symbol id="ic-saltpeter" viewBox="0 0 64 64" data-page-node-id="AOJI5jUXHDvI0m0lDHjH8Q">
+      <circle cx="32" cy="32" r="26" fill="#f5e9c8" opacity="0.1" filter="url(#glow-salt)" data-page-node-id="k0qzuJAtXErSIZdPkA6xG7"/>
+      <g transform="translate(32,32) scale(1.143) translate(-32,-32)" data-page-node-id="GCMgiGqnYhe4qLkgVTYSrz">
+        <path d="M17.2 30 L23.2 34.8 L23.2 46 L17.2 50.4 L11.2 46 L11.2 34.8Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round" data-page-node-id="GVX7RJdHXaMxrCuBZlE1iG"/>
+        <path d="M40.8 34.8 L46.8 30 L52.8 34.8 L52.8 46 L46.8 50.4 L40.8 46Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round" data-page-node-id="SbFaAcgvzNYZQ2j6i9jItw"/>
+        <path d="M32 9.2 L41.2 17.2 L41.2 38.8 L32 46.8 L22.8 38.8 L22.8 17.2Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.9)" stroke-width="1.2" stroke-linejoin="round" filter="url(#glow-salt)" data-page-node-id="QlL87yZFdP5FfxGiMMtOc4"/>
+        <path d="M22.8 17.2 L32 24.4 L41.2 17.2 M32 24.4 V46.8" fill="none" stroke="rgba(180,160,120,0.4)" stroke-width="1.2" stroke-linejoin="round" data-page-node-id="xfHxGBynBTwO1F7EO26ius"/>
+        <path d="M26.8 22.4 V35.6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8" data-page-node-id="Y7o4kiewTgmYzEt2NVnnae"/>
+        <path d="M14.2 33 L14.2 42" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6" data-page-node-id="PW1UIFixhW2EXMDwfCankX"/>
+      </g>
+    </symbol>
+
+    <!-- 硫磺（sulfur，v3）主体 32x34 → 归一化 ×1.412 -->
+    <symbol id="ic-sulfur" viewBox="0 0 64 64" data-page-node-id="JL4FSF0EDE4w38UwwzLLRF">
+      <circle cx="32" cy="32" r="26" fill="#ffd166" opacity="0.15" filter="url(#glow-sulfur)" data-page-node-id="weJiZhQ7s4qWa54Fk1vtXM"/>
+      <g transform="translate(32,32) scale(1.412) translate(-32,-32)" data-page-node-id="QJV2nPnGjrY4KCYyVJGP2p">
+        <path d="M19.2 41.6 L23.6 23.2 L39.2 16.8 L51.2 26.4 L50.8 40.8 L38 51.2 L25.2 49.6Z" fill="url(#g-sulfur)" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linejoin="round" filter="url(#glow-sulfur)" data-page-node-id="5Cu9AS2Gv3hjo3IEBgR9kD"/>
+        <path d="M23.6 23.2 L36 33.2 L38 51.2 M36 33.2 L51.2 26.4 M36 33.2 L19.2 41.6" fill="none" stroke="rgba(180,130,40,0.5)" stroke-width="1.2" stroke-linejoin="round" data-page-node-id="17TyJzDCFi88UweqdKM6dB"/>
+        <path d="M27.2 27.2 L30.8 41.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.7" data-page-node-id="acDkVeWOHNZkwxu3FlAnhN"/>
+        <path d="M40 28 L46 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5" data-page-node-id="w2huW8RcIYthbNbS114BT9"/>
+      </g>
+    </symbol>
+
+    <!-- 木炭粉（charcoal，v3）主体 38x43 → 归一化 ×1.116 -->
+    <symbol id="ic-charcoal" viewBox="0 0 64 64" data-page-node-id="XCzeuGvNXJVp3B8S7Dmq0g">
+      <circle cx="32" cy="32" r="26" fill="#4a4e69" opacity="0.1" data-page-node-id="TiJAUa89aDkZyZCmtsX2FE"/>
+      <g transform="translate(32,32) scale(1.116) translate(-32,-32)" data-page-node-id="c2l9yWn1ldGBsfwC54FfwO">
+        <path d="M19.2 40.8 L25.2 23.2 L41.2 18 L51.6 30.8 L46.8 45.2 L31.2 51.2Z" fill="url(#g-charcoal)" stroke="rgba(100,100,120,0.5)" stroke-width="1.2" stroke-linejoin="round" data-page-node-id="4BHPJa861z16fciNd6JAtq"/>
+        <path d="M25.2 23.2 L34.8 31.2 L46.8 45.2" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="1.5" stroke-linejoin="round" data-page-node-id="BnkHFG2RXk4JSvjfE6jZjN"/>
+        <path d="M28.8 37.2 L39.2 26.8" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-linecap="round" data-page-node-id="VrEr1lfIru49L17hjsEbBi"/>
+        <circle cx="30" cy="34" r="1.5" fill="#1a1a24" data-page-node-id="TUIpEycDiPGTA09ugvSDoV"/>
+        <circle cx="38" cy="38" r="2" fill="#1a1a24" data-page-node-id="81BLY9WxXsLWS7Z8Yd2uIA"/>
+        <circle cx="34" cy="44" r="1.2" fill="#1a1a24" data-page-node-id="9jlieSmAnYxeIz0DGU94xP"/>
+        <circle cx="54" cy="16.4" r="3" fill="#f4a261" filter="url(#glow-spark)" data-page-node-id="6AXciwNgwsoCF2B1Jgwhqp"/>
+        <circle cx="46" cy="10" r="2.2" fill="#ffd166" filter="url(#glow-spark)" data-page-node-id="UyBT9cB2UggzellpdNS2kH"/>
+        <circle cx="55.6" cy="26.4" r="1.8" fill="#ffd166" opacity="0.9" filter="url(#glow-spark)" data-page-node-id="VnbXkxqTHzMfNsZlWr6iyK"/>
+        <circle cx="48" cy="20" r="1.2" fill="#ff7b00" filter="url(#glow-spark)" data-page-node-id="s6ERGXKTo9IuBBRToEquCy"/>
+      </g>
+    </symbol>
+
+    <!-- 铝粉（aluminum，v3）主体 35x45 → 归一化 ×1.067 -->
+    <symbol id="ic-aluminum" viewBox="0 0 64 64" data-page-node-id="nX40QjewN1rUA7kLQ6jotV">
+      <!-- 整体微光背景（让白色粉末在深色底上也能浮起来） -->
+      <circle cx="32" cy="32" r="28" fill="#ffffff" opacity="0.12" data-page-node-id="SQKrMz5trQDh6nHNF71Kp0"/>
+      <g transform="translate(32,32) scale(1.067) translate(-32,-32)" data-page-node-id="7Vh24dW32DWHtkftX5dbwt">
+        <!-- 粉末堆主体 -->
+        <path d="M16 46 C22 36, 28 34, 32 34 C36 34, 42 36, 48 46 L44 54 C36 58, 28 58, 20 54 Z"
+        fill="url(#mg-alu)"
+        stroke="rgba(255,255,255,0.9)"
+        stroke-width="1.2"
+        stroke-linejoin="round" data-page-node-id="DWqWBnDokggHZUC0DJ4fgo"/>
+        <!-- 粉末表面的颗粒纹理（暗示这是粉末而不是光滑的石头） -->
+        <circle cx="26" cy="44" r="1.2" fill="#fff" opacity="0.7" data-page-node-id="GLEsDJEQvEzSCdY3DeAMBD"/>
+        <circle cx="34" cy="42" r="1" fill="#fff" opacity="0.6" data-page-node-id="XoYBeBXKHyOMlxNcPQFC5y"/>
+        <circle cx="38" cy="48" r="1.5" fill="#fff" opacity="0.8" data-page-node-id="O7hr4OG1tyFDefQUnA4CY8"/>
+        <circle cx="28" cy="50" r="0.8" fill="#fff" opacity="0.5" data-page-node-id="OmqF1TrpMK0MqsovBGWyTb"/>
+        <path d="M24 48 Q28 46 32 48" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.4" data-page-node-id="iFnI3j5qeUzOiz4vyGDfLb"/>
+        <!-- 核心大星芒（位于粉末堆正上方，强烈发光） -->
+        <path d="M32 12 L34 20 L42 22 L34 24 L32 32 L30 24 L22 22 L30 20 Z"
+        fill="#ffffff"
+        filter="url(#glow-alu)" data-page-node-id="MHtYVLWgtI7MorM1DnmTym"/>
+        <!-- 左侧小星芒（错落分布，增加灵动感） -->
+        <path d="M18 28 L19 32 L23 33 L19 34 L18 38 L17 34 L13 33 L17 32 Z"
+        fill="#ffffff"
+        opacity="0.85" data-page-node-id="NzFqeQ0oXm9Jj30d3JqcUu"/>
+        <!-- 右侧微小闪光点 -->
+        <circle cx="46" cy="20" r="2" fill="#ffffff" filter="url(#glow-alu)" data-page-node-id="ZkiycQYDa0mXywXHE8Cv4J"/>
+        <circle cx="42" cy="14" r="1" fill="#ffffff" opacity="0.7" data-page-node-id="2Iy2jznxnX2TnqWk2avBGG"/>
+      </g>
+    </symbol>
+
+    <!-- 锶盐（strontium，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-strontium" viewBox="0 0 64 64" data-page-node-id="06DgTuxuETksMaNrRPSspj">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)" data-page-node-id="opzEhxEdm955E3l8bQdL4D">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B" data-page-node-id="YgHteyzFQ48ERiIreuuEDv"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g)" stroke="rgba(255,255,255,0.6)" stroke-width="1" data-page-node-id="GVa0dYItOYA077SsHduz8z"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" data-page-node-id="UNnVGFJuCkTC4SPxRRE6Mc"/><path d="M25 32 L39 32 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#ff5d6c" filter="url(#glow-red)" data-page-node-id="XujFp6bpkiO8udIXGQRqnN"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round" data-page-node-id="HcExH25XLQRFWCkHQjBSuZ"/>
+      </g>
+    </symbol>
+
+    <!-- 钡盐（barium，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-barium" viewBox="0 0 64 64" data-page-node-id="HOeb1s6uJTerpUpj2j7CmA">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)" data-page-node-id="pRDoPfxEf2JUaEzzcqtIoU">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B" data-page-node-id="8enOHO93HzdMHSO8Q9ZrKD"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g2)" stroke="rgba(255,255,255,0.6)" stroke-width="1" data-page-node-id="0oftdCQrGn5y2qB59RnbtK"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g2)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" data-page-node-id="L01kC2TuMq7qxnQipuuc5Y"/><path d="M25 36 L39 36 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#51d88a" filter="url(#glow-green)" data-page-node-id="JmGM3WF4v276PCHf8TY2c9"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round" data-page-node-id="PKfyBbPXKt2I41FJMofQgG"/>
+      </g>
+    </symbol>
+
+    <!-- 铜盐（copper，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-copper" viewBox="0 0 64 64" data-page-node-id="arrC0bzXBZA3jfvvxlgz2v">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)" data-page-node-id="aHCH5qTYsx68zIeA8b2vCB">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B" data-page-node-id="UONM8lbwnUrrVMFlIDhl7Q"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g3)" stroke="rgba(255,255,255,0.6)" stroke-width="1" data-page-node-id="Xj2t7ubwUe7CnDGphMXkVY"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g3)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" data-page-node-id="NvvfFr1H5o96i7KZKPnYKV"/><path d="M25 28 L39 28 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#4cc9f0" filter="url(#glow-blue)" data-page-node-id="ZJulPzAPvN4Y5DfByYZWsB"/><circle cx="30" cy="40" r="1.5" fill="#fff" opacity="0.8" data-page-node-id="AWfHo5TktaW0h8gf0wBwUs"/><circle cx="34" cy="46" r="1" fill="#fff" opacity="0.6" data-page-node-id="Bjg9YbNbnDXWCypzGTjno4"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round" data-page-node-id="0Hby4lUVICR1IH0DpH2hVN"/>
+      </g>
+    </symbol>
+
+    <!-- 钠盐（sodium，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-sodium" viewBox="0 0 64 64" data-page-node-id="bKiZoxzxcnDTI5mBoAjBOQ">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)" data-page-node-id="5ve18iFiPF1XA4NUmmIJMa">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B" data-page-node-id="Z9O7NKGhuOJc2ySaP9byy9"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g4)" stroke="rgba(255,255,255,0.6)" stroke-width="1" data-page-node-id="0puArFFxsQLbJXFPkRJcQT"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g4)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" data-page-node-id="BOrM4Q3DcdGvA7RtBEsOz0"/><path d="M25 30 L39 30 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#ffd60a" filter="url(#glow-yellow)" data-page-node-id="RFnyB3r1PpH83fGnzayBzm"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round" data-page-node-id="3CA3s9bLmj0tjBd8xr5HZX"/>
+      </g>
+    </symbol>
+
+    <!-- 月光花瓣（moonpetal，v3）主体 33x53 → 归一化 ×0.906 -->
+    <symbol id="ic-moonpetal" viewBox="0 0 64 64" data-page-node-id="WsyAEhAcGuUHhbAtl8Hjz1">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-moon-amb)" data-page-node-id="a7pYg9CAGZW4UsqwARW72x"/>
+      <g transform="translate(32,32) scale(0.906) translate(-32,-32)" data-page-node-id="o2dwRWr2AeaYAFjgXIwC1v">
+        <!-- 垂落的拖尾：起笔藏在花瓣底下，从花底轮廓处自然垂出（避免断口和划痕感） -->
+        <g fill="none" stroke="url(#mg-moon-trail)" stroke-linecap="round" filter="url(#glow-moon)" data-page-node-id="iUR0hIMh1zk6chSDLjcBD1">
+        <path d="M28 30 C24 38, 21 48, 22 58" stroke-width="2.2" data-page-node-id="3d826hiPl2fCAvDRWOin7Z"/>
+        <path d="M36 30 C40 38, 43 48, 42 58" stroke-width="1.9" data-page-node-id="TO1e3ou8KmGrJePeFdEdzW"/>
+        <path d="M32 28 C32 41, 32 51, 32 58" stroke-width="1.5" data-page-node-id="oVIgiZN74U1jU3iaeJTGfT"/>
+        </g>
+
+        <!-- 花朵：五片花瓣绕花心均分 -->
+        <g transform="translate(32,21)" filter="url(#glow-moon)" data-page-node-id="o0KD9yIPYC7rXgbGdHgCxQ">
+        <g fill="url(#mg-moon-petal)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round" data-page-node-id="3uQSEWC8drSQDsD3s3q5Re">
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(0)" data-page-node-id="6bhsiD08MNK1gyTMHC7N1L"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(72)" data-page-node-id="m4Byg0g7Om9RgJL9LpMu0E"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(144)" data-page-node-id="ylZywYHVdtJ7gehqX4gGiJ"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(216)" data-page-node-id="85Pe8UACgRfooUdjFtCmn4"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(288)" data-page-node-id="fbgw2zjeQnPbFw9PVC0upY"/>
+        </g>
+        <!-- 花心 + 高光 -->
+        <circle cx="0" cy="0" r="3.9" fill="url(#mg-moon-core)" data-page-node-id="pPkPZbVkv5gt9oWGUXvics"/>
+        <circle cx="0" cy="0" r="1.5" fill="#fff" data-page-node-id="4ysvcKVDWVAKDJFEYJAZ0c"/>
+        </g>
+
+        <!-- 花瓣高光点缀（短、贴边，避免读成划痕） -->
+        <path d="M28.5 14 C27.8 15.2, 27.5 16.4, 27.8 17.6" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity="0.85" data-page-node-id="fINdLEQgFL17tQGcmQoj8H"/>
+        <circle cx="26" cy="29" r="1.2" fill="#fff" opacity="0.7" data-page-node-id="Okj7yY9ZlsXqDst4GNzdv7"/>
+        <circle cx="38" cy="13" r="1" fill="#fff" opacity="0.55" data-page-node-id="H2dzNEi6naTSc8RlCgTWgQ"/>
+      </g>
+    </symbol>
+
+    <!-- 龙鳞粉（dragonscale，v3）主体 35x34 → 归一化 ×1.371 -->
+    <symbol id="ic-dragonscale" viewBox="0 0 64 64" data-page-node-id="0jRviKkNP01TK8vBfLx0xe">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-scale-amb)" data-page-node-id="REetP0fLeJU4vDzXcQksHC"/>
+      <g transform="translate(32,32) scale(1.371) translate(-32,-32)" data-page-node-id="pxN6veCw92BVKXZFzGnPd5">
+        <!-- 三片菱形鳞片：下二上一，主片压在最前 -->
+        <g filter="url(#glow-scale)" data-page-node-id="zGwUR0LVf2O05JAo4gF7cL">
+        <!-- 左下鳞片 -->
+        <g transform="translate(23.5,39.5) scale(0.76)" data-page-node-id="pk9ja3JTdAM3OdDAzCMAM9">
+        <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-linejoin="round" data-page-node-id="FaldzThJhTGF2qQIWH3XoZ"/>
+        </g>
+        <!-- 右下鳞片 -->
+        <g transform="translate(40.5,39.5) scale(0.76)" data-page-node-id="wUpJyeTkUzScdCfUQXciu5">
+        <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-linejoin="round" data-page-node-id="zHMFl1L7jAvaIiLwBACh1d"/>
+        </g>
+        <!-- 主鳞片 -->
+        <g transform="translate(32,28)" data-page-node-id="hyVUixLGvW7sFEJ9FYjtT4">
+        <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linejoin="round" data-page-node-id="u9GfE17dl6nXOtBEZJBbs1"/>
+        </g>
+        </g>
+
+        <!-- 极简：不加纹理线，靠渐变 + 白描边 + 发光表达体积 -->
+      </g>
+    </symbol>
+
+    <!-- 凤羽灰（phoenix，v3）主体 43x44 → 归一化 ×1.091 -->
+    <symbol id="ic-phoenix" viewBox="0 0 64 64" data-page-node-id="tZKSEcdcidkRlDtOC2BNJB">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-plume-amb)" data-page-node-id="NHdHuiSrsOzvXQDC1wpLoH"/>
+      <g transform="translate(32,32) scale(1.091) translate(-32,-32)" data-page-node-id="1kQ5dpmJBBosV2YCVHeNAC">
+        <!-- 羽身：经典凤羽剪影（沿用 1024 原坐标，整体缩放进 64 画布居中） -->
+        <g filter="url(#glow-plume)" data-page-node-id="XO5Ol4kJMrJwOTBJonLq2q">
+        <g transform="translate(10.16,8.99) scale(0.044)" stroke="rgba(255,255,255,0.8)" stroke-width="20" stroke-linejoin="round" data-page-node-id="ZPYKwj5bm1A6mTdMni13YK">
+        <!-- 内层细羽枝：深金垫底 -->
+        <path fill="#e07b00" d="M4.27 1024a2457.83 2457.83 0 0 1 385.3-563.31A1869.47 1869.47 0 0 1 888.15 63.06a3983.61 3983.61 0 0 0-331.36 269.71C259.34 595.16 70.16 985.86 70.16 985.86z" data-page-node-id="FDFAPdgDzso840UansqFTt"/>
+        <!-- 主羽片：金光渐变 -->
+        <path fill="url(#mg-plume)" d="M732.87 90.42a162.98 162.98 0 0 0-45.08 49.7 182.25 182.25 0 0 0-19.26 54.33V122.4a1425.61 1425.61 0 0 0-303.23 209.22l-31.21 30.44c-12.33 11.94-16.95 109.43-16.95 109.43s-16.95-73.98-22.35-67.81c-200.36 220.39-186.87 374.9-151.81 427.3 60.49-115.59 131.77-258.54 250.06-367.58C745.2 138.97 914.35 60.37 917.05 59.21a4199.77 4199.77 0 0 0-346.77 283.58c-162.6 145.64-293.21 359.48-377.21 520.15 59.72 21.96 167.61-5.01 272.41-91.32 95.17-77.06 245.05-318.64 245.05-318.64l-167.99 33.14a1025.67 1025.67 0 0 1 125.61-70.51c44.69-20.04 90.55-25.43 92.09-30.82 14.26-45.08 12.71-72.82 98.25-200.36A1341.61 1341.61 0 0 1 987.94 22.99s-83.61-13.49-255.07 67.43z" data-page-node-id="JFzW0T4L1P68D3erXDnQ6a"/>
+        </g>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- 独角兽螺旋角（unicorn，v3）主体 35x52 → 归一化 ×0.923 -->
+    <symbol id="ic-unicorn" viewBox="0 0 64 64" data-page-node-id="XjgD4nlP2MQQi7mWJx0DFe">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-horn-amb)" data-page-node-id="cDeFMRBWaNJ9XFwzFUNENv"/>
+      <g transform="translate(32,32) scale(0.923) translate(-32,-32)" data-page-node-id="qJQCaCoBnCX0PdrVinGnF5">
+        <!-- 整体逆时针旋转 20°；再左移 3 单位，让旋转后的重心回到画布中心 -->
+        <g transform="translate(-3,0) rotate(-20 32 32)" data-page-node-id="rh8shix4k33k68iGxO8X5i">
+        <path d="M32 8 L42 52 C42 54, 38 56, 32 56 C26 56, 22 54, 22 52 Z" fill="url(#mg-horn)" stroke="rgba(255,255,255,0.85)" stroke-width="1.1" stroke-linejoin="round" filter="url(#glow-horn)" data-page-node-id="vyfkzUwWCXJOzLx6xIbJ39"/>
+        <path d="M24 44 Q32 40 40 44 M26 36 Q32 32 38 36 M28 28 Q32 24 36 28 M30 20 Q32 18 34 20" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.7" data-page-node-id="zkJQa1K134GEeNPSXPqPEc"/>
+        <circle cx="32" cy="10" r="2.5" fill="#fff" filter="url(#glow-horn)" data-page-node-id="byFw1PX3otN16fnKK9xvGo"/>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- 星尘（stardust，v3）主体 43x26 → 归一化 ×1.116 -->
+    <symbol id="ic-stardust" viewBox="0 0 64 64" data-page-node-id="f68UuVEuwyA3y7W3tDDUFC">
+      <circle cx="32" cy="32" r="28" fill="#fff1a8" opacity="0.15" data-page-node-id="OTcwbijoibW25jjq9oIDlE"/>
+      <g transform="translate(32,32) scale(1.116) translate(-32,-32)" data-page-node-id="4ojn2tXRGQpzAhUkccAn0i">
+        <ellipse cx="32" cy="34" rx="20" ry="8" fill="none" stroke="url(#mg-ring)" stroke-width="2.5" filter="url(#glow-ring)" transform="rotate(-15 32 34)" data-page-node-id="l2fjGjaFIL5ngP7GfeOYFX"/>
+        <circle cx="32" cy="34" r="4" fill="#fff" filter="url(#glow-ring)" data-page-node-id="9BWEiOOT3O03PWoQvuRXNt"/>
+        <circle cx="16" cy="30" r="1.5" fill="#fff" opacity="0.8" data-page-node-id="iP9Lq254f7Qsw88j4L6yjW"/>
+        <circle cx="48" cy="38" r="2" fill="#fff" opacity="0.9" data-page-node-id="BesMQQlEfzVthsbURZ7Ucv"/>
+        <circle cx="24" cy="42" r="1" fill="#fff" opacity="0.6" data-page-node-id="HVI005eb5E24ULsNBbiD6D"/>
+        <circle cx="40" cy="26" r="1.2" fill="#fff" opacity="0.7" data-page-node-id="fFgwShyq8TeK2fxZDJ6EWJ"/>
+      </g>
+    </symbol>
+
+    <!-- 妖精之泪（fairytear，v3）主体 28x42 → 归一化 ×1.143 -->
+    <symbol id="ic-fairytear" viewBox="0 0 64 64" data-page-node-id="55Z8OmYDFeneYFJWqR5Ylj">
+      <circle cx="32" cy="32" r="28" fill="#a78bfa" opacity="0.15" data-page-node-id="XBsTdepV1MBTzsByjhDQvA"/>
+      <g transform="translate(32,32) scale(1.143) translate(-32,-32)" data-page-node-id="q9jq8hqAhgm1uNXT4v68Wk">
+        <path d="M32 12 C42 24, 46 32, 46 40 C46 48, 40 54, 32 54 C24 54, 18 48, 18 40 C18 32, 22 24, 32 12 Z" fill="url(#mg-tear)" stroke="rgba(255,255,255,0.8)" stroke-width="1" filter="url(#glow-tear)" data-page-node-id="IprCyOI4nSRDkjvt8K49En"/>
+        <path d="M26 34 C26 28, 30 22, 32 18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8" data-page-node-id="imamNkD5DANuJMnosbU97t"/>
+        <circle cx="26" cy="42" r="2" fill="#fff" opacity="0.6" data-page-node-id="prag5sEQye3kPT30UfMpZa"/>
+        <path d="M32 54 V60" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" opacity="0.5" filter="url(#glow-tear)" data-page-node-id="ZSSXGPl39xxGmVD9wg4yuy"/>
+      </g>
+    </symbol>
+
+    <!-- 雷鸟羽毛（thunderbird，v3）主体 30x50 → 归一化 ×0.960 -->
+    <symbol id="ic-thunderbird" viewBox="0 0 64 64" data-page-node-id="5Lcr9xIRAGJj1VcsYvjfJt">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-bolt-amb)" data-page-node-id="OaYEUBXJyeiKjtLhjanhD5"/>
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)" data-page-node-id="HHlPV5y4KU63UBCWxdVkhG">
+        <!-- 闪电：沿用 32 视图原坐标，整体 ×2 放进 64 画布 -->
+        <g filter="url(#glow-lightning)" data-page-node-id="P9qUOcWcwK63TbySJBb4Qo">
+        <g transform="translate(-1,0) scale(2)" data-page-node-id="MYp67HJjF4DhEGePok92Te">
+        <path d="M19.4 3.4 9 17.6h6.4L13.4 28.6 24 13.6h-6.6Z" fill="url(#mg-lightning)" stroke="rgba(255,255,255,0.85)" stroke-width="0.6" stroke-linejoin="round" data-page-node-id="EK64sbtgwt9DGaDSb1IPA9"/>
+        <path d="M12.4 15.6 17.6 8" fill="none" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.6" data-page-node-id="xCnscDMX1wFDzTEFGirFJI"/>
+        </g>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- 影猫皮毛（shadowcat，v3）主体 40x46 → 归一化 ×1.043 -->
+    <symbol id="ic-shadowcat" viewBox="0 0 64 64" data-page-node-id="VKWaqOsMVtLpMdn9vBgTQR">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-cat-amb)" data-page-node-id="aniEBsrUMH7ujSfKSdKdSe"/>
+      <g transform="translate(32,32) scale(1.043) translate(-32,-32)" data-page-node-id="asnBMur4OUl9VE4nMjxQP3">
+        <!-- 猫头剪影：沿用 32 视图原坐标，整体 ×2 放进 64 画布 -->
+        <g filter="url(#glow-cat)" data-page-node-id="syXKKJdcoHAJioO7C2cGUd">
+        <g transform="translate(0,0.8) scale(2)" data-page-node-id="gBLWIuDRHfZkp0fufWAB5p">
+        <!-- 头部轮廓（去黑边，改半透明白） -->
+        <path d="M7.2 12.4 6.4 4 13.4 8.2a13 13 0 0 1 5.2 0L25.6 4l-.8 8.4c.8 1.4 1.2 3 1.2 4.6 0 6-4.6 10.2-10 10.2S6 23 6 17c0-1.6.4-3.2 1.2-4.6Z" fill="url(#mg-cat)" stroke="rgba(255,255,255,0.75)" stroke-width="0.6" stroke-linejoin="round" data-page-node-id="sbbbyQFFM8zi5V836A4P9l"/>
+        <!-- 左脸高光 -->
+        <path d="M9.6 11.6c-.9 2-1.2 4.3-.7 6.6" fill="none" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.35" data-page-node-id="7etUR0ojFNeX35PXMmE4Jn"/>
+        <!-- 眼睛：原黑色在深底上不可见，改自发光冷白；纵向拉长 1.2 倍更接近猫眼 -->
+        <g transform="translate(0,17.6) scale(1,1.2) translate(0,-17.6)" data-page-node-id="Sr6Ybi3G2NsU9r4C40YZpo">
+        <path d="M10.6 17.6c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Zm6.8 0c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Z" fill="#e6edfb" data-page-node-id="oEQWqzzskATwsC0EVrcLyw"/>
+        </g>
+        </g>
+        </g>
+      </g>
+    </symbol>
+</svg>
+
+<div class="wrap" data-page-node-id="SvGLSzHQMM61air6H7jiaj">
+
+  <header class="hero" data-page-node-id="CNqzwZiMNHHNS4oU7gJATm">
+    <span class="kicker" data-page-node-id="GQ1CiENLnvhZgQrzzSD1nL">✦ 设计语言 · 从 16 枚 v3 原料图标反推</span>
+    <h1 data-page-node-id="Oitc2ha3XgSNSMWR1NZ1dD">夜色琉璃 Night Glass</h1>
+    <p data-page-node-id="HL4DkAhdkb6yRAtfLCseFE">图标的画法就是 UI 的画法：深色夜空里，玻璃容器盛着发光的原料。边界永远半透明白，光永远从左上来，发光永远是一种语义。</p>
+    <div class="ico-row" data-page-node-id="7bzHvv4FuRr0y1qcXCYHoj">
+      <svg class="ico" viewBox="0 0 64 64" data-page-node-id="zgJ1usmGo3fiVyuwjBrQBa"><use href="#ic-saltpeter" data-page-node-id="0IA2WasB0Cb1FYj7n97aHl"/></svg>
+      <svg class="ico" viewBox="0 0 64 64" data-page-node-id="eWmoTvkQg9Q2DUPrZC1Jsi"><use href="#ic-sulfur" data-page-node-id="aqIi9H0gdYzSTBNoTa4a2s"/></svg>
+      <svg class="ico" viewBox="0 0 64 64" data-page-node-id="OolA9iel9Z8viFpDJ2KT6I"><use href="#ic-copper" data-page-node-id="AEmVE5uTMzEYYjCXbqRyoq"/></svg>
+      <svg class="ico" viewBox="0 0 64 64" data-page-node-id="p5S4g6bMjF8u4YTzF4NBb1"><use href="#ic-moonpetal" data-page-node-id="EbGWqHw6ftHpRzePFAwPBj"/></svg>
+      <svg class="ico" viewBox="0 0 64 64" data-page-node-id="b8CfdNVFeldMmd5E8xEgFy"><use href="#ic-unicorn" data-page-node-id="aUGEzv3UQDTehObTQJSewK"/></svg>
+      <svg class="ico" viewBox="0 0 64 64" data-page-node-id="mV076U5P17qCIz1qhw6qci"><use href="#ic-stardust" data-page-node-id="uLu7mpjCgmqTAE4MsGB8GS"/></svg>
+    </div>
+  </header>
+
+  <!-- ============ 01 原则 ============ -->
+  <section data-page-node-id="s7u82EogxfKBWJzvnOz9K9">
+    <div class="sec-head" data-page-node-id="DP31Pu051hjYUeWD6JLhqt"><span class="no" data-page-node-id="4U0CTYdHuXMQxaAuA7O126">01</span><h2 data-page-node-id="ceWGmu2BuwbGYVCqQPG48A">六条原则 — 每一条都对应图标里的一笔</h2></div>
+    <p class="sec-desc" data-page-node-id="Kb61WBTImdb4dXiXWZ5dCW">左边是图标的原画法，右边是它翻译成 UI 后的样子。现场演示件都是活的 CSS，不是图片。</p>
+    <div class="principles" data-page-node-id="6s3zQVggmMgCLsK7sDrKJD">
+      <div class="principle" data-page-node-id="JdGlhq0Tgt2rdJ0CJMrV7L">
+        <h3 data-page-node-id="X8Aa7x2xvBantRFaM1US9u"><em data-page-node-id="QOPLYGxUZt5QluQ2jvJ6SZ">i</em>去黑边 · 边界是光不是墨</h3>
+        <div class="from" data-page-node-id="6ixIbs62aSCKWwDLpFAg5C">图标：<code data-page-node-id="u1NX2bAbrr7Jxb8grXJBy2">stroke="rgba(255,255,255,0.8)"</code></div>
+        <p style="font-size:13px;color:var(--ink-2)" data-page-node-id="3iTmph7gC5ZSOSZrUcFZKx">UI 边框只用半透明白（.12 常态 / .22 强调），绝不出现纯黑描边。</p>
+        <div class="demo" data-page-node-id="IS3UUywd2PWyA97NO5WKKw">
+          <div class="d-line hairline" data-page-node-id="qmO8ek5VgxlwP2rk3XEwx2"></div>
+          <div class="d-line hardline" data-page-node-id="FWt8DJKaM2jBQnHqNsJAKe"></div>
+          <span style="font-size:12px;color:var(--ink-3)" data-page-node-id="D8HW3HUS90vggkLSEuWQcp">← 半透明白 ✓ ｜ 纯黑硬边 ✗</span>
+        </div>
+      </div>
+      <div class="principle" data-page-node-id="SIleBcbUX5tirSj2KWFWCR">
+        <h3 data-page-node-id="nhilEqXTJqzFOyT3X7dYAT"><em data-page-node-id="c3SjbzFHF6Uq9vKSAy5RDW">ii</em>光从左上 · 受光面一律 135°</h3>
+        <div class="from" data-page-node-id="8wCc0sNBemNbFPlHKCjcwX">图标：<code data-page-node-id="jWoo0DrPXU6R8Bvt2a9nwn">linearGradient x1=0 y1=0 → x2≈.75 y2=1</code></div>
+        <p style="font-size:13px;color:var(--ink-2)" data-page-node-id="7a1IETCRWjxWGBOLQMGHWD">所有渐变面（按钮、进度、选中底）都从左上亮、右下暗，绝不平涂。</p>
+        <div class="demo" data-page-node-id="XI2pyUPmOekxH8G0aRTzF3">
+          <div class="d-grad tl" data-page-node-id="HtGsLNkANQ5tNbok6u92xj">135° 渐变</div>
+          <div class="d-grad flat" data-page-node-id="qQGPrPsnCoB6rVQ1RmLVX3">平涂 ✗</div>
+        </div>
+      </div>
+      <div class="principle" data-page-node-id="xkjr8dDEexPES8HKm9EHl6">
+        <h3 data-page-node-id="TE2ODEBXVxiUrZ5x3khzcW"><em data-page-node-id="eH8hK7nS2kmYGen3KeH2Fx">iii</em>自发光 = 魔法 · 发光是语义</h3>
+        <div class="from" data-page-node-id="yRFhDKZXPmfHqifCsRlcc5">图标：<code data-page-node-id="rGydQZODzy3E7kGmUJ3RGZ">feGaussianBlur + feMerge</code>（仅魔法系）</div>
+        <p style="font-size:13px;color:var(--ink-2)" data-page-node-id="9It9rVwXZxDR5F88I3zfJI">UI 里只有强调/选中/稀有元素才带同色辉光；普通元素绝不发光——光一多就不值钱了。</p>
+        <div class="demo" data-page-node-id="egfk6BXaI2mZDXJ84HJf0Y">
+          <div class="d-glow on" data-page-node-id="fhhHAPPraKragyBHxmRHc9"><svg class="ico" viewBox="0 0 64 64" data-page-node-id="anUcEEj8HdIypOpHe9Rmtt"><use href="#ic-unicorn" data-page-node-id="wYBsPCFcbj7F8Z14c8KqPi"/></svg></div>
+          <div class="d-glow" data-page-node-id="yOQyBGhzL6Ch0QiVMpa7EH"><svg class="ico" viewBox="0 0 64 64" data-page-node-id="7RGDl94pOpi4SxS5qhdtwD"><use href="#ic-saltpeter" data-page-node-id="mslXdiMrhVOJEaZe4gnvN4"/></svg></div>
+          <span style="font-size:12px;color:var(--ink-3)" data-page-node-id="atsGuRng4ZpJoHOnyyuhDm">← 发光=魔法 ｜ 不发光=真实</span>
+        </div>
+      </div>
+      <div class="principle" data-page-node-id="u8okg3JiSYsJNFxNErWGa0">
+        <h3 data-page-node-id="aD1r3trry0nXubziVRgSaJ"><em data-page-node-id="iSO7OZuF16OM23ieM5IzQr">iv</em>高光点缀 · 顶部一条呼吸线</h3>
+        <div class="from" data-page-node-id="qBn3SbeNnoDrIKZElnx6a1">图标：<code data-page-node-id="KZmy5dUUhXn3gs5Y8UY3cL">path stroke="#fff" opacity=".5"</code>（瓶身光斑）</div>
+        <p style="font-size:13px;color:var(--ink-2)" data-page-node-id="icaWZgmHQdzBXRfnd274ra">每张卡顶边 1px 渐隐白高光，暗示"玻璃表面"。点到为止，不做成大反光。</p>
+        <div class="demo" data-page-node-id="DMc8ccRS0AZufAxoA9kmWb"><div class="d-hl" data-page-node-id="Tp3DhGhea0yelyMb9j9S06"></div></div>
+      </div>
+      <div class="principle" data-page-node-id="wV8Nj5F1mBCbktbGpP4C8n">
+        <h3 data-page-node-id="x9EqLwrTqLvpfhBzW7B8pp"><em data-page-node-id="3zeTGph7FdwkG77whLAot4">v</em>环境光晕 · 主体背后一圈同色雾</h3>
+        <div class="from" data-page-node-id="U3CIj9tSgxI5V2DzripkLl">图标：<code data-page-node-id="10plwRQ0wnCtUWRgn013QP">radialGradient 中心~0.2 → 边缘 0</code></div>
+        <p style="font-size:13px;color:var(--ink-2)" data-page-node-id="L5JcWApCZHZDSOEFnkeKUj">选中态在元素背后垫一圈同色径向光（20~28% 起、边缘归零），让主体从夜色里浮出来。</p>
+        <div class="demo" data-page-node-id="3vZkXUR1ZTMeDPTElWFyCF">
+          <div class="d-halo" data-page-node-id="7N1gosRISBXfQa4ClNGCRu"><svg class="ico" viewBox="0 0 64 64" data-page-node-id="pXHlws7ViBx5rTOkxUtmrw"><use href="#ic-moonpetal" data-page-node-id="pH2F0frl43l44hJqKKxsIh"/></svg></div>
+          <span style="font-size:12px;color:var(--ink-3)" data-page-node-id="u0Ydsu7uwMLiRuRaWvpjqo">← 光晕在主体后面，不在主体上</span>
+        </div>
+      </div>
+      <div class="principle" data-page-node-id="dhBrzC9CbxgqltN33F9kbl">
+        <h3 data-page-node-id="W3Ol2nCN2nOJhlCROqNo7L"><em data-page-node-id="KwXkoJt507OQExoeBXe1FK">vi</em>统一画布 · 网格即纪律</h3>
+        <div class="from" data-page-node-id="BH3sDZDeyDyo65b3xVDXRK">图标：<code data-page-node-id="FrUcyQsdq9D5dTbcPvRFbP">viewBox 0 0 64 64</code>，主体统一归一到 75%</div>
+        <p style="font-size:13px;color:var(--ink-2)" data-page-node-id="3gLDgHDN7tzZ6wGtMyeiz7">UI 对应：圆角三档 10/18/26，间距 4 的倍数，图标在卡片里占宽 ~44%。先量后改，不靠肉眼。</p>
+        <div class="demo" data-page-node-id="WSDiUx8LUIZKwaGrHCGzGb">
+          <div class="d-grid" data-page-node-id="xxx1rL4hlqxILdCQ2qIVMS"><i class="f" data-page-node-id="ZKFxJbcDzTyRzrSg1vZ6rs"></i><i data-page-node-id="DuHNZjWjs8jAsI2eYT7MBb"></i><i class="f" data-page-node-id="jvKW0nFf7n3k8ZtWonWFbx"></i><i data-page-node-id="CgoBo3z1gsUyI6FEhjHLX2"></i><i data-page-node-id="BCg4bQJrhq5vdlIfpqp8EL"></i><i class="f" data-page-node-id="92uErQK67ytNUuRiZl6Gyj"></i><i data-page-node-id="BrUGAu3NeDaJItPhDsdYwC"></i><i class="f" data-page-node-id="X4LJAFG0By7cKjYx8mNl0w"></i></div>
+          <span style="font-size:12px;color:var(--ink-3)" data-page-node-id="Xa1gR0RsoRC7eGuGRir6oA">← 4px 网格</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 色板 ============ -->
+  <section data-page-node-id="enFSEdYQDeUDkJFq0AQbae">
+    <div class="sec-head" data-page-node-id="jVDrU5u61AcIi1zXTmDGiE"><span class="no" data-page-node-id="rGOTo9lDXABWpbRzrEUkzJ">02</span><h2 data-page-node-id="Uuv1fcJAc61ucNovLRfLTo">色板 — 全部实测自图标与游戏夜空</h2></div>
+    <p class="sec-desc" data-page-node-id="8ABOStqh7iGIa33IMNbkAn">每个色值都从 v3 图标源码里 grep 出来，不是调色盘里挑的。</p>
+
+    <div class="swatch-group" data-page-node-id="KM02ZKDdSGd5Qe4Am8iTku">
+      <h4 data-page-node-id="OXws1pyOTlkeYrwahqlyCx">夜色阶 · 背景（游戏天空 + 图标深色系）</h4>
+      <div class="swatches" data-page-node-id="bweeIJUNcipuzg2WEiCDt8">
+        <div class="swatch" data-page-node-id="SpZwkZWxQexMeBjJvOjjKS"><div class="chip" style="background:#070b22" data-page-node-id="HAQ93a5xpRCqbto1n6NiHt"></div><div class="meta" data-page-node-id="sLmGvr28uTUAUGLZzjlImj"><b data-page-node-id="G1bGgQq96pGapSulbrHHDD">夜空 · 最深</b><span data-page-node-id="ngsgBw2aYaOMHa7I2dHuWj">#070b22</span></div></div>
+        <div class="swatch" data-page-node-id="Vb1Ez1QW9ixyxl5ZIou2Bh"><div class="chip" style="background:#101a45" data-page-node-id="Wo7VdifMqkZ0lpP9iAwAym"></div><div class="meta" data-page-node-id="bhMfLKfJDXt88q6GAzOejR"><b data-page-node-id="IB4EFcxsJASD7ro8UF4DPm">夜空 · 中</b><span data-page-node-id="i74rpXUOlsYdTd6EBiuj2p">#101a45</span></div></div>
+        <div class="swatch" data-page-node-id="ZM9Gt6ZjXAX6j4xqfhiTPm"><div class="chip" style="background:#1b2a63" data-page-node-id="EAYKQOjxMfBv5sas3k5GNu"></div><div class="meta" data-page-node-id="AmqFXESdkZVNSP1PMWOLCJ"><b data-page-node-id="nx1zBlnjCGBUTC7pyxbSJe">夜空 · 浅</b><span data-page-node-id="zn7LUE2OjQnzJYchPqeWUr">#1b2a63</span></div></div>
+        <div class="swatch" data-page-node-id="gIdBf9Uu80yZ6vJXyfBSCn"><div class="chip" style="background:#22223b" data-page-node-id="rXS8EG4sDejUBSjjmFHAHb"></div><div class="meta" data-page-node-id="QCZF78uKhLgnzkQzJJ3JQj"><b data-page-node-id="BT3AODacJIEttpjvtxGmAd">影猫 · 暖夜</b><span data-page-node-id="neLfjqRvHNd4TC2GJiaUre">#22223b</span></div></div>
+        <div class="swatch" data-page-node-id="C28WSsJqoGpq7LWOvCdEgR"><div class="chip" style="background:#2b2d42" data-page-node-id="1divP39mNqsUyIjluBoAVX"></div><div class="meta" data-page-node-id="1jzOuHOfniIAVtTwWNtB04"><b data-page-node-id="LSi9VEEYPu4kMXuda9TiCQ">陶罐 · 深</b><span data-page-node-id="WjprEDx1KcLVSVeHaIEFMf">#2b2d42</span></div></div>
+        <div class="swatch" data-page-node-id="E5Ar1FjRkoYqFPofVPzf7s"><div class="chip" style="background:#565d72" data-page-node-id="zeJ7thLHzHMWMtvxJC97a6"></div><div class="meta" data-page-node-id="rRGdqwozHNKtSUB4JXBweR"><b data-page-node-id="z2TaJxrgjitg0rthZFyVS4">陶罐 · 灰蓝</b><span data-page-node-id="KLwRQejPmcB71JjaAi4Ggm">#565d72</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group" data-page-node-id="ejgQQMDIQ8xRqWRv8bJ3EY">
+      <h4 data-page-node-id="3WoervCglDomzmUNNsSxvS">强调 · 琥珀与魔法紫（按钮 / 选中 / 稀有）</h4>
+      <div class="swatches" data-page-node-id="PKfi0LGRDFDVcRRjx8TUYh">
+        <div class="swatch" data-page-node-id="HW57GFEkSBPLMW3uoTAqJh"><div class="chip" style="background:linear-gradient(135deg,#ffe9ad,#ffd166 45%,#ffb703)" data-page-node-id="MoMFfPug7OKPjKO5rMpisR"></div><div class="meta" data-page-node-id="xDvYFFwSRjyRz0L8TSxnov"><b data-page-node-id="CCKV8c2JxKnm4RXZ0JYCD9">琥珀 · 主</b><span data-page-node-id="yjCiktWtn5G3RbDpCSxSaC">#ffd166→#ffb703</span></div></div>
+        <div class="swatch" data-page-node-id="bWwWlmWfXCAONrua4Ai9ga"><div class="chip" style="background:#fff3c4" data-page-node-id="J2jA8rYomDomGMBGtE0B3q"></div><div class="meta" data-page-node-id="GLNFabnn1jNga6XKACTeXD"><b data-page-node-id="PdKbbQNBQGfVFgMeDxo1qV">琥珀 · 高光</b><span data-page-node-id="39VndHhGsddVGokcyIeswR">#fff3c4</span></div></div>
+        <div class="swatch" data-page-node-id="LLRgiwSgxCJVuHCUK7silq"><div class="chip" style="background:#b388ff" data-page-node-id="mjgPv210Kzcf30VazrIXCh"></div><div class="meta" data-page-node-id="iS290PjqNQG4L6kGVjV73G"><b data-page-node-id="oPNrBxUnI2H75kKzVdYemC">魔法 · 主</b><span data-page-node-id="moWCtSCybMniKysBGgskGJ">#b388ff</span></div></div>
+        <div class="swatch" data-page-node-id="MxOquCOXbTHQof8rzHL59R"><div class="chip" style="background:#e0aaff" data-page-node-id="GKETMXZpjwmKZpmcNdpX5e"></div><div class="meta" data-page-node-id="hSlJvee2Ll3dWUUkE87CUq"><b data-page-node-id="LyGBXBA5u5Yd6CCZ1EplkF">魔法 · 浅</b><span data-page-node-id="rq6OCnFd4Z4ND3Pr1CNrCh">#e0aaff</span></div></div>
+        <div class="swatch" data-page-node-id="kcviLdr28bx17rHpWrOi5t"><div class="chip" style="background:#7b2cbf" data-page-node-id="7Vc1IRSTxoKED2uzwCLDpL"></div><div class="meta" data-page-node-id="aBYyebs3bBrb97UjGzqSh0"><b data-page-node-id="YGb3pNdCvkGowMQGGL0sss">魔法 · 深</b><span data-page-node-id="6GhbJQ4ajTe20IJ9YCKxIq">#7b2cbf</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group" data-page-node-id="qIC35i3rmD8Z5wqFBE9uQc">
+      <h4 data-page-node-id="fAryBeyQATysSkWJoLiwAS">焰色四相 · 分类色（实测自锶/钡/铜/钠试管液柱）</h4>
+      <div class="swatches" data-page-node-id="cqFeRyE76xvqZaSHg8ndQB">
+        <div class="swatch" data-page-node-id="93sSdbCedHAow1uPJZKJOQ"><div class="chip" style="background:#ff5d6c" data-page-node-id="wnRDwJJ4Cbls6nCue1iPaF"></div><div class="meta" data-page-node-id="ofONLvZ0FtWCRIvTWSEOR0"><b data-page-node-id="7Mz7ZGbsQGWyBszreiA0R1">锶 · 喜庆红</b><span data-page-node-id="TcsQPar16pbUwagaajeMKt">#ff5d6c</span></div></div>
+        <div class="swatch" data-page-node-id="Y2UIPHOf8t8OqF1nRZ4XpB"><div class="chip" style="background:#51d88a" data-page-node-id="vTiamppE1hfrw1Upq99zgr"></div><div class="meta" data-page-node-id="c9uA7IPtVa6Hdj9NSwyGpF"><b data-page-node-id="LHfHEcLpU8mUd8H7PuEskz">钡 · 田园绿</b><span data-page-node-id="fiK2Znv6iY8yZ8GaFgrBnt">#51d88a</span></div></div>
+        <div class="swatch" data-page-node-id="q0gcuyEtynuvFO7xDZuOay"><div class="chip" style="background:#4cc9f0" data-page-node-id="pZZ9jDW4aMXeNTS7Gvs7VS"></div><div class="meta" data-page-node-id="hlUiPyK6qwUOtBbH9RxOsj"><b data-page-node-id="vtZHffjWLRlltnQQRl7UzV">铜 · 湖蓝</b><span data-page-node-id="FWVpn5AF7hMtxYCP610ZLf">#4cc9f0</span></div></div>
+        <div class="swatch" data-page-node-id="uImfOLn2B54ouF0Tpk4shH"><div class="chip" style="background:#ffd60a" data-page-node-id="xoBqCQ8CQOnm3uIdUKiX2o"></div><div class="meta" data-page-node-id="bmAF8N6qm06bqmbMy54XYr"><b data-page-node-id="MCPA2wpXoNOi4GuAGL9Ivd">钠 · 路灯黄</b><span data-page-node-id="WqJpaOXGrR8e1XDNVPIQMo">#ffd60a</span></div></div>
+        <div class="swatch" data-page-node-id="VAyK3CZDKRbMbJLNHfEnRJ"><div class="chip" style="background:#8b5a2b" data-page-node-id="UA001FQCmxaOJrzVJYWTq5"></div><div class="meta" data-page-node-id="YWBNVCF7YhB5xQsrRIBY4F"><b data-page-node-id="5QAiwoIenDQWw7ldOBYi3P">木塞 · 结构</b><span data-page-node-id="miaohWT2YGE0PDBYmWxbwj">#8b5a2b</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group" data-page-node-id="1umt0LNtYF2zenfg1biten">
+      <h4 data-page-node-id="YdqSUvCDiNJLz75mOqdDF4">文字阶 · 半透明白分级（对应图标白 .9/.6/.3）</h4>
+      <div class="swatches" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))" data-page-node-id="ynEKDuklUkYF4ZtTCpOZpN">
+        <div class="swatch" data-page-node-id="725AGDt1l8Io40K6HTMW1C"><div class="chip" style="background:#141830" data-page-node-id="ctY3tN3nlUYZ7j4DTn8fcW"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;color:rgba(255,255,255,.92)" data-page-node-id="yU8wLUgm8l2lPcEscfaQDH">正文 Aa</span></div><div class="meta" data-page-node-id="WweGc7eJlc5VOZSZMAZUS5"><b data-page-node-id="F8pxw3A3Z5cXH74tnQFkg5">主文字</b><span data-page-node-id="U5w1Fa6pEnrFPYOObGciw0">rgba(255,255,255,.92)</span></div></div>
+        <div class="swatch" data-page-node-id="HSkkBFIE7WgfVSj8gGWfwr"><div class="chip" style="background:#141830" data-page-node-id="DmBTzHC6TZcW6SUsq0mUHN"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;color:rgba(255,255,255,.62)" data-page-node-id="n4E5nsFOCRfEeakD5c0WQV">辅助 Aa</span></div><div class="meta" data-page-node-id="0Mgymh2C5UTrLMprn6fZjI"><b data-page-node-id="UGpIV0cm8k8Gz1C6jZiwBr">辅助文字</b><span data-page-node-id="4glkvWo9Kd7wTO92sdZHUX">rgba(255,255,255,.62)</span></div></div>
+        <div class="swatch" data-page-node-id="TrWWQIJ7DZMnvrLnC5U6ZD"><div class="chip" style="background:#141830" data-page-node-id="zrkE8h0EpydF2i8Dz0t4sY"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;color:rgba(255,255,255,.40)" data-page-node-id="kmDniui1G0VsKYEsnF8ORg">弱化 Aa</span></div><div class="meta" data-page-node-id="yCrqaOBnn27cUCIDVB29h9"><b data-page-node-id="MSMJrluWHwAut0OKdiVHLG">弱化/标签</b><span data-page-node-id="gHmwkQeTApRk8aJ9vt5UvS">rgba(255,255,255,.40)</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 组件 ============ -->
+  <section data-page-node-id="XjBZfOMNcMHXEGeHgMOZal">
+    <div class="sec-head" data-page-node-id="JN8eHIw11Qp44jCbfyZ6UF"><span class="no" data-page-node-id="hyBJbDL3oFd7NwDjuYEBr7">03</span><h2 data-page-node-id="miDDdFi6XDUjhezHHeZYsK">组件 — 同一套语言拼出来的界面</h2></div>
+    <p class="sec-desc" data-page-node-id="0U97NaeOkzYjM2JekcNQBP">下面全是可交互的活组件：原料卡可以点选，标签可以切换，输入框可以聚焦看辉光。</p>
+    <div class="comp-grid" data-page-node-id="FB8n7Y4V0Xnqlq3f2DNCgm">
+
+      <div class="panel" data-page-node-id="26oBAdBoRZGHIPpDAd9tBp">
+        <h4 data-page-node-id="SV86k9QTrFeNeEGKILS2xE">按钮 · 主=发光琥珀，玻璃=瓶身，危险=锶红</h4>
+        <div class="btn-row" data-page-node-id="8Ou3DzF9G5GWm0vknNhJHn">
+          <button class="btn primary" data-page-node-id="TTidyd8Rb7udICiE3ReANH"><svg class="ico" viewBox="0 0 64 64" data-page-node-id="Q1zIRUbSaLvinfrFsOdG5g"><use href="#ic-phoenix" data-page-node-id="cvByx4paogOHxRckiCV92H"/></svg>今夜绽放</button>
+          <button class="btn glass" data-page-node-id="b9tVBCgi0pQpmuZe8LGDh8">再做一桶</button>
+          <button class="btn ghost" data-page-node-id="6cuzZ4so8mcUaE3VpjJNt0">查看手札</button>
+          <button class="btn danger" data-page-node-id="VPWk0Cnezl0RW6s8RLUoGG">清空配方</button>
+        </div>
+        <p class="hint" data-page-node-id="ExkzxWPHUQMBZrzIh0j0Px">主按钮是全页唯一的高亮元素——按"发光是语义"原则，一屏只允许一个。</p>
+        <div style="margin-top:26px" data-page-node-id="L1U0DB4jOSmti57m19vZe1">
+          <h4 style="margin-bottom:14px" data-page-node-id="ttu9P0CsgADqc25owZMVz2">标签 chips · 焰色四相当分类点</h4>
+          <div class="chip-row" data-page-node-id="qCxiAPQDphhNUaGIeMytMk">
+            <span class="tag on" data-page-node-id="uKxkVI1QwYChL9tCqc08ta"><span class="dot" style="color:#ffd166;background:#ffd166" data-page-node-id="rojDbi4Ow0m8m9P0IS7dY9"></span>基础</span>
+            <span class="tag" data-page-node-id="OcL23h85I1qX3SCQQoqyj5"><span class="dot" style="color:#ffb703;background:#ffb703" data-page-node-id="n32ZaN5lRcuVVrEUBgHQmb"></span>火花</span>
+            <span class="tag" data-page-node-id="HvmdYRq1nBiMtq8OgwM4FR"><span class="dot" style="color:#ff5d6c;background:#ff5d6c" data-page-node-id="6SkGHh3DteAKjIApjquc9I"></span>焰色</span>
+            <span class="tag" data-page-node-id="grv9VWR6NZ882DuKLFg4mf"><span class="dot" style="color:#b388ff;background:#b388ff" data-page-node-id="jDPabnqnVZGJhmnsFPY2ZA"></span>魔法</span>
+            <span class="tag" data-page-node-id="uzW9DG1M139S6sEVYiRppl"><span class="dot" style="color:#4cc9f0;background:#4cc9f0" data-page-node-id="E0BUGpCXUVwlxLhqEh7PCw"></span>塑形</span>
+          </div>
+        </div>
+        <div style="margin-top:26px" data-page-node-id="yFDBOslAAerQIinDgtUBOY">
+          <h4 style="margin-bottom:14px" data-page-node-id="AgrOXD3XUN2J1gXDfBDANB">输入与进度 · 聚焦辉光用魔法紫</h4>
+          <input class="field" placeholder="给这桶烟花起个名字…" data-page-node-id="QqthkKnXqlSpOkp6SjFzNz">
+          <div class="prog" data-page-node-id="6hDqV9cyhf2HOEBUu62EOs">
+            <div class="lab" data-page-node-id="fSkSPtzWLEWHxv38ppuAXN"><span data-page-node-id="cHC8Sji7VtKX56IsDvpD42">搅拌进度</span><span style="color:var(--amber)" data-page-node-id="hTkTryuibnbMoITh16Ldmr">68%</span></div>
+            <div class="track" data-page-node-id="S7FEiFZrgf41QgrOeGs9eE"><div class="fill" data-page-node-id="0bLxPYgSXqUPHcN5dPqLPV"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-page-node-id="7Y8PC9U7udSgksfb7QroRx">
+        <h4 data-page-node-id="WJBOSX3UbhWjdrbTFSmSVt">原料卡 · 真实不发光 / 魔法自发光 / 点选点亮</h4>
+        <div class="ing-grid" id="ingGrid" data-page-node-id="op8Y8eOlPscsuBzk5IRAq4">
+          <div class="ing-card" data-name="硝酸钾" data-page-node-id="0tFApvzS97YjYzCwulzdXN">
+            <svg class="ico" viewBox="0 0 64 64" data-page-node-id="gOsHc9dmhucgCbklorP5sE"><use href="#ic-saltpeter" data-page-node-id="n3xA5EgUr4TNHFoKMPb4jO"/></svg>
+            <b data-page-node-id="mFuQTpTUVCmVezIpcOmvna">硝酸钾</b><small data-page-node-id="eWBA8xjh8wb7AxIy7qvlGt">基础 · 真实</small>
+          </div>
+          <div class="ing-card" data-name="硫磺" data-page-node-id="z79h2kAoXU1JEdfqJZABFE">
+            <svg class="ico" viewBox="0 0 64 64" data-page-node-id="7klWk6dkACq2l3lzHW2fuU"><use href="#ic-sulfur" data-page-node-id="wiVepTbEjpaGPfSIknRlfD"/></svg>
+            <b data-page-node-id="aVMG9spNRgCuQCvxr13VGB">硫磺</b><small data-page-node-id="x52xhwpJ2ShgIz3alfGosM">火花 · 真实</small>
+          </div>
+          <div class="ing-card magic sel" data-name="月光花瓣" data-page-node-id="DdGpU2KP9ZUmy7nMj7zQrx">
+            <svg class="ico" viewBox="0 0 64 64" data-page-node-id="h5M88YqmeRFqlLbhIYtf4C"><use href="#ic-moonpetal" data-page-node-id="kBBeJrRLtVKOgaS4V3BoBC"/></svg>
+            <b data-page-node-id="YyA0AgenC3vSvBAjdcDQO9">月光花瓣</b><small data-page-node-id="2LRQIRCNDQwGciBZ6gxPFC">魔法 · 稀有</small>
+          </div>
+          <div class="ing-card magic" data-name="独角兽螺旋角" data-page-node-id="ytlaP2ZKMiH4ExfU1VVEZh">
+            <svg class="ico" viewBox="0 0 64 64" data-page-node-id="fL5QKLVmB9csborIDwlg0Y"><use href="#ic-unicorn" data-page-node-id="mRHodRWAhpXwWn2Ic28FlY"/></svg>
+            <b data-page-node-id="mPoZ3kWAeACq8P1nMmGRPT">独角兽螺旋角</b><small data-page-node-id="ocLobFDmNbBLuHGX3wGJdD">魔法 · 传说</small>
+          </div>
+          <div class="ing-card" data-name="铜盐" data-page-node-id="PlmaTPoWs4DlU3pqgNdOx2">
+            <svg class="ico" viewBox="0 0 64 64" data-page-node-id="IqZCyxA07EDeoIPWtELGEy"><use href="#ic-copper" data-page-node-id="Iz4eIebdhJGtt1mJyUgvx6"/></svg>
+            <b data-page-node-id="NyWhoc2okGVzvODQMDT6WO">铜盐</b><small data-page-node-id="DnnJw3Au6DOe1xBewiOqTh">焰色 · 真实</small>
+          </div>
+          <div class="ing-card magic" data-name="星尘" data-page-node-id="cRoEtCP1HzXugaaSXv0rCo">
+            <svg class="ico" viewBox="0 0 64 64" data-page-node-id="jq0XMK3znGVbBdsq6tGFPt"><use href="#ic-stardust" data-page-node-id="AcwBM0RWG39b75h41iq8ii"/></svg>
+            <b data-page-node-id="cPqMtzQhJ5FUAX0saDXRAB">星尘</b><small data-page-node-id="mXsZkxLuGsKdZUeP5I5uuK">魔法 · 稀有</small>
+          </div>
+        </div>
+        <p class="hint" data-page-node-id="3w0iBKMdVh8IsLg3JIv9w2">试试点击卡片——选中态 = 琥珀描边 + 环境光晕 + 已选角标，全部来自原则 i/iii/v。</p>
+        <div style="margin-top:22px" data-page-node-id="B1QBGWdDqqFBlb1uXjiFCS">
+          <h4 style="margin-bottom:14px" data-page-node-id="niKbFEIbC5dgevoSMyKFjc">Toast · 玻璃卡 + 顶部高光 + 图标辉光</h4>
+          <div class="toast" data-page-node-id="KNWuRKx6B7gcTv5rERePlO">
+            <svg class="ico" viewBox="0 0 64 64" data-page-node-id="QjUmmuParvuuVMpEG5LnkC"><use href="#ic-fairytear" data-page-node-id="xkMG5Wi7eIYbvlrm5NR0cX"/></svg>
+            <div data-page-node-id="qjxtz9HwTxbCBQ9JJWcUUt"><b data-page-node-id="HfpVBT1XJiIyStuYSA5qqt">妖精眼泪已入碗</b><small data-page-node-id="cunbh0GBWuB7B3BrZu8VJH">魔法原料 +1 · 传说度上升</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 换算表 ============ -->
+  <section data-page-node-id="pl2YJGDUG6HicFMvx8vFFM">
+    <div class="sec-head" data-page-node-id="kDRiLHrlXcD1KvsilHzwrs"><span class="no" data-page-node-id="gLK1Tn5S6hblmLRG8C0BEU">04</span><h2 data-page-node-id="sa1hfUKDHuYAUeNgThAPS3">换算表 — SVG 原语 ↔ CSS 等价物</h2></div>
+    <p class="sec-desc" data-page-node-id="2pAwFANTKSOBbuk3ADhExm">这套语言能"反推"的前提：图标的每个 SVG 手法都有 CSS 对应物，一一映射、不新增词汇。</p>
+    <div class="panel" style="padding:8px 6px" data-page-node-id="Pa3gpr1kuyStvOZu9J6BU2">
+      <table data-page-node-id="RNcz6AviamKBp1Zs62kt3v">
+        <tr data-page-node-id="RxvbZlovfyhBjwUe0d6M0e"><th data-page-node-id="ta6ApeZaIHOzPwcHNkrylI">图标手法（SVG）</th><th data-page-node-id="wnfKK5uhLhAz6Fn9XuYXRR">UI 等价（CSS）</th><th data-page-node-id="GDpKnoYRYfLx1cYryqm7lE">用在</th></tr>
+        <tr data-page-node-id="CZwTBnj0b6m1n2vjw8xW4G">
+          <td data-page-node-id="LFPzGx7s7dUKseAnq5qyJ6">半透明白描边</td>
+          <td data-page-node-id="nfXp1PbnGyqdrMWGutGrEm"><code data-page-node-id="PH2H4ghCNfoqvUdCjFA4OJ">border:1px solid rgba(255,255,255,.12)</code></td>
+          <td data-page-node-id="YhoAVJflq2uaWzlusYMO3k">所有卡片 / 分割线</td>
+        </tr>
+        <tr data-page-node-id="l919qk2Bhh86ayKLyjPx7x">
+          <td data-page-node-id="tbxDXYgccOgHem5wQMHFDB">左上光渐变 <code style="font-size:11px" data-page-node-id="5fsgBNOgW61AgzRwUqaCCO">x1=0 y1=0 → x2=.75 y2=1</code></td>
+          <td data-page-node-id="PIfzycSRe5pYCSn8ZA75gp"><code data-page-node-id="4wFrkcHMV4OAkjAXbWRSGg">linear-gradient(135deg, 亮, 暗)</code></td>
+          <td data-page-node-id="09AWNAOpc3GvedBeJwMCY2">按钮 / 选中底 / 进度条</td>
+        </tr>
+        <tr data-page-node-id="YS6LbpaVFXuAPbkmsucNJe">
+          <td data-page-node-id="6depQhjxrrPPxkruFezSOO">玻璃瓶身 <code style="font-size:11px" data-page-node-id="M0LgEd99rveF6SfgdTOid2">rgba(255,255,255,.5→.1)</code></td>
+          <td data-page-node-id="agBXNBuf13HPoUGnjTMHuZ"><code data-page-node-id="SIXn9wNMzEwZ5ddaOB4c4r">background:linear-gradient(150deg,rgba(255,255,255,.07),.02)</code></td>
+          <td data-page-node-id="1e9hGmAzDyqPeeVDZ8r32S">卡片表面</td>
+        </tr>
+        <tr data-page-node-id="7vyB7J8OgZCYGTimbshrkP">
+          <td data-page-node-id="5qbMCIkbl39WVKTo9NFkxm">自发光 <code style="font-size:11px" data-page-node-id="ljr1OmyR4oPDxspRTBtL1h">feGaussianBlur+feMerge</code></td>
+          <td data-page-node-id="sBya0PPLg8IKVpgG629xhh"><code data-page-node-id="73DAaRiD3s5i1HlfxQQFiY">box-shadow:0 0 22px 同色35%</code> / <code data-page-node-id="6yoYhlKeuyn0mbLFPbH0tr">filter:drop-shadow</code></td>
+          <td data-page-node-id="DQ2LR4FCowXqmmiDOSdOdk">仅主按钮 / 选中态 / 魔法原料</td>
+        </tr>
+        <tr data-page-node-id="SavRof164YbeImpCLEuUiI">
+          <td data-page-node-id="7BMFrKOykagMvBc5mWLDvd">环境光晕 <code style="font-size:11px" data-page-node-id="wUKzsDM7ysbEcUIfFln6aq">radialGradient .2→0</code></td>
+          <td data-page-node-id="1qnAqvzwLfBvofxAwNgK3b"><code data-page-node-id="KFOWAqD2fPpbd3nAZt28uB">background:radial-gradient(closest-side,同色25%,transparent)</code></td>
+          <td data-page-node-id="PEpQWprKXUFsR1S13p6HkR">选中背后 / 魔法卡顶部</td>
+        </tr>
+        <tr data-page-node-id="aHaFfpmAXOppUt5kvw9DRx">
+          <td data-page-node-id="UAOEX8KJyDIarDQKH8qq2I">高光点缀 <code style="font-size:11px" data-page-node-id="0NGnsrWDwqDfAJfJ09ttuO">stroke #fff opacity .5</code></td>
+          <td data-page-node-id="4fB0QVlkrCXgAxJIW4DVMo"><code data-page-node-id="LCyJwvqMCORNy214Dyvaq6">inset 0 1px 0 rgba(255,255,255,.2)</code></td>
+          <td data-page-node-id="XBigYrOnIGcAk4Q9GC5esk">卡片 / 按钮顶边</td>
+        </tr>
+        <tr data-page-node-id="tjLzklc0bWyWnB8j8xQyyN">
+          <td data-page-node-id="aB9ZddMLJCHNoZzCDDoBpr">焰色四相液柱</td>
+          <td data-page-node-id="dAFHcr6a0DuC40cCLaYeI4"><code data-page-node-id="6ToEYisHxh6nl20KUERtIs">--flame-red/-green/-blue/-yellow</code> 分类色点</td>
+          <td data-page-node-id="xq8zoFTRow5iuJZLWYfdcQ">chips / 分类标记</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <footer data-page-node-id="3RCRcj8IKJYleBJWIvxMxD">夜色琉璃 NIGHT GLASS · 从 烟火小作坊 v3 图标反推 · 色值均实测自源码</footer>
+</div>
+
+<script>
+  // 原料卡点选（单选，符合"一屏一个高亮"）
+  document.getElementById("ingGrid").addEventListener("click", function (e) {
+    var card = e.target.closest(".ing-card");
+    if (!card) return;
+    this.querySelectorAll(".ing-card").forEach(function (c) { c.classList.remove("sel"); });
+    card.classList.add("sel");
+  });
+  // 标签切换
+  document.querySelectorAll(".chip-row").forEach(function (row) {
+    row.addEventListener("click", function (e) {
+      var tag = e.target.closest(".tag");
+      if (!tag) return;
+      row.querySelectorAll(".tag").forEach(function (t) { t.classList.remove("on"); });
+      tag.classList.add("on");
+    });
+  });
+</script>
+</body>
+</html>

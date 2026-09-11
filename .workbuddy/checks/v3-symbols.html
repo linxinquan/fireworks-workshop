@@ -1,0 +1,758 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <!-- saltpeter -->
+    <linearGradient id="g-saltpeter" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#f5e9c8"/>
+    </linearGradient>
+    <filter id="glow-salt"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- saltpeter -->
+    <linearGradient id="g-saltpeter" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#f5e9c8"/>
+    </linearGradient>
+    <filter id="glow-salt"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- sulfur -->
+    <linearGradient id="g-sulfur" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#FFE082"/>
+    <stop offset="50%" stop-color="#FFD166"/>
+    <stop offset="100%" stop-color="#E9C46A"/>
+    </linearGradient>
+    <filter id="glow-sulfur"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- sulfur -->
+    <linearGradient id="g-sulfur" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#FFE082"/>
+    <stop offset="50%" stop-color="#FFD166"/>
+    <stop offset="100%" stop-color="#E9C46A"/>
+    </linearGradient>
+    <filter id="glow-sulfur"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- charcoal -->
+    <linearGradient id="g-charcoal" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#5c607a"/>
+    <stop offset="100%" stop-color="#22223b"/>
+    </linearGradient>
+    <filter id="glow-spark"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- charcoal -->
+    <linearGradient id="g-charcoal" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#5c607a"/>
+    <stop offset="100%" stop-color="#22223b"/>
+    </linearGradient>
+    <filter id="glow-spark"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- aluminum -->
+    <!-- 粉末堆的金属质感渐变 -->
+    <linearGradient id="mg-alu" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="40%" stop-color="#e9ecef"/>
+    <stop offset="100%" stop-color="#adb5bd"/>
+    </linearGradient>
+    <!-- 星芒的强烈发光滤镜
+    注意：filter 默认滤镜区域只有 bbox 的 ±10%，小图元（如 r=2 的圆）套上
+    stdDeviation=2 的模糊会被硬裁出方形接缝 —— 必须把区域放宽。 -->
+    <filter id="glow-alu" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge>
+    <feMergeNode in="blur"/>
+    <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+    </filter>
+    <!-- aluminum -->
+    <!-- 粉末堆的金属质感渐变 -->
+    <linearGradient id="mg-alu" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="40%" stop-color="#e9ecef"/>
+    <stop offset="100%" stop-color="#adb5bd"/>
+    </linearGradient>
+    <!-- 星芒的强烈发光滤镜
+    注意：filter 默认滤镜区域只有 bbox 的 ±10%，小图元（如 r=2 的圆）套上
+    stdDeviation=2 的模糊会被硬裁出方形接缝 —— 必须把区域放宽。 -->
+    <filter id="glow-alu" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge>
+    <feMergeNode in="blur"/>
+    <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+    </filter>
+    <!-- strontium -->
+    <linearGradient id="tube-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-red"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- strontium -->
+    <linearGradient id="tube-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-red"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- barium -->
+    <linearGradient id="tube-g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-green"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- barium -->
+    <linearGradient id="tube-g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-green"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- copper -->
+    <linearGradient id="tube-g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-blue"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- copper -->
+    <linearGradient id="tube-g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-blue"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- sodium -->
+    <linearGradient id="tube-g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-yellow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- sodium -->
+    <linearGradient id="tube-g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="50%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0.3)"/></linearGradient><filter id="glow-yellow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="55%" stop-color="#e2edff"/>
+    <stop offset="100%" stop-color="#b7cffb"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#cfe3ff"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.6" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="55%" stop-color="#e2edff"/>
+    <stop offset="100%" stop-color="#b7cffb"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#cfe3ff"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.6" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="55%" stop-color="#e2edff"/>
+    <stop offset="100%" stop-color="#b7cffb"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#cfe3ff"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.6" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="55%" stop-color="#e2edff"/>
+    <stop offset="100%" stop-color="#b7cffb"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#cfe3ff"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.6" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- moonpetal -->
+    <!-- 环境光晕：同色径向渐变，极低透明度，让图标在深色 UI 上自然浮起 -->
+    <radialGradient id="mg-moon-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#cfe3ff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 花瓣：光从左上打下来，尖端最亮、根部压深 -->
+    <linearGradient id="mg-moon-petal" x1="0" y1="0" x2="0.7" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="55%" stop-color="#e2edff"/>
+    <stop offset="100%" stop-color="#b7cffb"/>
+    </linearGradient>
+    <!-- 花心：径向高亮 -->
+    <radialGradient id="mg-moon-core" cx="42%" cy="35%" r="70%">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#cfe3ff"/>
+    </radialGradient>
+    <!-- 拖尾：越往下越透明，模拟消散。
+    必须用 userSpaceOnUse —— 中间那条竖直拖尾 x 恒为 32，包围盒宽度为 0，
+    用默认的 objectBoundingBox 渐变会因为包围盒退化而整条不渲染。 -->
+    <linearGradient id="mg-moon-trail" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="58">
+    <stop offset="0%" stop-color="#dceaff" stop-opacity="0.9"/>
+    <stop offset="55%" stop-color="#cfe3ff" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#cfe3ff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- 自发光（魔法原料必须微微发光）；滤镜区域放宽，避免模糊被裁出硬边 -->
+    <filter id="glow-moon" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.6" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- dragonscale -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-scale-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ffb703" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#ffb703" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 鳞片本体：金光渐变（亮金 → 金 → 橙金），光从左上打下来 -->
+    <linearGradient id="mg-scale" x1="0" y1="0" x2="0.75" y2="1">
+    <stop offset="0%" stop-color="#fff3c4"/>
+    <stop offset="35%" stop-color="#ffd166"/>
+    <stop offset="72%" stop-color="#ffb703"/>
+    <stop offset="100%" stop-color="#e07b00"/>
+    </linearGradient>
+    <!-- 边缘发光（滤镜区域放宽，避免小图元被裁出方形接缝） -->
+    <filter id="glow-scale" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.7" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- dragonscale -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-scale-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ffb703" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#ffb703" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 鳞片本体：金光渐变（亮金 → 金 → 橙金），光从左上打下来 -->
+    <linearGradient id="mg-scale" x1="0" y1="0" x2="0.75" y2="1">
+    <stop offset="0%" stop-color="#fff3c4"/>
+    <stop offset="35%" stop-color="#ffd166"/>
+    <stop offset="72%" stop-color="#ffb703"/>
+    <stop offset="100%" stop-color="#e07b00"/>
+    </linearGradient>
+    <!-- 边缘发光（滤镜区域放宽，避免小图元被裁出方形接缝） -->
+    <filter id="glow-scale" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.7" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- dragonscale -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-scale-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ffb703" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#ffb703" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 鳞片本体：金光渐变（亮金 → 金 → 橙金），光从左上打下来 -->
+    <linearGradient id="mg-scale" x1="0" y1="0" x2="0.75" y2="1">
+    <stop offset="0%" stop-color="#fff3c4"/>
+    <stop offset="35%" stop-color="#ffd166"/>
+    <stop offset="72%" stop-color="#ffb703"/>
+    <stop offset="100%" stop-color="#e07b00"/>
+    </linearGradient>
+    <!-- 边缘发光（滤镜区域放宽，避免小图元被裁出方形接缝） -->
+    <filter id="glow-scale" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.7" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- phoenix -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-plume-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ff7b00" stop-opacity="0.2"/>
+    <stop offset="100%" stop-color="#ff7b00" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 金光渐变：走 1024 原视图坐标（羽身两层共用一套，避免分层处颜色断层） -->
+    <linearGradient id="mg-plume" gradientUnits="userSpaceOnUse" x1="150" y1="60" x2="880" y2="1010">
+    <stop offset="0%" stop-color="#fff6d0"/>
+    <stop offset="30%" stop-color="#ffd60a"/>
+    <stop offset="65%" stop-color="#ffa400"/>
+    <stop offset="100%" stop-color="#f26b00"/>
+    </linearGradient>
+    <!-- 自发光（滤镜区域放宽，避免模糊被裁出硬边） -->
+    <filter id="glow-plume" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.8" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- phoenix -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-plume-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ff7b00" stop-opacity="0.2"/>
+    <stop offset="100%" stop-color="#ff7b00" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 金光渐变：走 1024 原视图坐标（羽身两层共用一套，避免分层处颜色断层） -->
+    <linearGradient id="mg-plume" gradientUnits="userSpaceOnUse" x1="150" y1="60" x2="880" y2="1010">
+    <stop offset="0%" stop-color="#fff6d0"/>
+    <stop offset="30%" stop-color="#ffd60a"/>
+    <stop offset="65%" stop-color="#ffa400"/>
+    <stop offset="100%" stop-color="#f26b00"/>
+    </linearGradient>
+    <!-- 自发光（滤镜区域放宽，避免模糊被裁出硬边） -->
+    <filter id="glow-plume" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.8" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- phoenix -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-plume-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ff7b00" stop-opacity="0.2"/>
+    <stop offset="100%" stop-color="#ff7b00" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 金光渐变：走 1024 原视图坐标（羽身两层共用一套，避免分层处颜色断层） -->
+    <linearGradient id="mg-plume" gradientUnits="userSpaceOnUse" x1="150" y1="60" x2="880" y2="1010">
+    <stop offset="0%" stop-color="#fff6d0"/>
+    <stop offset="30%" stop-color="#ffd60a"/>
+    <stop offset="65%" stop-color="#ffa400"/>
+    <stop offset="100%" stop-color="#f26b00"/>
+    </linearGradient>
+    <!-- 自发光（滤镜区域放宽，避免模糊被裁出硬边） -->
+    <filter id="glow-plume" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.8" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- unicorn -->
+    <!-- 彩虹渐变：粉 → 淡紫 → 紫，光从左上打下来 -->
+    <linearGradient id="mg-horn" x1="0" y1="0" x2="0.9" y2="1">
+    <stop offset="0%" stop-color="#ffd6ec"/>
+    <stop offset="45%" stop-color="#e0aaff"/>
+    <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-horn-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#e0aaff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow-horn" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- unicorn -->
+    <!-- 彩虹渐变：粉 → 淡紫 → 紫，光从左上打下来 -->
+    <linearGradient id="mg-horn" x1="0" y1="0" x2="0.9" y2="1">
+    <stop offset="0%" stop-color="#ffd6ec"/>
+    <stop offset="45%" stop-color="#e0aaff"/>
+    <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-horn-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#e0aaff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow-horn" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- unicorn -->
+    <!-- 彩虹渐变：粉 → 淡紫 → 紫，光从左上打下来 -->
+    <linearGradient id="mg-horn" x1="0" y1="0" x2="0.9" y2="1">
+    <stop offset="0%" stop-color="#ffd6ec"/>
+    <stop offset="45%" stop-color="#e0aaff"/>
+    <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-horn-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#e0aaff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow-horn" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- stardust -->
+    <linearGradient id="mg-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fff1a8"/></linearGradient>
+    <filter id="glow-ring"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- stardust -->
+    <linearGradient id="mg-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fff1a8"/></linearGradient>
+    <filter id="glow-ring"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- fairytear -->
+    <radialGradient id="mg-tear" cx="40%" cy="30%" r="60%"><stop offset="0%" stop-color="#e0d4ff"/><stop offset="100%" stop-color="#a78bfa"/></radialGradient>
+    <filter id="glow-tear"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- fairytear -->
+    <radialGradient id="mg-tear" cx="40%" cy="30%" r="60%"><stop offset="0%" stop-color="#e0d4ff"/><stop offset="100%" stop-color="#a78bfa"/></radialGradient>
+    <filter id="glow-tear"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <!-- thunderbird -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-bolt-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#b388ff" stop-opacity="0.24"/>
+    <stop offset="100%" stop-color="#b388ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 紫电渐变：亮紫 → 紫 → 深紫，光从左上打下来 -->
+    <linearGradient id="mg-lightning" x1="0" y1="0" x2="0.8" y2="1">
+    <stop offset="0%" stop-color="#f2ecff"/>
+    <stop offset="35%" stop-color="#c9a8ff"/>
+    <stop offset="72%" stop-color="#b388ff"/>
+    <stop offset="100%" stop-color="#7b2cbf"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-lightning" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- thunderbird -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-bolt-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#b388ff" stop-opacity="0.24"/>
+    <stop offset="100%" stop-color="#b388ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 紫电渐变：亮紫 → 紫 → 深紫，光从左上打下来 -->
+    <linearGradient id="mg-lightning" x1="0" y1="0" x2="0.8" y2="1">
+    <stop offset="0%" stop-color="#f2ecff"/>
+    <stop offset="35%" stop-color="#c9a8ff"/>
+    <stop offset="72%" stop-color="#b388ff"/>
+    <stop offset="100%" stop-color="#7b2cbf"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-lightning" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- thunderbird -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-bolt-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#b388ff" stop-opacity="0.24"/>
+    <stop offset="100%" stop-color="#b388ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 紫电渐变：亮紫 → 紫 → 深紫，光从左上打下来 -->
+    <linearGradient id="mg-lightning" x1="0" y1="0" x2="0.8" y2="1">
+    <stop offset="0%" stop-color="#f2ecff"/>
+    <stop offset="35%" stop-color="#c9a8ff"/>
+    <stop offset="72%" stop-color="#b388ff"/>
+    <stop offset="100%" stop-color="#7b2cbf"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-lightning" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- shadowcat -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-cat-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#8d99ae" stop-opacity="0.24"/>
+    <stop offset="100%" stop-color="#8d99ae" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 猫头渐变：冷灰，光从左上打下来 -->
+    <linearGradient id="mg-cat" x1="0" y1="0" x2="0.85" y2="1">
+    <stop offset="0%" stop-color="#939eb3"/>
+    <stop offset="52%" stop-color="#565d72"/>
+    <stop offset="100%" stop-color="#2b2d42"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-cat" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.8" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- shadowcat -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-cat-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#8d99ae" stop-opacity="0.24"/>
+    <stop offset="100%" stop-color="#8d99ae" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 猫头渐变：冷灰，光从左上打下来 -->
+    <linearGradient id="mg-cat" x1="0" y1="0" x2="0.85" y2="1">
+    <stop offset="0%" stop-color="#939eb3"/>
+    <stop offset="52%" stop-color="#565d72"/>
+    <stop offset="100%" stop-color="#2b2d42"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-cat" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.8" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- shadowcat -->
+    <!-- 环境光晕：同色径向渐变 -->
+    <radialGradient id="mg-cat-amb" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#8d99ae" stop-opacity="0.24"/>
+    <stop offset="100%" stop-color="#8d99ae" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 猫头渐变：冷灰，光从左上打下来 -->
+    <linearGradient id="mg-cat" x1="0" y1="0" x2="0.85" y2="1">
+    <stop offset="0%" stop-color="#939eb3"/>
+    <stop offset="52%" stop-color="#565d72"/>
+    <stop offset="100%" stop-color="#2b2d42"/>
+    </linearGradient>
+    <!-- 发光：挂在未缩放的组上，滤镜区域放宽 -->
+    <filter id="glow-cat" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="1.8" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+    <!-- 硝酸钾（saltpeter，v3）主体 42x41 → 归一化 ×1.143 -->
+    <symbol id="ic-saltpeter" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="26" fill="#f5e9c8" opacity="0.1" filter="url(#glow-salt)"/>
+      <g transform="translate(32,32) scale(1.143) translate(-32,-32)">
+        <path d="M17.2 30 L23.2 34.8 L23.2 46 L17.2 50.4 L11.2 46 L11.2 34.8Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round"/>
+        <path d="M40.8 34.8 L46.8 30 L52.8 34.8 L52.8 46 L46.8 50.4 L40.8 46Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round"/>
+        <path d="M32 9.2 L41.2 17.2 L41.2 38.8 L32 46.8 L22.8 38.8 L22.8 17.2Z" fill="url(#g-saltpeter)" stroke="rgba(255,255,255,0.9)" stroke-width="1.2" stroke-linejoin="round" filter="url(#glow-salt)"/>
+        <path d="M22.8 17.2 L32 24.4 L41.2 17.2 M32 24.4 V46.8" fill="none" stroke="rgba(180,160,120,0.4)" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="M26.8 22.4 V35.6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        <path d="M14.2 33 L14.2 42" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+      </g>
+    </symbol>
+
+    <!-- 硫磺（sulfur，v3）主体 32x34 → 归一化 ×1.412 -->
+    <symbol id="ic-sulfur" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="26" fill="#ffd166" opacity="0.15" filter="url(#glow-sulfur)"/>
+      <g transform="translate(32,32) scale(1.412) translate(-32,-32)">
+        <path d="M19.2 41.6 L23.6 23.2 L39.2 16.8 L51.2 26.4 L50.8 40.8 L38 51.2 L25.2 49.6Z" fill="url(#g-sulfur)" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linejoin="round" filter="url(#glow-sulfur)"/>
+        <path d="M23.6 23.2 L36 33.2 L38 51.2 M36 33.2 L51.2 26.4 M36 33.2 L19.2 41.6" fill="none" stroke="rgba(180,130,40,0.5)" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="M27.2 27.2 L30.8 41.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <path d="M40 28 L46 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      </g>
+    </symbol>
+
+    <!-- 木炭粉（charcoal，v3）主体 38x43 → 归一化 ×1.116 -->
+    <symbol id="ic-charcoal" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="26" fill="#4a4e69" opacity="0.1"/>
+      <g transform="translate(32,32) scale(1.116) translate(-32,-32)">
+        <path d="M19.2 40.8 L25.2 23.2 L41.2 18 L51.6 30.8 L46.8 45.2 L31.2 51.2Z" fill="url(#g-charcoal)" stroke="rgba(100,100,120,0.5)" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="M25.2 23.2 L34.8 31.2 L46.8 45.2" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M28.8 37.2 L39.2 26.8" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="30" cy="34" r="1.5" fill="#1a1a24"/>
+        <circle cx="38" cy="38" r="2" fill="#1a1a24"/>
+        <circle cx="34" cy="44" r="1.2" fill="#1a1a24"/>
+        <circle cx="54" cy="16.4" r="3" fill="#f4a261" filter="url(#glow-spark)"/>
+        <circle cx="46" cy="10" r="2.2" fill="#ffd166" filter="url(#glow-spark)"/>
+        <circle cx="55.6" cy="26.4" r="1.8" fill="#ffd166" opacity="0.9" filter="url(#glow-spark)"/>
+        <circle cx="48" cy="20" r="1.2" fill="#ff7b00" filter="url(#glow-spark)"/>
+      </g>
+    </symbol>
+
+    <!-- 铝粉（aluminum，v3）主体 35x45 → 归一化 ×1.067 -->
+    <symbol id="ic-aluminum" viewBox="0 0 64 64">
+      <!-- 整体微光背景（让白色粉末在深色底上也能浮起来） -->
+      <circle cx="32" cy="32" r="28" fill="#ffffff" opacity="0.12"/>
+      <g transform="translate(32,32) scale(1.067) translate(-32,-32)">
+        <!-- 粉末堆主体 -->
+        <path d="M16 46 C22 36, 28 34, 32 34 C36 34, 42 36, 48 46 L44 54 C36 58, 28 58, 20 54 Z"
+        fill="url(#mg-alu)"
+        stroke="rgba(255,255,255,0.9)"
+        stroke-width="1.2"
+        stroke-linejoin="round"/>
+        <!-- 粉末表面的颗粒纹理（暗示这是粉末而不是光滑的石头） -->
+        <circle cx="26" cy="44" r="1.2" fill="#fff" opacity="0.7"/>
+        <circle cx="34" cy="42" r="1" fill="#fff" opacity="0.6"/>
+        <circle cx="38" cy="48" r="1.5" fill="#fff" opacity="0.8"/>
+        <circle cx="28" cy="50" r="0.8" fill="#fff" opacity="0.5"/>
+        <path d="M24 48 Q28 46 32 48" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+        <!-- 核心大星芒（位于粉末堆正上方，强烈发光） -->
+        <path d="M32 12 L34 20 L42 22 L34 24 L32 32 L30 24 L22 22 L30 20 Z"
+        fill="#ffffff"
+        filter="url(#glow-alu)"/>
+        <!-- 左侧小星芒（错落分布，增加灵动感） -->
+        <path d="M18 28 L19 32 L23 33 L19 34 L18 38 L17 34 L13 33 L17 32 Z"
+        fill="#ffffff"
+        opacity="0.85"/>
+        <!-- 右侧微小闪光点 -->
+        <circle cx="46" cy="20" r="2" fill="#ffffff" filter="url(#glow-alu)"/>
+        <circle cx="42" cy="14" r="1" fill="#ffffff" opacity="0.7"/>
+      </g>
+    </symbol>
+
+    <!-- 锶盐（strontium，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-strontium" viewBox="0 0 64 64">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 32 L39 32 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#ff5d6c" filter="url(#glow-red)"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </symbol>
+
+    <!-- 钡盐（barium，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-barium" viewBox="0 0 64 64">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g2)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g2)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 36 L39 36 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#51d88a" filter="url(#glow-green)"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </symbol>
+
+    <!-- 铜盐（copper，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-copper" viewBox="0 0 64 64">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g3)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g3)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 28 L39 28 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#4cc9f0" filter="url(#glow-blue)"/><circle cx="30" cy="40" r="1.5" fill="#fff" opacity="0.8"/><circle cx="34" cy="46" r="1" fill="#fff" opacity="0.6"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </symbol>
+
+    <!-- 钠盐（sodium，v1）主体 16x50 → 归一化 ×0.960 -->
+    <symbol id="ic-sodium" viewBox="0 0 64 64">
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)">
+        <rect x="26" y="8" width="12" height="6" rx="2" fill="#8B5A2B"/><path d="M28 14 L36 14 L36 20 L28 20 Z" fill="url(#tube-g4)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/><path d="M24 20 L40 20 L40 52 C40 56 36 58 32 58 C28 58 24 56 24 52 Z" fill="url(#tube-g4)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><path d="M25 30 L39 30 L39 52 C39 55 36 57 32 57 C28 57 25 55 25 52 Z" fill="#ffd60a" filter="url(#glow-yellow)"/><path d="M26 22 L26 54" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </symbol>
+
+    <!-- 月光花瓣（moonpetal，v3）主体 33x53 → 归一化 ×0.906 -->
+    <symbol id="ic-moonpetal" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-moon-amb)"/>
+      <g transform="translate(32,32) scale(0.906) translate(-32,-32)">
+        <!-- 垂落的拖尾：起笔藏在花瓣底下，从花底轮廓处自然垂出（避免断口和划痕感） -->
+        <g fill="none" stroke="url(#mg-moon-trail)" stroke-linecap="round" filter="url(#glow-moon)">
+        <path d="M28 30 C24 38, 21 48, 22 58" stroke-width="2.2"/>
+        <path d="M36 30 C40 38, 43 48, 42 58" stroke-width="1.9"/>
+        <path d="M32 28 C32 41, 32 51, 32 58" stroke-width="1.5"/>
+        </g>
+
+        <!-- 花朵：五片花瓣绕花心均分 -->
+        <g transform="translate(32,21)" filter="url(#glow-moon)">
+        <g fill="url(#mg-moon-petal)" stroke="rgba(255,255,255,0.8)" stroke-width="1" stroke-linejoin="round">
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(0)"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(72)"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(144)"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(216)"/>
+        <path d="M0 -2.5 C4.2 -6.7, 5.5 -12.6, 0 -16 C-5.5 -12.6, -4.2 -6.7, 0 -2.5 Z" transform="rotate(288)"/>
+        </g>
+        <!-- 花心 + 高光 -->
+        <circle cx="0" cy="0" r="3.9" fill="url(#mg-moon-core)"/>
+        <circle cx="0" cy="0" r="1.5" fill="#fff"/>
+        </g>
+
+        <!-- 花瓣高光点缀（短、贴边，避免读成划痕） -->
+        <path d="M28.5 14 C27.8 15.2, 27.5 16.4, 27.8 17.6" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity="0.85"/>
+        <circle cx="26" cy="29" r="1.2" fill="#fff" opacity="0.7"/>
+        <circle cx="38" cy="13" r="1" fill="#fff" opacity="0.55"/>
+      </g>
+    </symbol>
+
+    <!-- 龙鳞粉（dragonscale，v3）主体 35x34 → 归一化 ×1.371 -->
+    <symbol id="ic-dragonscale" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-scale-amb)"/>
+      <g transform="translate(32,32) scale(1.371) translate(-32,-32)">
+        <!-- 三片菱形鳞片：下二上一，主片压在最前 -->
+        <g filter="url(#glow-scale)">
+        <!-- 左下鳞片 -->
+        <g transform="translate(23.5,39.5) scale(0.76)">
+        <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>
+        <!-- 右下鳞片 -->
+        <g transform="translate(40.5,39.5) scale(0.76)">
+        <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.8)" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>
+        <!-- 主鳞片 -->
+        <g transform="translate(32,28)">
+        <polygon points="0,-13 12,0 0,13 -12,0" fill="url(#mg-scale)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linejoin="round"/>
+        </g>
+        </g>
+
+        <!-- 极简：不加纹理线，靠渐变 + 白描边 + 发光表达体积 -->
+      </g>
+    </symbol>
+
+    <!-- 凤羽灰（phoenix，v3）主体 43x44 → 归一化 ×1.091 -->
+    <symbol id="ic-phoenix" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-plume-amb)"/>
+      <g transform="translate(32,32) scale(1.091) translate(-32,-32)">
+        <!-- 羽身：经典凤羽剪影（沿用 1024 原坐标，整体缩放进 64 画布居中） -->
+        <g filter="url(#glow-plume)">
+        <g transform="translate(10.16,8.99) scale(0.044)" stroke="rgba(255,255,255,0.8)" stroke-width="20" stroke-linejoin="round">
+        <!-- 内层细羽枝：深金垫底 -->
+        <path fill="#e07b00" d="M4.27 1024a2457.83 2457.83 0 0 1 385.3-563.31A1869.47 1869.47 0 0 1 888.15 63.06a3983.61 3983.61 0 0 0-331.36 269.71C259.34 595.16 70.16 985.86 70.16 985.86z"/>
+        <!-- 主羽片：金光渐变 -->
+        <path fill="url(#mg-plume)" d="M732.87 90.42a162.98 162.98 0 0 0-45.08 49.7 182.25 182.25 0 0 0-19.26 54.33V122.4a1425.61 1425.61 0 0 0-303.23 209.22l-31.21 30.44c-12.33 11.94-16.95 109.43-16.95 109.43s-16.95-73.98-22.35-67.81c-200.36 220.39-186.87 374.9-151.81 427.3 60.49-115.59 131.77-258.54 250.06-367.58C745.2 138.97 914.35 60.37 917.05 59.21a4199.77 4199.77 0 0 0-346.77 283.58c-162.6 145.64-293.21 359.48-377.21 520.15 59.72 21.96 167.61-5.01 272.41-91.32 95.17-77.06 245.05-318.64 245.05-318.64l-167.99 33.14a1025.67 1025.67 0 0 1 125.61-70.51c44.69-20.04 90.55-25.43 92.09-30.82 14.26-45.08 12.71-72.82 98.25-200.36A1341.61 1341.61 0 0 1 987.94 22.99s-83.61-13.49-255.07 67.43z"/>
+        </g>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- 独角兽螺旋角（unicorn，v3）主体 35x52 → 归一化 ×0.923 -->
+    <symbol id="ic-unicorn" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-horn-amb)"/>
+      <g transform="translate(32,32) scale(0.923) translate(-32,-32)">
+        <!-- 整体逆时针旋转 20°；再左移 3 单位，让旋转后的重心回到画布中心 -->
+        <g transform="translate(-3,0) rotate(-20 32 32)">
+        <path d="M32 8 L42 52 C42 54, 38 56, 32 56 C26 56, 22 54, 22 52 Z" fill="url(#mg-horn)" stroke="rgba(255,255,255,0.85)" stroke-width="1.1" stroke-linejoin="round" filter="url(#glow-horn)"/>
+        <path d="M24 44 Q32 40 40 44 M26 36 Q32 32 38 36 M28 28 Q32 24 36 28 M30 20 Q32 18 34 20" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="32" cy="10" r="2.5" fill="#fff" filter="url(#glow-horn)"/>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- 星尘（stardust，v3）主体 43x26 → 归一化 ×1.116 -->
+    <symbol id="ic-stardust" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="#fff1a8" opacity="0.15"/>
+      <g transform="translate(32,32) scale(1.116) translate(-32,-32)">
+        <ellipse cx="32" cy="34" rx="20" ry="8" fill="none" stroke="url(#mg-ring)" stroke-width="2.5" filter="url(#glow-ring)" transform="rotate(-15 32 34)"/>
+        <circle cx="32" cy="34" r="4" fill="#fff" filter="url(#glow-ring)"/>
+        <circle cx="16" cy="30" r="1.5" fill="#fff" opacity="0.8"/>
+        <circle cx="48" cy="38" r="2" fill="#fff" opacity="0.9"/>
+        <circle cx="24" cy="42" r="1" fill="#fff" opacity="0.6"/>
+        <circle cx="40" cy="26" r="1.2" fill="#fff" opacity="0.7"/>
+      </g>
+    </symbol>
+
+    <!-- 妖精之泪（fairytear，v3）主体 28x42 → 归一化 ×1.143 -->
+    <symbol id="ic-fairytear" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="#a78bfa" opacity="0.15"/>
+      <g transform="translate(32,32) scale(1.143) translate(-32,-32)">
+        <path d="M32 12 C42 24, 46 32, 46 40 C46 48, 40 54, 32 54 C24 54, 18 48, 18 40 C18 32, 22 24, 32 12 Z" fill="url(#mg-tear)" stroke="rgba(255,255,255,0.8)" stroke-width="1" filter="url(#glow-tear)"/>
+        <path d="M26 34 C26 28, 30 22, 32 18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        <circle cx="26" cy="42" r="2" fill="#fff" opacity="0.6"/>
+        <path d="M32 54 V60" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" opacity="0.5" filter="url(#glow-tear)"/>
+      </g>
+    </symbol>
+
+    <!-- 雷鸟羽毛（thunderbird，v3）主体 30x50 → 归一化 ×0.960 -->
+    <symbol id="ic-thunderbird" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-bolt-amb)"/>
+      <g transform="translate(32,32) scale(0.96) translate(-32,-32)">
+        <!-- 闪电：沿用 32 视图原坐标，整体 ×2 放进 64 画布 -->
+        <g filter="url(#glow-lightning)">
+        <g transform="translate(-1,0) scale(2)">
+        <path d="M19.4 3.4 9 17.6h6.4L13.4 28.6 24 13.6h-6.6Z" fill="url(#mg-lightning)" stroke="rgba(255,255,255,0.85)" stroke-width="0.6" stroke-linejoin="round"/>
+        <path d="M12.4 15.6 17.6 8" fill="none" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
+        </g>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- 影猫皮毛（shadowcat，v3）主体 40x46 → 归一化 ×1.043 -->
+    <symbol id="ic-shadowcat" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="28" fill="url(#mg-cat-amb)"/>
+      <g transform="translate(32,32) scale(1.043) translate(-32,-32)">
+        <!-- 猫头剪影：沿用 32 视图原坐标，整体 ×2 放进 64 画布 -->
+        <g filter="url(#glow-cat)">
+        <g transform="translate(0,0.8) scale(2)">
+        <!-- 头部轮廓（去黑边，改半透明白） -->
+        <path d="M7.2 12.4 6.4 4 13.4 8.2a13 13 0 0 1 5.2 0L25.6 4l-.8 8.4c.8 1.4 1.2 3 1.2 4.6 0 6-4.6 10.2-10 10.2S6 23 6 17c0-1.6.4-3.2 1.2-4.6Z" fill="url(#mg-cat)" stroke="rgba(255,255,255,0.75)" stroke-width="0.6" stroke-linejoin="round"/>
+        <!-- 左脸高光 -->
+        <path d="M9.6 11.6c-.9 2-1.2 4.3-.7 6.6" fill="none" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.35"/>
+        <!-- 眼睛：原黑色在深底上不可见，改自发光冷白；纵向拉长 1.2 倍更接近猫眼 -->
+        <g transform="translate(0,17.6) scale(1,1.2) translate(0,-17.6)">
+        <path d="M10.6 17.6c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Zm6.8 0c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Z" fill="#e6edfb"/>
+        </g>
+        </g>
+        </g>
+      </g>
+    </symbol>
+</svg>

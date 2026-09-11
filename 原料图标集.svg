@@ -1,0 +1,294 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1200" width="1080" height="1200" font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif">
+  <!--
+    原料图标集 · 烟火小作坊（剪影版 · 备份）
+    用法一：浏览器直接打开 = 图标图集预览
+    用法二：当 sprite 复用 —— <svg class="ico" viewBox="0 0 32 32"><use href="原料图标集.svg#ic-saltpeter"/></svg>
+    统一约定：viewBox 32×32；描边统一 #241407 / 1.7；填充统一竖向渐变（高光 → 本色 → 暗部）；
+             每个图标收在 4~28 的方框内，一眼能认出剪影。
+  -->
+
+  <defs>
+    <linearGradient id="g-saltpeter" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#f8f0dc"/><stop offset="1" stop-color="#cbb894"/></linearGradient>
+    <linearGradient id="g-sulfur" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#ffefbe"/><stop offset=".48" stop-color="#ffd166"/><stop offset="1" stop-color="#d19b1f"/></linearGradient>
+    <linearGradient id="g-charcoal" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#7d6b57"/><stop offset=".48" stop-color="#4a3d2f"/><stop offset="1" stop-color="#251d14"/></linearGradient>
+    <linearGradient id="g-strontium" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#ffa8b0"/><stop offset=".48" stop-color="#ff5d6c"/><stop offset="1" stop-color="#b8283a"/></linearGradient>
+    <linearGradient id="g-barium" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#a8f2c6"/><stop offset=".48" stop-color="#51d88a"/><stop offset="1" stop-color="#229455"/></linearGradient>
+    <linearGradient id="g-copper" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#b3eafc"/><stop offset=".48" stop-color="#4cc9f0"/><stop offset="1" stop-color="#1a86b4"/></linearGradient>
+    <linearGradient id="g-sodium" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#fff19a"/><stop offset=".48" stop-color="#ffd60a"/><stop offset="1" stop-color="#bd9a00"/></linearGradient>
+    <linearGradient id="g-aluminum" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".48" stop-color="#e6ecf5"/><stop offset="1" stop-color="#9daabd"/></linearGradient>
+    <linearGradient id="g-moonpetal" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#f4f9ff"/><stop offset=".48" stop-color="#cfe3ff"/><stop offset="1" stop-color="#8aa9d6"/></linearGradient>
+    <linearGradient id="g-dragonscale" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#ffe0a3"/><stop offset=".48" stop-color="#ffb703"/><stop offset="1" stop-color="#c17f00"/></linearGradient>
+    <linearGradient id="g-phoenix" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#ffc985"/><stop offset=".48" stop-color="#ff7b00"/><stop offset="1" stop-color="#bd4e00"/></linearGradient>
+    <linearGradient id="g-unicorn" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#f7e8ff"/><stop offset=".48" stop-color="#e0aaff"/><stop offset="1" stop-color="#9f63d3"/></linearGradient>
+    <linearGradient id="g-stardust" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#fffce8"/><stop offset=".48" stop-color="#fff1a8"/><stop offset="1" stop-color="#cbb45c"/></linearGradient>
+    <linearGradient id="g-fairytear" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#dcccff"/><stop offset=".48" stop-color="#a78bfa"/><stop offset="1" stop-color="#6a49c9"/></linearGradient>
+    <linearGradient id="g-thunderbird" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#e0cdff"/><stop offset=".48" stop-color="#b388ff"/><stop offset="1" stop-color="#7647d0"/></linearGradient>
+    <linearGradient id="g-shadowcat" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#cbd3e0"/><stop offset=".48" stop-color="#8d99ae"/><stop offset="1" stop-color="#525c6e"/></linearGradient>
+
+    <!-- 1 硝酸钾：结晶簇（主晶 + 左右侧晶） -->
+    <symbol id="ic-saltpeter" viewBox="0 0 32 32">
+      <path d="M8.6 15 11.6 17.4 11.6 23 8.6 25.2 5.6 23 5.6 17.4Z" fill="url(#g-saltpeter)" stroke="#241407" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M20.4 17.4 23.4 15 26.4 17.4 26.4 23 23.4 25.2 20.4 23Z" fill="url(#g-saltpeter)" stroke="#241407" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M16 4.6 20.6 8.6 20.6 19.4 16 23.4 11.4 19.4 11.4 8.6Z" fill="url(#g-saltpeter)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M11.4 8.6 16 12.2 20.6 8.6M16 12.2V23.4" fill="none" stroke="#241407" stroke-width="1.3" stroke-linejoin="round" opacity=".7"/>
+      <path d="M13.4 11.2V17.8" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".65"/>
+    </symbol>
+
+    <!-- 2 硫磺：硫磺块（棱角分明，区别于炭块） -->
+    <symbol id="ic-sulfur" viewBox="0 0 32 32">
+      <path d="M9.6 20.8 11.8 11.6 19.6 8.4 25.6 13.2 25.4 20.4 19 25.6 12.6 24.8Z" fill="url(#g-sulfur)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M11.8 11.6 18 16.6 19 25.6M18 16.6 25.6 13.2M18 16.6 9.6 20.8" fill="none" stroke="#241407" stroke-width="1.25" stroke-linejoin="round" opacity=".6"/>
+      <path d="M13.6 13.6 15.4 20.6" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".5"/>
+    </symbol>
+
+    <!-- 3 木炭粉：炭块（本色为深炭，暖色火花点缀） -->
+    <symbol id="ic-charcoal" viewBox="0 0 32 32">
+      <path d="M9.6 20.4 12.6 11.6 20.6 9 25.8 15.4 23.4 22.6 15.6 25.6Z" fill="url(#g-charcoal)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M12.6 11.6 17.4 15.6 23.4 22.6" fill="none" stroke="#241407" stroke-width="1.3" stroke-linejoin="round" opacity=".55"/>
+      <path d="M14.4 18.6 19.6 13.4" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".22"/>
+      <circle cx="27" cy="8.2" r="1.5" fill="#f4a261"/>
+      <circle cx="23" cy="5" r="1.1" fill="#ffd166"/>
+      <circle cx="27.8" cy="13.2" r=".9" fill="#ffd166" opacity=".8"/>
+    </symbol>
+
+    <!-- 4 锶盐：红色宝石 -->
+    <symbol id="ic-strontium" viewBox="0 0 32 32">
+      <path d="M16 4.4 23.8 11.8 16 27.4 8.2 11.8Z" fill="url(#g-strontium)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M8.2 11.8h15.6M16 4.4 13.4 11.8 16 27.4M16 4.4l2.6 7.4L16 27.4" fill="none" stroke="#241407" stroke-width="1.25" stroke-linejoin="round" opacity=".6"/>
+      <path d="M12 13.6 14.6 21.4" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".45"/>
+    </symbol>
+
+    <!-- 5 钡盐：四叶草（单条路径画四瓣，避免草心出现交叉描边） -->
+    <symbol id="ic-barium" viewBox="0 0 32 32">
+      <path d="M15.4 20.8Q15.4 24.6 12.8 27.2" fill="none" stroke="#241407" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M16 11.6A4.4 4.4 0 1 1 20.4 16 4.4 4.4 0 1 1 16 20.4 4.4 4.4 0 1 1 11.6 16 4.4 4.4 0 1 1 16 11.6Z" fill="url(#g-barium)" stroke="#241407" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="16" cy="16" r="1.4" fill="#e9fff3" opacity=".75"/>
+    </symbol>
+
+    <!-- 6 铜盐：溶液滴 -->
+    <symbol id="ic-copper" viewBox="0 0 32 32">
+      <path d="M16 4C20.6 10.6 24.6 14.4 24.6 19A8.6 8.6 0 0 1 7.4 19C7.4 14.4 11.4 10.6 16 4Z" fill="url(#g-copper)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M12.2 18.4a3.6 3.6 0 0 0 3.2 4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" opacity=".55"/>
+    </symbol>
+
+    <!-- 7 钠盐：金黄（亮得盖色） -->
+    <symbol id="ic-sodium" viewBox="0 0 32 32">
+      <path d="M16 7.8C21.4 7.8 26 10.7 26 16S21.4 24.2 16 24.2 6 21.3 6 16 10.6 7.8 16 7.8Z" fill="url(#g-sodium)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M9.2 13.2q-1.7-1-2.8-2.6M22.8 13.2q1.7-1 2.8-2.6" fill="none" stroke="#ffd60a" stroke-width="1.4" stroke-linecap="round" opacity=".9"/>
+      <path d="M16.2 8.2c1.4-1.9 3.9-2.7 5.7-1.9-.9 2-3.4 3.1-5.4 2.7Z" fill="#51d88a" stroke="#241407" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M12.4 20.2q-.8-2.8 1.2-4.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" opacity=".5"/>
+    </symbol>
+
+    <!-- 8 铝粉：银白星芒（整体 0.88 缩放，让视觉体量和其它图标一致） -->
+    <symbol id="ic-aluminum" viewBox="0 0 32 32">
+      <g transform="matrix(.88 0 0 .88 1.92 1.92)">
+      <path d="M15 4.6C16.4 11.6 19.4 14.6 26.4 16 19.4 17.4 16.4 20.4 15 27.4 13.6 20.4 10.6 17.4 3.6 16 10.6 14.6 13.6 11.6 15 4.6Z" fill="url(#g-aluminum)" stroke="#241407" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M25.6 4.4c.4 1.8 1.2 2.6 3 3-1.8.4-2.6 1.2-3 3-.4-1.8-1.2-2.6-3-3 1.8-.4 2.6-1.2 3-3Z" fill="url(#g-aluminum)" stroke="#241407" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M11.6 10.8c.4 1 1.8 2.4 3 2.8" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".75"/>
+      </g>
+    </symbol>
+
+    <!-- 9 月光花瓣：月牙 + 花瓣 -->
+    <symbol id="ic-moonpetal" viewBox="0 0 32 32">
+      <path d="M20.8 19.2c4.8 1 6.4 5.2 4.2 8-3.2-.6-5.2-4.2-4.2-8Z" fill="url(#g-moonpetal)" stroke="#241407" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M17.6 5A11.4 11.4 0 1 0 17.6 27 12.5 12.5 0 0 1 17.6 5Z" fill="url(#g-moonpetal)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M10.6 12.4c-1.6 2.6-1.2 5.8.8 8.2" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".55"/>
+    </symbol>
+
+    <!-- 10 龙鳞粉：龙鳞（同心纹路，避免和铜盐的水滴撞形） -->
+    <symbol id="ic-dragonscale" viewBox="0 0 32 32">
+      <path d="M16 4.6c9.6 4.6 13.6 12.8 0 22.4C2.4 17.4 6.4 9.2 16 4.6Z" fill="url(#g-dragonscale)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M8.8 15.4c3.6 4.4 10.8 4.4 14.4 0M12 20.4c2.4 2.2 5.6 2.2 8 0" fill="none" stroke="#241407" stroke-width="1.3" stroke-linecap="round" opacity=".62"/>
+      <path d="M12.8 8.6c-1.6 2-2.4 4.2-2.6 6.2" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+    </symbol>
+
+    <!-- 11 凤羽灰：火苗 -->
+    <symbol id="ic-phoenix" viewBox="0 0 32 32">
+      <path d="M16 3.8c3.6 5.6 9 8.8 9 14.6a9 9 0 0 1-18 0c0-5 4-6.8 5.2-12 1.6 3.2 2.8 4.2 3.4 4.8-.4-3.2-.2-5.8.4-7.4Z" fill="url(#g-phoenix)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M16 14.4c1.8 2.8 4 4.6 4 7a4 4 0 0 1-8 0c0-2.4 2.2-4.2 4-7Z" fill="#ffd9a8" opacity=".8"/>
+    </symbol>
+
+    <!-- 12 独角兽鬃毛：斜置螺旋角 -->
+    <symbol id="ic-unicorn" viewBox="0 0 32 32">
+      <path d="M24.4 4.4 15.6 27.2Q9.4 26.4 6.4 20.8Z" fill="url(#g-unicorn)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M11.4 16.2Q14 19.6 18 20.8M16.1 10.7Q17.8 13.3 21.5 14.5" fill="none" stroke="#241407" stroke-width="1.3" stroke-linecap="round" opacity=".7"/>
+      <path d="M9.8 21.6 19 7.8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".45"/>
+    </symbol>
+
+    <!-- 13 星尘：光环 -->
+    <symbol id="ic-stardust" viewBox="0 0 32 32">
+      <g transform="matrix(.88 0 0 .88 1.92 1.92)">
+      <ellipse cx="16" cy="17" rx="11" ry="5.4" fill="none" stroke="#241407" stroke-width="5"/>
+      <ellipse cx="16" cy="17" rx="11" ry="5.4" fill="none" stroke="url(#g-stardust)" stroke-width="3.2"/>
+      <path d="M16 2.8c.8 3.1 2.3 4.6 5.4 5.4-3.1.8-4.6 2.3-5.4 5.4-.8-3.1-2.3-4.6-5.4-5.4 3.1-.8 4.6-2.3 5.4-5.4Z" fill="url(#g-stardust)" stroke="#241407" stroke-width="1.4" stroke-linejoin="round"/>
+      <circle cx="5" cy="25.2" r="1.5" fill="url(#g-stardust)" stroke="#241407" stroke-width="1.1"/>
+      <circle cx="27.4" cy="24" r="1.2" fill="url(#g-stardust)" stroke="#241407" stroke-width="1.1"/>
+      </g>
+    </symbol>
+
+    <!-- 14 妖精之泪：彗星 -->
+    <symbol id="ic-fairytear" viewBox="0 0 32 32">
+      <g transform="matrix(.88 0 0 .88 1.92 1.92)">
+      <path d="M15.6 15.4C21.6 11.4 25.8 8.2 29.6 5.2 28.4 11.2 24.6 16 18.6 18.8 16.6 18.4 15.4 17.2 15.6 15.4Z" fill="url(#g-fairytear)" stroke="#241407" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="11.6" cy="20.4" r="6.4" fill="url(#g-fairytear)" stroke="#241407" stroke-width="1.7"/>
+      <path d="M8 19a3.8 3.8 0 0 1 2.4-3" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+      <circle cx="4.8" cy="9.6" r="1.3" fill="#dcccff" opacity=".9"/>
+      <circle cx="9.4" cy="5.6" r="1" fill="#dcccff" opacity=".7"/>
+      </g>
+    </symbol>
+
+    <!-- 15 雷鸟羽毛：闪电 -->
+    <symbol id="ic-thunderbird" viewBox="0 0 32 32">
+      <path d="M19.4 3.4 9 17.6h6.4L13.4 28.6 24 13.6h-6.6Z" fill="url(#g-thunderbird)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M12.4 15.6 17.6 8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+    </symbol>
+
+    <!-- 16 影猫皮毛：猫头剪影 -->
+    <symbol id="ic-shadowcat" viewBox="0 0 32 32">
+      <path d="M7.2 12.4 6.4 4 13.4 8.2a13 13 0 0 1 5.2 0L25.6 4l-.8 8.4c.8 1.4 1.2 3 1.2 4.6 0 6-4.6 10.2-10 10.2S6 23 6 17c0-1.6.4-3.2 1.2-4.6Z" fill="url(#g-shadowcat)" stroke="#241407" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M10.6 17.6c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Zm6.8 0c0-1.4.8-2.4 2-2.4s2 1 2 2.4c0 1.6-.8 2.6-2 2.6s-2-1-2-2.6Z" fill="#241407"/>
+      <path d="M9.6 11.6c-.9 2-1.2 4.3-.7 6.6" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".35"/>
+    </symbol>
+  </defs>
+
+  <!-- ===== 以下为图集预览层，删除后不影响 sprite 复用 ===== -->
+  <rect width="1080" height="1200" fill="#0c0e13"/>
+
+  <text x="60" y="88" font-size="40" font-weight="800" fill="#e9edf4" letter-spacing="1">原料图标集</text>
+  <text x="60" y="124" font-size="16" fill="#8b93a4">烟火小作坊 · 16 款统一风格 SVG 图标 · viewBox 32×32 · 描边 #241407 / 1.7 · 竖向渐变填充</text>
+  <line x1="60" y1="156" x2="1020" y2="156" stroke="#ffffff" stroke-opacity=".08"/>
+
+  <!-- 1 硝酸钾 -->
+  <g>
+    <rect x="60" y="200" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="74" y="226" font-size="11" fill="#5f6779">01</text>
+    <use xlink:href="#ic-saltpeter" href="#ic-saltpeter" x="110" y="224" width="110" height="110"/>
+    <text x="165" y="368" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">硝酸钾</text>
+    <text x="165" y="392" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-saltpeter</text>
+  </g>
+  <!-- 2 硫磺 -->
+  <g>
+    <rect x="310" y="200" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="324" y="226" font-size="11" fill="#5f6779">02</text>
+    <use xlink:href="#ic-sulfur" href="#ic-sulfur" x="360" y="224" width="110" height="110"/>
+    <text x="415" y="368" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">硫磺</text>
+    <text x="415" y="392" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-sulfur</text>
+  </g>
+  <!-- 3 木炭粉 -->
+  <g>
+    <rect x="560" y="200" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="574" y="226" font-size="11" fill="#5f6779">03</text>
+    <use xlink:href="#ic-charcoal" href="#ic-charcoal" x="610" y="224" width="110" height="110"/>
+    <text x="665" y="368" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">木炭粉</text>
+    <text x="665" y="392" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-charcoal</text>
+  </g>
+  <!-- 4 锶盐 -->
+  <g>
+    <rect x="810" y="200" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="824" y="226" font-size="11" fill="#5f6779">04</text>
+    <use xlink:href="#ic-strontium" href="#ic-strontium" x="860" y="224" width="110" height="110"/>
+    <text x="915" y="368" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">锶盐</text>
+    <text x="915" y="392" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-strontium</text>
+  </g>
+
+  <!-- 5 钡盐 -->
+  <g>
+    <rect x="60" y="440" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="74" y="466" font-size="11" fill="#5f6779">05</text>
+    <use xlink:href="#ic-barium" href="#ic-barium" x="110" y="464" width="110" height="110"/>
+    <text x="165" y="608" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">钡盐</text>
+    <text x="165" y="632" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-barium</text>
+  </g>
+  <!-- 6 铜盐 -->
+  <g>
+    <rect x="310" y="440" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="324" y="466" font-size="11" fill="#5f6779">06</text>
+    <use xlink:href="#ic-copper" href="#ic-copper" x="360" y="464" width="110" height="110"/>
+    <text x="415" y="608" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">铜盐</text>
+    <text x="415" y="632" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-copper</text>
+  </g>
+  <!-- 7 钠盐 -->
+  <g>
+    <rect x="560" y="440" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="574" y="466" font-size="11" fill="#5f6779">07</text>
+    <use xlink:href="#ic-sodium" href="#ic-sodium" x="610" y="464" width="110" height="110"/>
+    <text x="665" y="608" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">钠盐</text>
+    <text x="665" y="632" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-sodium</text>
+  </g>
+  <!-- 8 铝粉 -->
+  <g>
+    <rect x="810" y="440" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="824" y="466" font-size="11" fill="#5f6779">08</text>
+    <use xlink:href="#ic-aluminum" href="#ic-aluminum" x="860" y="464" width="110" height="110"/>
+    <text x="915" y="608" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">铝粉</text>
+    <text x="915" y="632" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-aluminum</text>
+  </g>
+
+  <!-- 9 月光花瓣 -->
+  <g>
+    <rect x="60" y="680" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="74" y="706" font-size="11" fill="#5f6779">09</text>
+    <use xlink:href="#ic-moonpetal" href="#ic-moonpetal" x="110" y="704" width="110" height="110"/>
+    <text x="165" y="848" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">月光花瓣</text>
+    <text x="165" y="872" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-moonpetal</text>
+  </g>
+  <!-- 10 龙鳞粉 -->
+  <g>
+    <rect x="310" y="680" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="324" y="706" font-size="11" fill="#5f6779">10</text>
+    <use xlink:href="#ic-dragonscale" href="#ic-dragonscale" x="360" y="704" width="110" height="110"/>
+    <text x="415" y="848" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">龙鳞粉</text>
+    <text x="415" y="872" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-dragonscale</text>
+  </g>
+  <!-- 11 凤羽灰 -->
+  <g>
+    <rect x="560" y="680" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="574" y="706" font-size="11" fill="#5f6779">11</text>
+    <use xlink:href="#ic-phoenix" href="#ic-phoenix" x="610" y="704" width="110" height="110"/>
+    <text x="665" y="848" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">凤羽灰</text>
+    <text x="665" y="872" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-phoenix</text>
+  </g>
+  <!-- 12 独角兽鬃毛 -->
+  <g>
+    <rect x="810" y="680" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="824" y="706" font-size="11" fill="#5f6779">12</text>
+    <use xlink:href="#ic-unicorn" href="#ic-unicorn" x="860" y="704" width="110" height="110"/>
+    <text x="915" y="848" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">独角兽鬃毛</text>
+    <text x="915" y="872" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-unicorn</text>
+  </g>
+
+  <!-- 13 星尘 -->
+  <g>
+    <rect x="60" y="920" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="74" y="946" font-size="11" fill="#5f6779">13</text>
+    <use xlink:href="#ic-stardust" href="#ic-stardust" x="110" y="944" width="110" height="110"/>
+    <text x="165" y="1088" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">星尘</text>
+    <text x="165" y="1112" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-stardust</text>
+  </g>
+  <!-- 14 妖精之泪 -->
+  <g>
+    <rect x="310" y="920" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="324" y="946" font-size="11" fill="#5f6779">14</text>
+    <use xlink:href="#ic-fairytear" href="#ic-fairytear" x="360" y="944" width="110" height="110"/>
+    <text x="415" y="1088" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">妖精之泪</text>
+    <text x="415" y="1112" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-fairytear</text>
+  </g>
+  <!-- 15 雷鸟羽毛 -->
+  <g>
+    <rect x="560" y="920" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="574" y="946" font-size="11" fill="#5f6779">15</text>
+    <use xlink:href="#ic-thunderbird" href="#ic-thunderbird" x="610" y="944" width="110" height="110"/>
+    <text x="665" y="1088" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">雷鸟羽毛</text>
+    <text x="665" y="1112" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-thunderbird</text>
+  </g>
+  <!-- 16 影猫皮毛 -->
+  <g>
+    <rect x="810" y="920" width="210" height="210" rx="18" fill="#151922" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="824" y="946" font-size="11" fill="#5f6779">16</text>
+    <use xlink:href="#ic-shadowcat" href="#ic-shadowcat" x="860" y="944" width="110" height="110"/>
+    <text x="915" y="1088" font-size="19" font-weight="600" fill="#e9edf4" text-anchor="middle">影猫皮毛</text>
+    <text x="915" y="1112" font-size="12" fill="#5f6779" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">ic-shadowcat</text>
+  </g>
+
+  <text x="60" y="1172" font-size="13" fill="#5f6779">复用方式：&lt;svg class="ico" viewBox="0 0 32 32"&gt;&lt;use href="原料图标集.svg#ic-&lt;原料id&gt;"/&gt;&lt;/svg&gt;</text>
+</svg>
