@@ -213,37 +213,46 @@
     display:grid;gap:9px;
     grid-template-columns:repeat(auto-fill,minmax(138px,1fr));
   }
-  /* 原料卡：紧凑三行（图标+名称 / 说明 / 标签），高度约为原来的 2/3 */
+  /* 原料卡：图标在上居中放大，名称/说明/标签在下；尺寸与原来相仿 */
   .ing-card{
     position:relative;
     display:grid;
-    grid-template-columns:auto minmax(0,1fr);
-    grid-template-areas:"emoji name" "desc desc" "tags tags";
-    align-items:center;column-gap:4px;row-gap:3px;
+    grid-template-columns:1fr;
+    grid-template-areas:"emoji" "name" "desc" "tags";
+    justify-items:center;align-content:start;
+    row-gap:4px;
     background:var(--glass-bg);
     border:1px solid var(--glass-line);
     border-radius:12px;
     box-shadow:var(--hl);
-    padding:8px 9px 7px;
-    text-align:left;color:var(--ink);
+    padding:11px 8px 9px;
+    text-align:center;color:var(--ink);
     transition:transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .2s ease;
+  }
+  /* 分类配色：基础药(琥珀) / 着色剂(青) / 花型剂(紫) —— 顶部色条 + 分类标签同色，做 UI 区分 */
+  .ing-card.cat-base{--cat:#ffce5c}
+  .ing-card.cat-color{--cat:#5ad1ff}
+  .ing-card.cat-shape{--cat:#c08bff}
+  .ing-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    border-radius:12px 12px 0 0;background:var(--cat);opacity:.92;
   }
   .ing-card:hover{transform:translateY(-2px);border-color:var(--glass-line-strong)}
   .ing-card:active{transform:scale(.97)}
   /* 原料图标（统一风格 SVG，见文末「原料图标集」）
      注意：<svg> 没写宽高会回落到 300×150，所以 .ico 必须自带尺寸 */
   .ico{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;flex:none}
-  .ing-card .ing-ico{grid-area:emoji;width:27px;height:27px}
+  .ing-card .ing-ico{grid-area:emoji;width:44px;height:44px}
   .ing-card .ing-name{
     grid-area:name;font-weight:700;font-size:13px;line-height:1.25;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
   }
   .ing-card .ing-desc{
     grid-area:desc;font-size:10.5px;color:var(--ink-dim);line-height:1.35;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
   .ing-card .ing-tags{
-    grid-area:tags;display:flex;gap:4px;flex-wrap:nowrap;
+    grid-area:tags;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;
     overflow:hidden;margin-top:1px;
   }
   .tag{
@@ -253,6 +262,10 @@
   .tag.real{background:rgba(81,216,138,.15);color:#a9eec4}
   .tag.magic{background:rgba(255,209,102,.14);color:#ffe4a1}
   .tag.type{background:rgba(140,150,255,.16);color:#c6ccff}
+  /* 分类标签按分类配色，强化区分 */
+  .ing-card.cat-base .tag.type{background:rgba(255,206,92,.18);color:#ffe6a6}
+  .ing-card.cat-color .tag.type{background:rgba(90,209,255,.16);color:#cdeeff}
+  .ing-card.cat-shape .tag.type{background:rgba(192,139,255,.18);color:#e3d2ff}
   .ing-card.selected{
     border-color:rgba(255,209,102,.65);
     background:linear-gradient(150deg, rgba(255,209,102,.16), rgba(255,209,102,.04));
@@ -427,7 +440,7 @@
   .pack-stage h3{margin:0;font-size:15px;color:var(--ink-dim)}
   /* 烟花筒：SVG 精绘（细长比例 + 纸质光影 + 金箍 + 开口内壁） */
   .tube-wrap{
-    position:relative;width:96px;height:245px;margin:4px 0 10px;
+    position:relative;width:76px;height:194px;margin:4px 0 8px;
   }
   .tube{position:absolute;inset:0}
   .tube svg{width:100%;height:100%;display:block;overflow:visible}
@@ -479,7 +492,7 @@
   }
   .launch-tube{
     position:absolute;left:50%;bottom:calc(11vh + 14px);transform:translateX(-50%);
-    width:100px;height:254px;z-index:2;
+    width:80px;height:204px;z-index:2;
     transform-origin:50% 100%;
     transition:transform .3s ease;
   }
@@ -499,6 +512,20 @@
     display:flex;gap:12px;align-items:center;
     transition:opacity .25s ease;
   }
+  /* 沉浸连放：结果卡收起后浮出的「查看本次效果」入口（右下角，避免与居中控制条重叠） */
+  .peek-btn{
+    position:fixed;right:14px;bottom:calc(20px + env(safe-area-inset-bottom));
+    z-index:5;display:none;
+  }
+  /* 结果卡右上角的关闭叉：每张卡（含首次）都显示，点它收起卡片回到放烟花界面 */
+  .card-close{
+    position:absolute;top:8px;right:10px;z-index:3;
+    width:30px;height:30px;padding:0;line-height:28px;text-align:center;
+    font-size:22px;font-weight:700;color:#fff;
+    background:rgba(0,0,0,.28);border:none;border-radius:50%;cursor:pointer;
+    transition:background .15s ease;
+  }
+  .card-close:hover{background:rgba(0,0,0,.5)}
   #step-launch.firing .launch-controls{opacity:0;pointer-events:none}
   /* 结果卡浮层：放完后从底部浮出，不遮挡夜空主体
      注意 overflow 必须保持 visible —— 否则 top:-14px 的 ribbon 会被滚动容器按 padding box 剪掉一半；
@@ -529,7 +556,7 @@
   body.immersive #app{max-width:none;padding:0}
   body.immersive #step-launch{position:fixed;inset:0;border-radius:0;z-index:5;min-height:0}
   @media (max-height:560px){
-    .launch-tube{width:78px;height:198px;bottom:calc(6vh + 60px)}
+    .launch-tube{width:62px;height:158px;bottom:calc(6vh + 60px)}
     #step-launch .card{padding:16px}
     .launch-controls{bottom:max(10px,env(safe-area-inset-bottom))}
     .launch-controls .btn{padding:9px 16px;font-size:13px}
@@ -684,9 +711,9 @@
     .ing-card{
       display:grid;grid-template-columns:1fr;justify-items:center;
       column-gap:0;row-gap:3px;
-      padding:8px 6px 7px;border-radius:11px;
+      padding:9px 6px 8px;border-radius:11px;
     }
-    .ing-card .ing-ico{width:25px;height:25px}
+    .ing-card .ing-ico{width:38px;height:38px}
     .ing-card .ing-name{font-size:12px;text-align:center;padding-right:0}
     .ing-card .ing-desc{font-size:10px;line-height:1.35;text-align:center;-webkit-line-clamp:2}
     .ing-card .ing-tags{justify-content:center;gap:3px}
@@ -728,14 +755,14 @@
     /* 装填：筒更小，消除大片空白 */
     .pack-stage{padding:12px 12px 10px;gap:6px}
     .pack-stage h3{font-size:13.5px}
-    .tube-wrap{width:64px;height:163px;margin:2px 0 8px}
+    .tube-wrap{width:52px;height:133px;margin:2px 0 6px}
     .pack-options{gap:9px}
     .pack-option{padding:10px 12px;gap:10px}
     .pack-option .po-emoji{font-size:20px}
     .pack-option .po-title{font-size:13px}
     .pack-option .po-desc{font-size:11.5px}
     /* 点燃 */
-    .launch-tube{width:88px;height:224px;bottom:calc(10vh + 12px)}
+    .launch-tube{width:70px;height:178px;bottom:calc(10vh + 12px)}
     .launch-hint{padding:0 18px;font-size:12px;line-height:1.6}
     .launch-controls{gap:10px;width:calc(100% - 24px);justify-content:center;align-items:stretch}
     .launch-controls .btn{flex:1 1 0;min-width:0;padding:12px 10px;font-size:14px;display:flex;justify-content:center}
@@ -761,7 +788,7 @@
     .big-bowl{height:160px}
     .big-bowl .mix-zone{top:42px}
     .bowl-visual{height:92px}
-    .tube-wrap{width:66px;height:168px}
+    .tube-wrap{width:52px;height:133px}
   }
 
   /* 结果卡：矮视口（横屏手机 / 小窗口）逐级压缩，尽量一屏看全、不出现滚动 */
@@ -1260,8 +1287,11 @@
         <button type="button" class="btn" id="btnLaunch" data-page-node-id="RwjdQuDDl0wL5kG70y7BMh">🔥 点燃引线</button>
         <button type="button" class="btn ghost" id="btnBack3" data-page-node-id="4s1dLsFRgkUns8vOEvDrmi">↩ 重新装填</button>
       </div>
+      <!-- 沉浸连放时：结果卡收起后浮出的「查看本次效果」入口 -->
+      <button type="button" class="btn ghost peek-btn" id="btnPeek" hidden>👀 查看本次效果</button>
       <!-- 燃放报告：放完后从底部浮出 -->
       <div class="card" id="resultCard" hidden aria-live="polite" data-page-node-id="e9HXXhFW21MP3Yp5CtG7HT">
+        <button type="button" class="card-close" id="btnClose" aria-label="关闭本次效果">×</button>
         <div class="ribbon" id="rcRibbon" data-page-node-id="MvuFTuLmvDQpTfYvQ8RCpJ">今夜绽放</div>
         <!-- 内容区独立滚动：卡片本身 overflow:visible，顶部的 ribbon 才不会被剪掉 -->
         <div class="card-body">
@@ -1289,7 +1319,7 @@
   <div class="dlg-inner" data-page-node-id="xaZKCHtqBgN6EVpdD1I4MW">
     <button type="button" class="dlg-close" id="journalClose" aria-label="关闭" data-page-node-id="qQfi42YzH47nC6T6p56Ypk">✕</button>
     <h2 id="journalTitle" data-page-node-id="Gx5FZzLGunBjzSdJJ8AUe8">📖 炼金手札</h2>
-    <p class="dlg-sub" data-page-node-id="nDP1jyU3Rimv8KgLsO4qsB">真实原料走的是“焰色反应”：金属盐在高温下发出特征色的光；魔法原料嘛……就当是作坊的祖传秘方吧。</p>
+    <p class="dlg-sub" data-page-node-id="nDP1jyU3Rimv8KgLsO4qsB">普通原料走的是“焰色反应”：金属盐在高温下发出特征色的光；魔法原料嘛……就当是作坊的祖传秘方吧。</p>
     <div class="journal-grid" id="journalGrid" data-page-node-id="QQcNF5hCdMZRcez3fwL2Ui"></div>
     <p class="journal-note" data-page-node-id="khb4fan1fiYDBthcMdYOjb">
       真实烟花核心步骤：① <b data-page-node-id="8fHq6Yo11doPTQyDur8YKo">配药</b> —— 按比例称量氧化剂、燃料、金属盐与粘合剂；② <b data-page-node-id="h7QZSLWuRYG3DHA2T8Zpwc">造粒</b> —— 混合揉团、压制成“星体”并干燥；③ <b data-page-node-id="PFeEju1Is5fQwakIjKIrvf">装填</b> —— 把星体按图案排入纸壳弹体，装发射药、插引线；④ <b data-page-node-id="Bf7vJVbhfEtpN3CDyXXjsy">点燃</b> —— 引线点燃发射药升空，开爆药在预定高度炸开，星体燃烧成图案。<br data-page-node-id="f27QK7ZhkT8EdGGRAchHoz">
@@ -2098,8 +2128,15 @@
   var BY_ID = {};
   INGREDIENTS.forEach(function(ing){ BY_ID[ing.id] = ing; });
 
-  var TYPE_LABEL = {base:"基础药", color:"着色剂", spark:"闪光剂", shape:"花型剂"};
+  var TYPE_LABEL = {base:"基础药", color:"着色剂", spark:"着色剂", shape:"花型剂"};
   var TYPE_CLASS = {base:"real", color:"real", spark:"real", shape:"magic"};
+  /* 分类归并：基础药 / 着色剂(着色+闪光) / 花型剂，共 3 类，用于 UI 配色区分；
+     注意 spark 在配方解析里仍用于闪光效果，这里仅做视觉归并，不改数据 type */
+  function catOf(ing){
+    if(ing.type==="base") return "base";
+    if(ing.type==="shape") return "shape";
+    return "color"; // color 与 spark 统一归入「着色剂」
+  }
 
   /* ============ 原料图标 ============
      图标本体是文档里的 <symbol id="ic-<原料id>">（见 HTML 的「原料图标集」），
@@ -2125,6 +2162,7 @@
     packed: false,
     recipe: null,          // 解析后的配方
     launched: false,
+    continuous: false,     // 沉浸连放模式：触发后结果卡不再弹出
     soundOn: true
   };
   var mixGeom = {center: 0, half: 120};
@@ -2139,6 +2177,12 @@
   var packStage = $("packStage"), packNote = $("packNote");
   var launchStage = $("step-launch"), launchHint = $("launchHint");
   var resultCard = $("resultCard");
+  var peekBtn = $("btnPeek");
+  // 沉浸连放时，结果卡收起后显示「查看本次效果」浮钮；点开结果卡时隐藏
+  function updatePeek(){
+    if(!peekBtn) return;
+    peekBtn.style.display = (state.continuous && resultCard.hidden) ? "flex" : "none";
+  }
   var stepsEls = Array.prototype.slice.call(document.querySelectorAll(".steps li[data-step]"));
   var scenes = {1:$("step-pick"), 2:$("step-mix"), 3:$("step-pack"), 4:$("step-launch")};
 
@@ -2617,6 +2661,13 @@
     fxRunning = false;
     fx.style.display = "none";
     launchStage.classList.remove("firing");
+    if(state.continuous){
+      // 沉浸连放：不再弹结果卡，回到可再次点燃状态，连续绽放不打断
+      state.launched = false;
+      launchHint.textContent = "🔁 沉浸连放中：继续点「点燃引线」连放不歇；想换配方点顶部步骤条回到前面。";
+      updatePeek();
+      return;
+    }
     // 展示结果卡
     showResult();
   }
@@ -2829,7 +2880,7 @@
     INGREDIENTS.forEach(function(ing){
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "ing-card" + (state.selected.indexOf(ing.id)>=0 ? " selected" : "");
+      btn.className = "ing-card cat-" + catOf(ing) + (state.selected.indexOf(ing.id)>=0 ? " selected" : "");
       btn.setAttribute("role", "option");
       btn.setAttribute("aria-selected", String(state.selected.indexOf(ing.id)>=0));
       btn.dataset.id = ing.id;
@@ -2841,7 +2892,7 @@
         '<span class="ing-name">'+ing.name+'</span>' +
         '<span class="ing-desc">'+ing.desc+'</span>' +
         '<span class="ing-tags">' +
-          '<span class="tag '+(ing.real?"real":"magic")+'">'+(ing.real?"真实原料":"魔法原料")+'</span>' +
+          '<span class="tag '+(ing.real?"real":"magic")+'">'+(ing.real?"普通原料":"魔法原料")+'</span>' +
           '<span class="tag type">'+TYPE_LABEL[ing.type]+'</span>' +
         '</span>';
       btn.addEventListener("click", function(){
@@ -3041,8 +3092,10 @@
   /* ============ UI：点燃 ============ */
   function enterLaunch(){
     state.launched = false;
+    state.continuous = false;   // 重新进入点燃步骤时退出沉浸连放，恢复正常结果卡
     resultCard.hidden = true;
     launchStage.classList.remove("firing");
+    if(peekBtn) peekBtn.style.display = "none";
     var bases = state.selected.some(function(id){ return BY_ID[id].type==="base"; });
     var hint = "";
     if(!bases){ hint = "⚠️ 配方缺少基础药，预计会哑火（冒股青烟）。"; }
@@ -3054,6 +3107,7 @@
   function launch(){
     if(state.launched) return;
     state.launched = true;
+    if(peekBtn) peekBtn.style.display = "none";   // 燃放中隐藏浮钮，放完再由 endFx 决定
     ensureAudio();
     haptic(18);
     var r = parseRecipe();
@@ -3092,6 +3146,7 @@
     var r = state.recipe;
     if(!r) return;
     resultCard.hidden = false;
+    if(peekBtn) peekBtn.style.display = "none";
     resultCard.classList.toggle("fail", r.dud);
     // 内层滚动位置复位，避免上次滚到底后这次的头部信息看不到
     var rcBody = resultCard.querySelector(".card-body");
@@ -3121,29 +3176,6 @@
     $("rcIngredients").innerHTML = ingSegs.join("");
     // 滚动到结果卡
     try{ resultCard.scrollIntoView({behavior: reducedMotion?"auto":"smooth", block:"nearest"}); }catch(e){}
-  }
-  function fireAgain(){
-    if(!state.recipe) return;
-    state.launched = true;
-    ensureAudio();
-    var tubeEl = launchStage.querySelector(".launch-tube");
-    var rect = tubeEl.getBoundingClientRect();
-    var originX = rect.left + rect.width/2;
-    var originY = rect.top + rect.height * TUBE_MOUTH_RATIO;
-    launchStage.classList.add("firing");
-    launchHint.textContent = "同一配方，再放一次——每一次效果都有细微不同";
-    // 重新解析，引入随机差异（同配方不同效果）
-    var r = parseRecipe();
-    state.recipe = r;
-    resultCard.hidden = true;
-    startFx();
-    if(r.dud){
-      playFizz();
-      delayed.push({t:fxT+0.9, fn:function(){ spawnDudSmoke(originX, originY); }});
-    } else {
-      shells.push(new Shell(originX, originY, originY - window.innerHeight*0.3, r.colors[0]||"#fff", r.params));
-      playWhistle(1.0);
-    }
   }
 
   /* ============ 步骤导航 ============ */
@@ -3175,7 +3207,7 @@
       item.className = "journal-item";
       item.innerHTML =
         '<div class="j-head">'+ingIcon(ing.id, "j-ico")+' '+ing.name+'</div>' +
-        '<span class="tag j-type '+(ing.real?"real":"magic")+'">'+(ing.real?"真实原料":"魔法原料")+' · '+TYPE_LABEL[ing.type]+'</span>' +
+        '<span class="tag j-type '+(ing.real?"real":"magic")+'">'+(ing.real?"普通原料":"魔法原料")+' · '+TYPE_LABEL[ing.type]+'</span>' +
         '<div class="j-fact">'+ing.fact+'</div>';
       grid.appendChild(item);
     });
@@ -3212,7 +3244,25 @@
     $("btnBack3").addEventListener("click", function(){ goStep(3); });
     // 点燃
     $("btnLaunch").addEventListener("click", launch);
-    $("btnAgain").addEventListener("click", fireAgain);
+    $("btnAgain").addEventListener("click", function(){
+      // 进入沉浸连放模式：回到点燃引信页面，之后再次点燃不再弹结果卡
+      state.continuous = true;
+      state.launched = false;
+      resultCard.hidden = true;
+      launchStage.classList.remove("firing");
+      launchHint.textContent = "🔁 沉浸连放模式：点「点燃引线」连续绽放，不再打断。";
+      updatePeek();
+    });
+    $("btnClose").addEventListener("click", function(){
+      // 关闭结果卡：收起弹窗，回到放烟花界面（可再次点燃）
+      resultCard.hidden = true;
+      state.launched = false;
+      updatePeek();
+    });
+    $("btnPeek").addEventListener("click", function(){
+      // 查看本次效果：在连放中临时弹出结果卡
+      showResult();
+    });
     $("btnNew").addEventListener("click", function(){
       state.selected = [];
       state.mix = 0;
