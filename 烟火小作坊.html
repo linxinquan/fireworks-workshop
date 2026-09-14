@@ -370,10 +370,19 @@
     min-height:330px;
     display:flex;align-items:center;justify-content:center;
   }
-  .mix-stage .big-bowl{
-    position:relative;width:min(300px,70vw);height:200px;
+  /* 碗与进度条共用一个定宽列容器：
+     宽度只由这一个容器决定，因此两者必然同宽、同轴；
+     容器整体在搅拌区居中，搅拌棒挂进碗里跟随碗定位，不会错位 */
+  .mix-col{
+    width:min(300px,100%);
+    display:flex;flex-direction:column;align-items:center;
   }
-  .big-bowl > svg{width:100%;height:100%;display:block}
+  .mix-stage .big-bowl{
+    position:relative;width:100%;height:200px;
+  }
+  /* 只作用于碗本体那张 SVG：不能用 .big-bowl > svg ——
+     搅拌棒 .spoon 也是 .big-bowl 的直接子元素，会被一起撑成整碗大小而错位 */
+  .big-bowl > svg.bowl-svg{width:100%;height:100%;display:block}
   .big-bowl .mix-zone{
     position:absolute;left:50%;top:52px;transform:translateX(-50%);
     width:120px;height:74px;z-index:1;
@@ -382,6 +391,8 @@
     filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));
     will-change:transform;
   }
+  /* 搅拌棒相对碗定位（不是相对 stage）：碗在列容器里的位置变化时它自动跟随，
+     水平永远落在碗中轴，垂直落在碗口内（与原料显示区 mix-zone 的 top 对齐） */
   .spoon{
     position:absolute;left:50%;top:56px;
     width:56px;height:56px;margin-left:-28px;margin-top:-28px;
@@ -390,25 +401,71 @@
     filter:drop-shadow(0 3px 3px rgba(0,0,0,.4));
     will-change:transform;
   }
+  /* 新手引导：浮在碗上方，手指左右滑动演示"按住拖动"，开始搅拌后淡出 */
+  .mix-guide{
+    position:absolute;left:50%;top:14px;transform:translateX(-50%);
+    z-index:4;pointer-events:none;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:8px 14px;border-radius:var(--r-md);
+    background:rgba(8,12,32,.62);
+    border:1px solid rgba(255,209,102,.35);
+    box-shadow:0 6px 20px rgba(0,0,0,.45);
+    backdrop-filter:blur(4px);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .mix-guide.hide{opacity:0;transform:translateX(-50%) translateY(-8px)}
+  .mix-guide .mg-text{
+    font-size:13px;font-weight:700;color:#ffe6a8;letter-spacing:.02em;white-space:nowrap;
+  }
+  .mix-guide .mg-hand{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    width:96px;height:26px;
+  }
+  .mix-guide .mg-finger{
+    position:relative;z-index:2;font-size:22px;line-height:1;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));
+    animation:mgSwipe 1.6s ease-in-out infinite;
+  }
+  .mix-guide .mg-track{
+    position:absolute;left:0;right:0;top:50%;height:2px;transform:translateY(-50%);
+    background:linear-gradient(90deg,transparent,rgba(255,209,102,.65),transparent);
+    border-radius:999px;
+  }
+  @keyframes mgSwipe{
+    0%,100%{transform:translateX(-26px)}
+    50%{transform:translateX(26px)}
+  }
+  /* 用户一旦开始搅拌（拖动了搅拌棒），引导立即隐去 */
+  .mix-stage.mixing .mix-guide{opacity:0;transform:translateX(-50%) translateY(-8px)}
+
+  /* 进度条：宽度撑满列容器（即与碗同宽），下方留出与碗的间隙 */
   .mix-progress{
-    position:absolute;right:18px;bottom:18px;
-    display:flex;flex-direction:column;align-items:center;gap:4px;
+    width:100%;
+    margin-top:26px;              /* 与碗之间留出间隙 */
+    display:flex;flex-direction:column;align-items:center;gap:6px;
   }
-  .progress-ring{position:relative;width:88px;height:88px}
-  .progress-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-  .progress-ring .ring-bg{fill:none;stroke:rgba(255,255,255,.14);stroke-width:9}
-  .progress-ring .ring-fg{
-    fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;
-    stroke-dasharray:251.3;stroke-dashoffset:251.3;
-    transition:stroke-dashoffset .1s linear;
+  /* 进度条 + 右侧百分比：把数字放到条外，避免与色块互相干扰 */
+  .progress-bar{
+    position:relative;width:100%;height:14px;
+    background:rgba(255,255,255,.12);
+    border:1px solid var(--glass-line);
+    border-radius:999px;overflow:hidden;
   }
-  .progress-ring .ring-pct{
-    position:absolute;inset:0;display:grid;place-items:center;
-    font-size:16px;font-weight:800;
+  .progress-fill{
+    position:absolute;left:0;top:0;bottom:0;width:0;
+    background:var(--accent);border-radius:999px;
+    transition:width .12s linear, background .2s linear;
+  }
+  /* 百分比数字：随填充条一起移动，贴在色块末端内侧 */
+  .progress-pct{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    font-size:10.5px;font-weight:800;color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.9);
+    pointer-events:none;letter-spacing:.02em;
   }
   .mix-status{
     font-size:13px;color:var(--ink-dim);text-align:center;
-    max-width:240px;line-height:1.6;
+    max-width:100%;line-height:1.6;
   }
   .mix-status strong{color:var(--accent)}
   .mix-side h3{margin:0 0 8px;font-size:16px}
@@ -440,7 +497,7 @@
   .pack-stage h3{margin:0;font-size:15px;color:var(--ink-dim)}
   /* 烟花筒：SVG 精绘（细长比例 + 纸质光影 + 金箍 + 开口内壁） */
   .tube-wrap{
-    position:relative;width:76px;height:194px;margin:4px 0 8px;
+    position:relative;width:52px;height:132px;margin:4px 0 8px;
   }
   .tube{position:absolute;inset:0}
   .tube svg{width:100%;height:100%;display:block;overflow:visible}
@@ -492,7 +549,7 @@
   }
   .launch-tube{
     position:absolute;left:50%;bottom:calc(11vh + 14px);transform:translateX(-50%);
-    width:80px;height:204px;z-index:2;
+    width:54px;height:138px;z-index:2;
     transform-origin:50% 100%;
     transition:transform .3s ease;
   }
@@ -509,15 +566,21 @@
   .launch-controls{
     position:absolute;left:50%;bottom:max(20px,env(safe-area-inset-bottom));
     transform:translateX(-50%);z-index:3;
-    display:flex;gap:12px;align-items:center;
+    display:flex;gap:9px;align-items:center;justify-content:center;
+    max-width:calc(100% - 20px);flex-wrap:wrap;
     transition:opacity .25s ease;
   }
-  /* 沉浸连放：结果卡收起后浮出的「查看本次效果」入口（右下角，避免与居中控制条重叠） */
+  /* 最后一页有三个按钮 + 浮钮，统一收小，避免挤在一起 */
+  .launch-controls .btn{padding:9px 15px;font-size:13px;letter-spacing:.02em}
+  /* 沉浸连放：结果卡收起后浮出的「查看本次效果」入口
+     放在控制条正上方居中，避免与右下角按钮同高重叠 */
   .peek-btn{
-    position:fixed;right:14px;bottom:calc(20px + env(safe-area-inset-bottom));
+    position:fixed;left:50%;transform:translateX(-50%);
+    bottom:calc(74px + env(safe-area-inset-bottom));
     z-index:5;display:none;
+    padding:8px 14px;font-size:12.5px;
   }
-  /* 结果卡右上角的关闭叉：每张卡（含首次）都显示，点它收起卡片回到放烟花界面 */
+  /* 结果卡右上角的关闭叉：每张卡（含首次）都显示，点它与「再放一次」一致 —— 收起卡片并进入沉浸连放 */
   .card-close{
     position:absolute;top:8px;right:10px;z-index:3;
     width:30px;height:30px;padding:0;line-height:28px;text-align:center;
@@ -527,6 +590,17 @@
   }
   .card-close:hover{background:rgba(0,0,0,.5)}
   #step-launch.firing .launch-controls{opacity:0;pointer-events:none}
+  /* 自由连放：点火常驻时控制区必须仍然可见可点（否则关不掉），只弱化不隐藏 */
+  #step-launch.free .launch-controls{opacity:1;pointer-events:auto}
+  #step-launch.free .launch-controls .btn{opacity:.72}
+  #step-launch.free .launch-controls .btn:hover{opacity:1}
+  /* 自由连放开/关的状态色：开启时按钮走强调色，一眼可辨 */
+  #btnFree.on{
+    color:var(--accent);
+    border-color:rgba(255,209,102,.55);
+    background:rgba(255,209,102,.14);
+    opacity:1 !important;
+  }
   /* 结果卡浮层：放完后从底部浮出，不遮挡夜空主体
      注意 overflow 必须保持 visible —— 否则 top:-14px 的 ribbon 会被滚动容器按 padding box 剪掉一半；
      真正的滚动交给内层 .card-body。 */
@@ -556,10 +630,11 @@
   body.immersive #app{max-width:none;padding:0}
   body.immersive #step-launch{position:fixed;inset:0;border-radius:0;z-index:5;min-height:0}
   @media (max-height:560px){
-    .launch-tube{width:62px;height:158px;bottom:calc(6vh + 60px)}
+    .launch-tube{width:42px;height:108px;bottom:calc(6vh + 52px)}
     #step-launch .card{padding:16px}
-    .launch-controls{bottom:max(10px,env(safe-area-inset-bottom))}
-    .launch-controls .btn{padding:9px 16px;font-size:13px}
+    .launch-controls{bottom:max(10px,env(safe-area-inset-bottom));gap:7px}
+    .launch-controls .btn{padding:8px 12px;font-size:12.5px;white-space:nowrap}
+    .peek-btn{bottom:calc(58px + env(safe-area-inset-bottom));padding:7px 12px;font-size:12px}
   }
 
   /* 配方卡：夜色琉璃 —— 玻璃表面 + 半透明白边 + 顶部 1px 高光线 */
@@ -664,6 +739,68 @@
   .journal-note a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
   .journal-note a:visited{color:#e6b45a}
 
+  /* ===== 烟花图鉴（成就式收集） ===== */
+  .album-progress{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:18px;
+  }
+  .album-progress .ap-bar{
+    flex:1;height:10px;border-radius:999px;overflow:hidden;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);
+  }
+  .album-progress .ap-bar span{
+    display:block;height:100%;width:0;
+    background:linear-gradient(90deg,#ffd166,#b388ff);
+    transition:width .45s cubic-bezier(.22,.9,.32,1);
+  }
+  .album-progress .ap-txt{font-size:12.5px;color:var(--ink-dim);white-space:nowrap}
+  .album-progress .ap-txt b{color:var(--accent);font-size:15px}
+  .album-group{margin-bottom:20px}
+  .album-group h3{
+    margin:0 0 4px;font-size:16px;display:flex;align-items:center;gap:8px;
+  }
+  .album-group .ag-count{
+    font-size:11px;font-weight:700;color:var(--ink-dim);
+    background:rgba(255,255,255,.09);border-radius:999px;padding:2px 9px;
+  }
+  .album-group .ag-desc{font-size:12px;color:var(--ink-faint);margin:0 0 10px;line-height:1.6}
+  .album-grid{display:grid;gap:9px;grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+  .album-item{
+    position:relative;text-align:center;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    border-radius:var(--r-sm);padding:12px 8px 10px;
+    filter:grayscale(1);opacity:.5;transition:all .25s ease;
+  }
+  .album-item.on{
+    filter:none;opacity:1;
+    background:linear-gradient(160deg,rgba(255,209,102,.14),rgba(179,136,255,.1));
+    border-color:rgba(255,209,102,.4);
+    box-shadow:0 0 16px rgba(255,209,102,.12);
+  }
+  .album-item .ai-ico{font-size:26px;line-height:1}
+  .album-item .ai-name{font-size:13px;font-weight:800;margin-top:6px}
+  .album-item .ai-hint{
+    font-size:10.5px;color:var(--ink-faint);line-height:1.5;margin-top:5px;
+  }
+  .album-item.on .ai-hint{color:var(--ink-dim)}
+  .album-item .ai-new{
+    position:absolute;top:-6px;right:-5px;
+    font-size:9px;font-weight:800;letter-spacing:.5px;
+    background:linear-gradient(135deg,#ff5d6c,#ffb703);color:#fff;
+    padding:2px 6px;border-radius:999px;
+    box-shadow:0 2px 8px rgba(255,93,108,.5);
+  }
+  .album-reset{margin-top:4px;font-size:12.5px}
+
+  /* 结果卡：图鉴新收录 */
+  .card .fx-new{
+    margin-top:10px;padding:9px 11px;border-radius:var(--r-sm);
+    font-size:12.5px;line-height:1.6;
+    background:linear-gradient(135deg,rgba(255,209,102,.16),rgba(179,136,255,.12));
+    border:1px solid rgba(255,209,102,.35);
+    color:#ffe6a8;
+  }
+
   .footer-note{
     text-align:center;color:var(--ink-faint);font-size:12px;
     margin-top:26px;line-height:1.8;
@@ -686,8 +823,14 @@
     .brand .logo{width:34px;height:34px;border-radius:11px}
     .brand h1{font-size:17px;letter-spacing:.03em}
     .brand .sub{display:none}
-    .hud-btns{gap:6px;flex:none}
-    .hud-btn{padding:9px 11px;font-size:12px;white-space:nowrap}
+    .hud-btns{gap:6px;flex:none;min-width:0}
+    /* 手机端按钮多，整体收紧字号，避免顶栏拥挤换行 */
+    .hud-btn{padding:8px 9px;font-size:11.5px;white-space:nowrap}
+    .album-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+    .album-item{padding:10px 6px 9px}
+    .album-item .ai-ico{font-size:22px}
+    .album-item .ai-name{font-size:12px}
+    .album-item .ai-hint{font-size:10px}
     /* 步骤条收紧 */
     .steps{margin:10px 0 12px;gap:2px}
     .steps .step-label{display:none}
@@ -739,15 +882,27 @@
     .bowl-panel .bowl .mix-display .empty-txt{font-size:10.5px;padding-top:1px}
     .bowl-panel .bowl-hint{margin-top:0;flex:1;min-width:0;font-size:12.5px;line-height:1.45;white-space:normal}
     .bowl-panel .bowl-hint .hint-sub{display:block;font-size:10.5px;color:var(--ink-faint);margin-top:1px}
-    /* 搅拌：碗在上、进度条在下，操作时两者都在视口内 */
-    .mix-stage{flex-direction:column;justify-content:center;gap:10px;min-height:0;padding:14px 12px 12px}
-    .mix-stage .big-bowl{width:min(248px,64vw);height:176px}
+    /* 搅拌：碗在上、进度条在下，操作时两者都在视口内
+       注意：进度条在移动端改为流式布局，必须清掉桌面端为绝对定位预留的 padding-bottom，
+       否则内容整体被顶偏、看起来没居中 */
+    .mix-stage{flex-direction:column;justify-content:center;align-items:center;gap:16px;min-height:0;padding:14px 12px 12px}
+    .mix-stage .big-bowl{width:min(248px,100%);height:176px}
     .big-bowl .mix-zone{top:46px;font-size:30px}
     .spoon{top:49px;width:50px;height:50px;margin-left:-25px;margin-top:-25px}
-    .mix-progress{position:static;flex-direction:row;align-items:center;gap:12px;width:100%;justify-content:center}
-    .progress-ring{width:62px;height:62px}
-    .progress-ring .ring-pct{font-size:14px}
-    .mix-status{flex:1;max-width:none;text-align:left;font-size:12px;line-height:1.55}
+    /* 与碗同宽同轴：用同一个宽度公式，居中由 .mix-stage 的 align-items 保证 */
+    .mix-progress{width:min(248px,100%);margin-top:14px;align-items:center;gap:5px}
+    .progress-bar{width:100%;height:13px}
+    .progress-pct{font-size:10px;right:7px}
+    .mix-status{width:100%;max-width:100%;text-align:center;font-size:12px;line-height:1.55}
+    /* 引导层在小屏收紧，别挡住碗 */
+    .mix-guide{top:6px;padding:6px 11px;gap:4px}
+    .mix-guide .mg-text{font-size:11.5px}
+    .mix-guide .mg-hand{width:78px;height:22px}
+    .mix-guide .mg-finger{font-size:18px}
+    @keyframes mgSwipe{
+      0%,100%{transform:translateX(-20px)}
+      50%{transform:translateX(20px)}
+    }
     .mix-side h3{font-size:14px}
     .mix-side .recipe-list{gap:5px}
     .mix-side .recipe-list li{padding:7px 10px;font-size:12.5px}
@@ -755,17 +910,19 @@
     /* 装填：筒更小，消除大片空白 */
     .pack-stage{padding:12px 12px 10px;gap:6px}
     .pack-stage h3{font-size:13.5px}
-    .tube-wrap{width:52px;height:133px;margin:2px 0 6px}
+    .tube-wrap{width:36px;height:92px;margin:2px 0 6px}
     .pack-options{gap:9px}
     .pack-option{padding:10px 12px;gap:10px}
     .pack-option .po-emoji{font-size:20px}
     .pack-option .po-title{font-size:13px}
     .pack-option .po-desc{font-size:11.5px}
     /* 点燃 */
-    .launch-tube{width:70px;height:178px;bottom:calc(10vh + 12px)}
+    .launch-tube{width:48px;height:122px;bottom:calc(10vh + 12px)}
     .launch-hint{padding:0 18px;font-size:12px;line-height:1.6}
-    .launch-controls{gap:10px;width:calc(100% - 24px);justify-content:center;align-items:stretch}
-    .launch-controls .btn{flex:1 1 0;min-width:0;padding:12px 10px;font-size:14px;display:flex;justify-content:center}
+    /* 三个按钮：收小并允许换行，宁可行高紧凑也不重叠 */
+    .launch-controls{gap:7px;width:calc(100% - 20px);justify-content:center;align-items:center}
+    .launch-controls .btn{flex:0 1 auto;min-width:0;padding:9px 12px;font-size:12.5px;white-space:nowrap}
+    .peek-btn{bottom:calc(66px + env(safe-area-inset-bottom));padding:7px 12px;font-size:12px}
     /* 结果卡 */
     #step-launch .card{padding:16px 14px}
     #step-launch .card .fx-name{font-size:26px}
@@ -785,10 +942,11 @@
   /* 手机横屏 / 矮屏：压缩竖向占位 */
   @media (max-height:520px){
     .mix-stage{min-height:230px;gap:6px}
+    .mix-progress{margin-top:8px}
     .big-bowl{height:160px}
     .big-bowl .mix-zone{top:42px}
     .bowl-visual{height:92px}
-    .tube-wrap{width:52px;height:133px}
+    .tube-wrap{width:36px;height:92px}
   }
 
   /* 结果卡：矮视口（横屏手机 / 小窗口）逐级压缩，尽量一屏看全、不出现滚动 */
@@ -879,6 +1037,7 @@
       </div>
     </div>
     <div class="hud-btns" data-page-node-id="VPIFlZnujOAxehYuFtcG25">
+      <button type="button" class="hud-btn" id="btnAlbum" data-page-node-id="SWj2FzlMVHhqq0NGBhELQI2">🏆 烟花图鉴</button>
       <button type="button" class="hud-btn" id="btnJournal" data-page-node-id="SWj2FzlMVHhqq0NGBhELQI">📖 炼金手札</button>
       <button type="button" class="hud-btn" id="btnSound" aria-pressed="true" data-page-node-id="J3x1cqHVBK8SWyqTjXQwMn">🔊 音效</button>
     </div>
@@ -960,13 +1119,22 @@
       <div class="workbench" data-page-node-id="zO6gZtGb6QUIelskCIZ6ok">
         <div class="step-head" data-page-node-id="mGXlbtB0MPBVLjxlhteUXh">
           <h2 id="mixTitle" data-page-node-id="UGHFQjeACjuSzRtwMnQ0sr">② 搅拌造粒</h2>
-          <p data-page-node-id="zvmZg7vEqpn34MsxZhekFv">按住搅拌棒，在碗里左右来回搅拌。来回次数决定配方的“火候”—— 拌得太少不均匀，拌过头会出意外。</p>
+          <p data-page-node-id="zvmZg7vEqpn34MsxZhekFv">按住搅拌棒，在碗里左右来回搅拌。搅拌进度决定配方的“火候”—— 拌得太少不均匀，拌过头会出意外。</p>
         </div>
         <div class="mix-layout" data-page-node-id="b3vMlAG1Uswq76Z8UBEiDD">
           <div class="mix-stage" id="mixStage" data-page-node-id="ZoEBvwCztIKzqBLdod5sWX">
+            <!-- 新手引导：只在还没开始搅拌时显示，提示"按住搅拌棒左右拖动" -->
+            <div class="mix-guide" id="mixGuide" aria-hidden="true" data-page-node-id="mgGuide0000000000001">
+              <div class="mg-hand" data-page-node-id="mgHand00000000000001">
+                <span class="mg-finger" data-page-node-id="mgFinger000000000001">👆</span>
+                <span class="mg-track" data-page-node-id="mgTrack0000000000001"></span>
+              </div>
+              <div class="mg-text" data-page-node-id="mgText0000000000001">按住搅拌棒，左右来回拖动</div>
+            </div>
+            <div class="mix-col" data-page-node-id="mixCol0000000000001">
             <div class="big-bowl" id="bigBowl" aria-hidden="true" data-page-node-id="4Mu05KwwAHZ0l0NjqrUQDI">
               <!-- 夜色琉璃 · 玻璃研钵（大）：与第一步小碗同一画法，尺寸 ×2 -->
-              <svg viewBox="0 0 300 200" aria-hidden="true" focusable="false">
+              <svg class="bowl-svg" viewBox="0 0 300 200" aria-hidden="true" focusable="false">
                 <defs>
                   <linearGradient id="gb2-body" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0" stop-color="rgba(255,255,255,.30)"/>
@@ -989,8 +1157,8 @@
                       stroke-width="2.2" fill="none" stroke-linecap="round"/>
               </svg>
               <div class="mix-zone" id="mixZone" data-page-node-id="kFKezjGYBmWSe1myDUKQQl"></div>
-            </div>
-            <svg class="spoon" id="spoon" viewBox="0 0 56 56" aria-hidden="true" data-page-node-id="FpaPLApESxcWz7F9xLZn8V">
+              <!-- 搅拌棒（水晶握柄+杆身+桨叶）：相对碗定位，水平落在碗中轴 -->
+              <svg class="spoon" id="spoon" viewBox="0 0 56 56" aria-hidden="true" data-page-node-id="FpaPLApESxcWz7F9xLZn8V">
               <defs>
                 <linearGradient id="sp-glass" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0" stop-color="rgba(255,255,255,.55)"/>
@@ -1002,25 +1170,30 @@
                   <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
               </defs>
-              <!-- 水晶搅拌棒：玻璃桨叶 + 高光弧 + 琥珀握珠（自发光） -->
-              <ellipse cx="28" cy="13" rx="12" ry="8" fill="url(#sp-glass)" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
-              <path d="M20 10.5 C23 7.5 33 7.5 36 10.5" stroke="rgba(255,255,255,.7)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-              <path d="M28 20 V44" stroke="rgba(255,255,255,.5)" stroke-width="4.5" stroke-linecap="round"/>
-              <path d="M28 21 V43" stroke="rgba(255,255,255,.85)" stroke-width="1.4" stroke-linecap="round"/>
+              <!-- 水晶搅拌棒（上握柄 / 中杆身 / 下桨叶），轮廓清晰一眼可辨 -->
+              <!-- 杆身：玻璃圆柱，两侧描边 + 中央高光 -->
+              <rect x="24" y="14" width="8" height="26" rx="4" fill="url(#sp-glass)" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
+              <path d="M28 17 V37" stroke="rgba(255,255,255,.9)" stroke-width="1.6" stroke-linecap="round"/>
+              <!-- 顶部握柄：较粗的琥珀色手柄 + 端帽 -->
+              <rect x="21" y="4" width="14" height="11" rx="5.5" fill="#ffd166" stroke="rgba(120,80,10,.45)" stroke-width="1.1"/>
+              <path d="M24.5 7 V12 M31.5 7 V12" stroke="rgba(150,100,20,.45)" stroke-width="1.1" stroke-linecap="round"/>
+              <ellipse cx="25" cy="7.4" rx="3.2" ry="1.6" fill="rgba(255,255,255,.75)"/>
+              <!-- 底部桨叶：横向扁平桨板，插入碗中搅拌的部分 -->
+              <path d="M28 38 C20 38 15 42 15 46.5 C15 50 20 52 28 52 C36 52 41 50 41 46.5 C41 42 36 38 28 38 Z"
+                    fill="url(#sp-glass)" stroke="rgba(255,255,255,.7)" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M20 43.5 C24 42 32 42 36 43.5" stroke="rgba(255,255,255,.8)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
               <g filter="url(#sp-glow)">
-                <circle cx="28" cy="47.5" r="3.6" fill="#ffd166"/>
-                <circle cx="27" cy="46.4" r="1.2" fill="#fffbe8"/>
+                <circle cx="28" cy="46.6" r="2.4" fill="#ffd166" opacity=".85"/>
               </g>
             </svg>
-            <div class="mix-progress" aria-hidden="true" data-page-node-id="S3lPXDeahBCx0TWtaiC7Nn">
-              <div class="progress-ring" data-page-node-id="f1Cl5QHcUxMfoD0ABSXjQH">
-                <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true" data-page-node-id="EjS1ueEI7BXMrsAiQ1mxAZ">
-                  <circle class="ring-bg" cx="44" cy="44" r="40" data-page-node-id="9viDmB1v5HNvW0cuZzdwzn"></circle>
-                  <circle class="ring-fg" id="ringFg" cx="44" cy="44" r="40" data-page-node-id="P7UMMMpdUc0BvmbIfJjBd5"></circle>
-                </svg>
-                <div class="ring-pct" id="mixPct" data-page-node-id="KJQU3cUDSmJUqEIfmXXZci">0</div>
+            </div>
+            <div class="mix-progress" id="mixProgress" aria-hidden="true" data-page-node-id="S3lPXDeahBCx0TWtaiC7Nn">
+              <div class="progress-bar" aria-hidden="true" data-page-node-id="f1Cl5QHcUxMfoD0ABSXjQH">
+                <div class="progress-fill" id="progFill"></div>
+                <span class="progress-pct" id="mixPct" data-page-node-id="KJQU3cUDSmJUqEIfmXXZci">0</span>
               </div>
               <div class="mix-status" id="mixStatus" data-page-node-id="HLIqEHzB0z1aw10jUCxL7G">👈👉 按住搅拌棒左右来回搅拌</div>
+            </div>
             </div>
           </div>
           <aside class="mix-side" aria-label="当前配方" data-page-node-id="j6Hysf3oWuJUalcins2YkF">
@@ -1028,12 +1201,12 @@
             <ul class="recipe-list" id="mixRecipe" data-page-node-id="7NZdHZGv0KIIFLiHzBGHeC"></ul>
             <p class="mix-tip" data-page-node-id="ApvaGV04A9DSONGUh65W0g">
               真实烟花里，这一步叫<b data-page-node-id="vC3Fsdr71MJTk3JfbkFAw6">造粒</b>：把混合粉加水揉成湿团，再压成一颗颗“星体”。<br data-page-node-id="MoA1M0VXph7sKKFscYh1Cj">
-              火候提示：<b style="color:#7fd08a" data-page-node-id="02WfHAjkFiQB9cLdyQcb0W">1~3 个完整来回</b>为最佳区间（40~115°）；不足 <b style="color:#ffb9c1" data-page-node-id="ecWSaVJWHSaBbc2teOQ3rn">1 个来回</b>拌不匀，超过约 <b style="color:#ffb9c1" data-page-node-id="1EK92mSDEy9sWZpNV7ZUwE">3 个半来回</b>（135°）会触发神秘效果。
+              火候提示：搅拌进度 <b style="color:#7fd08a" data-page-node-id="02WfHAjkFiQB9cLdyQcb0W">27%~77%</b>（约 1~3 个完整来回）为最佳区间；不到 <b style="color:#ffb9c1" data-page-node-id="ecWSaVJWHSaBbc2teOQ3rn">27%</b> 拌不匀，超过 <b style="color:#ffb9c1" data-page-node-id="1EK92mSDEy9sWZpNV7ZUwE">90%</b> 会触发神秘效果。
             </p>
           </aside>
         </div>
         <div class="next-bar" data-page-node-id="pUD0LUzoVbC9FT1SVxdPOQ">
-          <div class="panel-note" id="mixNote" data-page-node-id="Dz17J6UN5ino5HepZeM7jX">⏳ 搅拌进度会实时显示在碗的右下角。</div>
+          <div class="panel-note" id="mixNote" data-page-node-id="Dz17J6UN5ino5HepZeM7jX">⏳ 搅拌进度会实时显示在碗的下方。</div>
           <button type="button" class="btn ghost" id="btnBack1" data-page-node-id="ne4DYTdlogMNqRbc4xjFhS">← 重新选料</button>
           <button type="button" class="btn" id="btnToPack" disabled data-page-node-id="D4mYksw48HCFTc9nhjbXAC">完成搅拌 · 装填 →</button>
         </div>
@@ -1285,13 +1458,14 @@
       </div>
       <div class="launch-controls" data-page-node-id="DlxOVsY62rGb56glz2MGyb">
         <button type="button" class="btn" id="btnLaunch" data-page-node-id="RwjdQuDDl0wL5kG70y7BMh">🔥 点燃引线</button>
+        <button type="button" class="btn ghost" id="btnFree" aria-pressed="false" data-page-node-id="9XkQ2mNpVbLc7RtWqZ4YnE">🎯 自由连放</button>
         <button type="button" class="btn ghost" id="btnBack3" data-page-node-id="4s1dLsFRgkUns8vOEvDrmi">↩ 重新装填</button>
       </div>
       <!-- 沉浸连放时：结果卡收起后浮出的「查看本次效果」入口 -->
       <button type="button" class="btn ghost peek-btn" id="btnPeek" hidden>👀 查看本次效果</button>
       <!-- 燃放报告：放完后从底部浮出 -->
       <div class="card" id="resultCard" hidden aria-live="polite" data-page-node-id="e9HXXhFW21MP3Yp5CtG7HT">
-        <button type="button" class="card-close" id="btnClose" aria-label="关闭本次效果">×</button>
+        <button type="button" class="card-close" id="btnClose" aria-label="收起结果，继续放飞" title="收起结果，继续放飞">×</button>
         <div class="ribbon" id="rcRibbon" data-page-node-id="MvuFTuLmvDQpTfYvQ8RCpJ">今夜绽放</div>
         <!-- 内容区独立滚动：卡片本身 overflow:visible，顶部的 ribbon 才不会被剪掉 -->
         <div class="card-body">
@@ -1304,6 +1478,7 @@
             <button type="button" class="btn ghost" id="btnNew" data-page-node-id="Dxah3shzQz4jnB5hrSrUjV">🔁 再做一桶</button>
           </div>
           <div class="fx-ingredients" id="rcIngredients" data-page-node-id="i2DipSMCFhRN8bbLliVI3z"></div>
+          <div class="fx-new" id="rcNew" hidden></div>
         </div>
       </div>
     </section>
@@ -1325,6 +1500,15 @@
       真实烟花核心步骤：① <b data-page-node-id="8fHq6Yo11doPTQyDur8YKo">配药</b> —— 按比例称量氧化剂、燃料、金属盐与粘合剂；② <b data-page-node-id="h7QZSLWuRYG3DHA2T8Zpwc">造粒</b> —— 混合揉团、压制成“星体”并干燥；③ <b data-page-node-id="PFeEju1Is5fQwakIjKIrvf">装填</b> —— 把星体按图案排入纸壳弹体，装发射药、插引线；④ <b data-page-node-id="Bf7vJVbhfEtpN3CDyXXjsy">点燃</b> —— 引线点燃发射药升空，开爆药在预定高度炸开，星体燃烧成图案。<br data-page-node-id="f27QK7ZhkT8EdGGRAchHoz">
       颜色原理参考<a href="https://www.acs.org/content/dam/acsorg/education/students/highschool/chemistryclubs/July_ChemClubCal.pdf" target="_blank" rel="noopener noreferrer" data-page-node-id="AjzUOj44tzZunHyAR93Guy">美国化学会（ACS）</a>与<a href="https://m.kepuchina.cn/tuwendetail?id=646234" target="_blank" rel="noopener noreferrer" data-page-node-id="U7ER9VN5nyfTFFbb4KX2eD">科普中国</a>；工艺细节参考<a href="https://news.cctv.com/2026/02/24/ARTILj7Bt9dvzvjjjbsQSQBQ260224.shtml" target="_blank" rel="noopener noreferrer" data-page-node-id="3UBWgrvMotESYNhEKZ0cyt">央视网</a>与<a href="https://fireworks.org/how-fireworks-are-made-the-complete-manufacturing-process-from-raw-materials-to-spectacular-displays/" target="_blank" rel="noopener noreferrer" data-page-node-id="NhFvakPuGy0n2Rx0tbVqyG">Fireworks.org</a>。
     </p>
+  </div>
+</dialog>
+
+<dialog id="albumDialog" aria-labelledby="albumTitle" data-page-node-id="albDlgRoot00000000001">
+  <div class="dlg-inner" data-page-node-id="albDlgInner0000000001">
+    <button type="button" class="dlg-close" id="albumClose" aria-label="关闭" data-page-node-id="albDlgClose000000001">✕</button>
+    <h2 id="albumTitle" data-page-node-id="albDlgTitle000000001">🏆 烟花图鉴</h2>
+    <p class="dlg-sub" data-page-node-id="albDlgSub0000000001">成功的绽放才会被收录。同一个花型、同一种主色，只用触发过就算解锁——去把整本图鉴点亮吧。</p>
+    <div id="albumBody" data-page-node-id="albDlgBody000000001"></div>
   </div>
 </dialog>
 
@@ -2113,8 +2297,8 @@
     {id:"charcoal", name:"木炭粉", type:"base", real:true, desc:"燃料 · 金色火花", color:"#f4a261", fact:"黑火药三大件之一（硝酸钾+硫磺+木炭），决定燃烧速度。", power:.8},
     {id:"strontium", name:"锶盐", type:"color", real:true, desc:"焰色反应 · 正红色", color:"#ff5d6c", fact:"锶盐燃烧发出喜庆正红（约 605–680nm），是烟花的经典红。", rarity:2},
     {id:"barium", name:"钡盐", type:"color", real:true, desc:"焰色反应 · 翠绿色", color:"#51d88a", fact:"钡盐燃烧呈翠绿（约 505–535nm），春意盎然的绿。", rarity:2},
-    {id:"copper", name:"铜盐", type:"color", real:true, desc:"焰色反应 · 梦幻蓝（难做）", color:"#4cc9f0", fact:"蓝色最难做：铜盐需要极窄的燃烧温度窗口，偏差一点就变绿或发白。", rarity:3, fragile:true},
-    {id:"sodium", name:"钠盐", type:"color", real:true, desc:"焰色反应 · 金黄（太亮会盖色）", color:"#ffd60a", fact:"钠盐燃烧呈金黄（589nm），过于明亮，配方里常要控制用量，否则会盖住别的颜色。", rarity:2, loud:true},
+    {id:"copper", name:"铜盐", type:"color", real:true, desc:"焰色反应 · 梦幻蓝", color:"#4cc9f0", fact:"蓝色最难做：铜盐需要极窄的燃烧温度窗口，偏差一点就变绿或发白。", rarity:3, fragile:true},
+    {id:"sodium", name:"钠盐", type:"color", real:true, desc:"焰色反应 · 金黄", color:"#ffd60a", fact:"钠盐燃烧呈金黄（589nm），过于明亮，配方里常要控制用量，否则会盖住别的颜色。", rarity:2, loud:true},
     {id:"aluminum", name:"铝粉", type:"spark", real:true, desc:"闪光 · 银白星芒", color:"#ffffff", fact:"铝粉/镁粉燃烧产生银白色闪光与拖尾，是烟花的“银花”。", rarity:2, effect:"sparkle"},
     {id:"moonpetal", name:"月光花瓣", type:"shape", real:false, shape:"willow", color:"#cfe3ff", desc:"魔法 · 垂柳拖尾", fact:"想象原料：采自月圆之夜的昙花，能让星体缓缓垂落成柳条。", rarity:2, effect:"trail"},
     {id:"dragonscale", name:"龙鳞粉", type:"shape", real:false, shape:"double", color:"#ffb703", desc:"魔法 · 二次绽放", fact:"想象原料：研磨自龙蜕下的鳞片，点火时会有第二重惊喜。", rarity:3, effect:"double"},
@@ -2145,15 +2329,59 @@
     return '<svg class="ico'+(cls?' '+cls:'')+'" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#ic-'+id+'"/></svg>';
   }
 
-  var SHAPE_NAME = {peony:"牡丹", willow:"垂柳", chrys:"菊花", ring:"光环", star:"星绽", double:"双子", comet:"彗星", rainbow:"虹", mystery:"谜团"};
+  var SHAPE_NAME = {peony:"牡丹", willow:"垂柳", chrys:"菊花", ring:"光环", star:"星绽", double:"双子", comet:"彗星", rainbow:"虹", mystery:"谜团", flower:"花瓣"};
   var COLOR_NAME = {red:"赤", green:"翠", blue:"蓝", gold:"金", purple:"紫", white:"月白", rainbow:"彩"};
+
+  /* ============ 图鉴：收集定义 ============
+     分组：shape 花型 / color 主色 / hidden 隐藏成就。
+     仅当一次燃放「成功触发」对应条件时才解锁并记录。
+     持久化在 localStorage，key 见 ACH_KEY。 */
+  var ACH_KEY = "fw_workshop_achievements_v1";
+
+  var ACH_GROUPS = [
+    { id:"shape", title:"花型图鉴", desc:"用花型剂做出对应的绽放形态。" },
+    { id:"color", title:"颜色图鉴", desc:"让烟火的主色调命中对应颜色。" },
+    { id:"hidden", title:"隐藏成就", desc:"一些需要特定条件才会出现的结果。" }
+  ];
+
+  var ACHIEVEMENTS = [
+    /* —— 花型 —— */
+    { id:"shape_peony",  group:"shape", name:"牡丹",  ico:"🎆", style:"peony",   hint:"加入任意花型剂之外的基础配方（默认形态）" },
+    { id:"shape_willow", group:"shape", name:"垂柳",  ico:"🌿", style:"willow",  hint:"用月光花瓣，让星体缓缓垂落" },
+    { id:"shape_chrys",  group:"shape", name:"菊花",  ico:"🌼", style:"chrys",   hint:"用雷鸟羽毛炸出细密银丝" },
+    { id:"shape_ring",   group:"shape", name:"光环",  ico:"💫", style:"ring",    hint:"用星尘聚成一圈光晕" },
+    { id:"shape_star",   group:"shape", name:"星绽",  ico:"⭐", style:"star",    hint:"用凤羽灰在空中画出星星" },
+    { id:"shape_double", group:"shape", name:"双子",  ico:"✨", style:"double",  hint:"用龙鳞粉触发第二重惊喜" },
+    { id:"shape_comet",  group:"shape", name:"彗星",  ico:"☄️", style:"comet",   hint:"用妖精之泪拖出长长的尾迹" },
+    { id:"shape_rainbow",group:"shape", name:"虹",    ico:"🌈", style:"rainbow", hint:"用独角兽鬃毛让烟火不断变色" },
+    { id:"shape_mystery",group:"shape", name:"谜团",  ico:"🌀", style:"mystery", hint:"用影猫皮毛，或把搅拌进度推过 90%" },
+    { id:"shape_flower", group:"shape", name:"花瓣",  ico:"🌸", style:"flower",  hint:"谜团里才会偶尔出现的形态" },
+
+    /* —— 颜色（对应公式里 colorName 的全部可能取值） —— */
+    { id:"color_red",    group:"color", name:"赤",   ico:"🔴", colorName:"red",    hint:"用锶盐调出正红" },
+    { id:"color_green",  group:"color", name:"翠",   ico:"🟢", colorName:"green",  hint:"用钡盐调出翠绿（或铜盐搅拌不足翻车）" },
+    { id:"color_blue",   group:"color", name:"蓝",   ico:"🔵", colorName:"blue",   hint:"搅拌充足时用铜盐成功烧出蓝色" },
+    { id:"color_gold",   group:"color", name:"金",   ico:"🟡", colorName:"gold",   hint:"用钠盐（或不加着色剂）的金白火花" },
+    { id:"color_rainbow",group:"color", name:"彩",   ico:"🟣", colorName:"rainbow",hint:"用独角兽鬃毛做出彩虹变色" },
+    { id:"color_mystery",group:"color", name:"神秘", ico:"🌀", colorName:"mystery",hint:"把搅拌进度推过 90%，主色会变成神秘" },
+
+    /* —— 隐藏成就 —— */
+    { id:"hd_dud",      group:"hidden", name:"哑火的小爆竹", ico:"💨", hint:"不放任何基础药，看看会发生什么" },
+    { id:"hd_copper_fail", group:"hidden", name:"铜盐翻车",   ico:"🧪", hint:"搅拌不足时用铜盐——蓝会变成绿白" },
+    { id:"hd_sodium_cover",group:"hidden", name:"金光盖色",   ico:"🌟", hint:"放入钠盐，让金光盖住所有颜色" },
+    { id:"hd_tight_double",group:"hidden", name:"紧压二重爆", ico:"🪨", hint:"紧压装填，有概率触发隐藏的二次绽放" },
+    { id:"hd_overmix",  group:"hidden", name:"失控的猛药",    ico:"💥", hint:"把搅拌进度推过 90%，让效果失控" },
+    { id:"hd_no_color", group:"hidden", name:"纯火药的浪漫",  ico:"🔥", hint:"不加任何着色剂，只用燃料燃烧的金白色" },
+    { id:"hd_four",     group:"hidden", name:"满载配方",      ico:"🧰", hint:"一次配方用满 4 个原料" },
+    { id:"hd_rainbow_kill", group:"hidden", name:"虹彩猎手",  ico:"🎯", hint:"一次用满 4 个原料，并且做出彩虹变色" }
+  ];
 
   /* ============ 状态 ============ */
   var state = {
     step: 1,
     selected: [],          // 原料 id 数组
     dropId: null,          // 刚投入碗中的原料 id（触发投料动画）
-    mix: 0,                // 搅拌火候：按左右拖动行程折算的累计度数
+    mix: 0,                // 搅拌进度：按左右拖动行程折算的累计分（0~150，进度 = mix/150×100%）
     mixing: false,
     lastT: 0,              // 上一次指针的归一化横向位置（-1 左端 … 1 右端）
     strokeStart: 0,        // 当前这一程的起点位置
@@ -2163,6 +2391,7 @@
     recipe: null,          // 解析后的配方
     launched: false,
     continuous: false,     // 沉浸连放模式：触发后结果卡不再弹出
+    freeMode: false,       // 自由连放：点击屏幕任意位置即从桶口放一枚
     soundOn: true
   };
   var mixGeom = {center: 0, half: 120};
@@ -2173,7 +2402,7 @@
   var bowlEl = document.querySelector(".bowl-panel .bowl");
   var pickNote = $("pickNote"), btnToMix = $("btnToMix");
   var mixStage = $("mixStage"), spoon = $("spoon"), bigBowl = $("bigBowl"), mixZone = $("mixZone");
-  var ringFg = $("ringFg"), mixPct = $("mixPct"), mixStatus = $("mixStatus"), mixRecipe = $("mixRecipe"), mixNote = $("mixNote"), btnToPack = $("btnToPack");
+  var progFill = $("progFill"), mixPct = $("mixPct"), mixStatus = $("mixStatus"), mixRecipe = $("mixRecipe"), mixNote = $("mixNote"), btnToPack = $("btnToPack");
   var packStage = $("packStage"), packNote = $("packNote");
   var launchStage = $("step-launch"), launchHint = $("launchHint");
   var resultCard = $("resultCard");
@@ -2469,13 +2698,18 @@
     ctx.globalAlpha = 1;
   };
 
-  function Shell(x,y,targetY,color,spec){
+  function Shell(x,y,targetY,color,spec,targetX){
     this.x=x; this.y=y; this.targetY=targetY;
     this.color=color; this.spec=spec;
     this.t=0; this.dur=0.75+Math.random()*0.25;
     var dy = y-targetY;
-    this.vx = (Math.random()-0.5)*30;
     this.vy = -dy/this.dur;
+    if(targetX !== undefined && targetX !== null){
+      // 自由连放：弹体在飞行时间内水平飞到目标点
+      this.vx = (targetX - x)/this.dur;
+    } else {
+      this.vx = (Math.random()-0.5)*30;
+    }
     this.trail=[];
   }
   Shell.prototype.update = function(dt){
@@ -2654,7 +2888,8 @@
       p.draw(fctx);
     }
     var still = shells.length>0 || particles.length>0 || delayed.length>0;
-    if(still){ animId = requestAnimationFrame(fxLoop); }
+    // 自由连放：粒子放完后循环继续空转，保证随时点击都能立刻渲染
+    if(still || state.freeMode){ animId = requestAnimationFrame(fxLoop); }
     else { endFx(); }
   }
   function endFx(){
@@ -2870,7 +3105,16 @@
       params: params,
       ings: ings,
       mix: mix,
-      pack: pack
+      pack: pack,
+      /* —— 供图鉴解锁判定使用 —— */
+      flags: {
+        copperFail: colors.some(function(c){ return c.id==="copper"; }) && mix < 40,
+        sodiumCover: colors.some(function(c){ return c.id==="sodium"; }),
+        noColor: !dud && colors.length === 0,
+        overMix: mix > 135,
+        tightDouble: !!params.tightDouble,
+        fourIngs: ings.length >= 4
+      }
     };
   }
 
@@ -2951,8 +3195,12 @@
   /* ============ UI：搅拌（左右来回） ============ */
   var SPOON_RANGE = 56;      // 搅拌棒左右摆动幅度（CSS px）
   var TUBE_MOUTH_RATIO = 30 / 234; // 筒口在烟花筒 SVG（viewBox 92×234）中的高度占比：y=30
-  var MIX_PER_UNIT = 10;     // 单向扫过整个碗宽（2.0）＝ +20°，一个完整来回（左→右→左）＝ +40°
+  var MIX_PER_UNIT = 10;     // 单向扫过整个碗宽（2.0）＝ +20 分，一个完整来回（左→右→左）＝ +40 分（总 150 分对应进度 100%）
   var MIX_MIN_TRAVEL = 0.5;  // 单次扫动至少要跨过半个碗宽才算数，防止原地小幅抖动刷火候
+  /* 自由连放限流：防止狂点导致同屏弹体/粒子过多而掉帧 */
+  var FREE_MIN_GAP = 180;    // 两次发射的最小间隔（毫秒）
+  var FREE_MAX_SHELLS = 8;   // 同屏最多同时在飞的弹体数
+  var freeLastFire = 0;
 
   function clampT(t){ return t < -1 ? -1 : (t > 1 ? 1 : t); }
 
@@ -2962,6 +3210,7 @@
     state.lastT = 0;
     state.strokeStart = 0;
     state.moveDir = 0;
+    mixStage.classList.remove("mixing");   // 重置新手引导的显示
     spoon.style.transform = "";
     mixZone.style.transform = "";
     updateMixUI();
@@ -2969,6 +3218,8 @@
       var ing = BY_ID[id];
       return '<li>'+ingIcon(ing.id, "r-ico")+' '+ing.name+' <span style="color:var(--ink-faint);font-size:11px">（'+TYPE_LABEL[ing.type]+'）</span></li>';
     }).join("");
+    // 等布局稳定后再量碗宽，用于手指位置到搅拌幅度的映射
+    requestAnimationFrame(cacheMixGeometry);
   }
   // 缓存碗的水平几何：在搅拌区任意位置按下都能搅，
   // 只要横向位移映射进碗口范围即可 —— 手机上手指不必精确按在碗里
@@ -2991,6 +3242,7 @@
     if(e.pointerType==="mouse" && e.button!==0) return;
     cacheMixGeometry();
     state.mixing = true;
+    mixStage.classList.add("mixing");   // 已经上手，隐去新手引导
     state.moveDir = 0;
     state.lastT = clampT((e.clientX - mixGeom.center) / mixGeom.half);
     state.strokeStart = state.lastT;
@@ -3025,41 +3277,40 @@
   function updateMixUI(){
     var m = state.mix;
     var pct = Math.min(100, Math.round(m/150*100));
-    mixPct.textContent = pct;
-    var circ = 251.3;
-    var off = circ * (1 - Math.min(1, m/150));
-    ringFg.style.strokeDashoffset = off;
+    mixPct.textContent = pct + "%";
     // 颜色分段
-    if(m<40){ ringFg.style.stroke = "#ff5d6c"; }
-    else if(m<=115){ ringFg.style.stroke = "#51d88a"; }
-    else if(m<=135){ ringFg.style.stroke = "#ffd166"; }
-    else { ringFg.style.stroke = "#b388ff"; }
+    var col;
+    if(m<40){ col = "#ff5d6c"; }
+    else if(m<=115){ col = "#51d88a"; }
+    else if(m<=135){ col = "#ffd166"; }
+    else { col = "#b388ff"; }
+    if(progFill){ progFill.style.width = pct + "%"; progFill.style.background = col; }
 
-    var deg = "<strong>"+Math.round(m)+"°</strong>";
+    var prog = "<strong>"+pct+"%</strong>";
     var times = "约 <strong>"+(m/40).toFixed(1)+"</strong> 个来回";
 
     if(m===0){
       mixStatus.innerHTML = "👈👉 按住搅拌棒，在碗里左右来回搅拌";
       mixNote.className = "panel-note";
-      mixNote.innerHTML = "⏳ 火候实时显示在碗的右下角：一个完整来回（左→右→左）约 +40°。";
+      mixNote.innerHTML = "⏳ 搅拌进度实时显示在碗的下方，一个完整来回（左→右→左）约涨 27%。";
       btnToPack.disabled = true;
     } else if(m<40){
-      mixStatus.innerHTML = "🕐 还没拌匀……火候 "+deg+"（"+times+"），再搅几下（<strong style='color:#7fd08a'>40~115</strong> 最佳）";
+      mixStatus.innerHTML = "🕐 还没拌匀……搅拌进度 "+prog+"（"+times+"），再搅几下（<strong style='color:#7fd08a'>27% 以上</strong>更好）";
       mixNote.className = "panel-note warn";
-      mixNote.innerHTML = "⚠️ 火候不足：星体拌不匀，花朵会稀疏、颜色发淡"+(state.selected.indexOf("copper")>=0 ? "，铜盐蓝色也容易翻车变绿白" : "")+"。想冒险也可以直接装填 —— 效果会打折扣。";
+      mixNote.innerHTML = "⚠️ 搅拌不足：星体拌不匀，花朵会稀疏、颜色发淡"+(state.selected.indexOf("copper")>=0 ? "，铜盐蓝色也容易翻车变绿白" : "")+"。想冒险也可以直接装填 —— 效果会打折扣。";
       btnToPack.disabled = false;
     } else if(m<=115){
-      mixStatus.innerHTML = "✅ 火候正好！"+deg+"（"+times+"）—— 可以收手了（最佳 <strong style='color:#7fd08a'>40~115</strong>）";
+      mixStatus.innerHTML = "✅ 搅拌正好！"+prog+"（"+times+"）—— 可以收手了（最佳区间 <strong style='color:#7fd08a'>27%~77%</strong>）";
       mixNote.className = "panel-note ok";
       mixNote.innerHTML = "✅ 星体颗粒均匀饱满，配方成型。装填去吧！";
       btnToPack.disabled = false;
     } else if(m<=135){
-      mixStatus.innerHTML = "🔥 快过头了……"+deg+"（"+times+"），再搅就要失控（<strong style='color:#b388ff'>超过 135</strong> 触发神秘效果）";
+      mixStatus.innerHTML = "🔥 快过头了……"+prog+"（"+times+"），再搅就要失控（<strong style='color:#b388ff'>超过 90%</strong> 触发神秘效果）";
       mixNote.className = "panel-note warn";
       mixNote.innerHTML = "⚠️ 搅拌接近临界值：配比开始失衡，继续搅会触发“神秘效果”，结果不可预测。";
       btnToPack.disabled = false;
     } else {
-      mixStatus.innerHTML = "🌀 过度搅拌！"+deg+"（"+times+"）—— 配方彻底失控，神秘效果启动 🎲";
+      mixStatus.innerHTML = "🌀 过度搅拌！"+prog+"（"+times+"）—— 配方彻底失控，神秘效果启动 🎲";
       mixNote.className = "panel-note";
       mixNote.innerHTML = "🎲 过度搅拌触发神秘效果：形状、颜色、强度全部随机！勇敢的焰火师，接受这个惊喜吧。";
       btnToPack.disabled = false;
@@ -3093,16 +3344,56 @@
   function enterLaunch(){
     state.launched = false;
     state.continuous = false;   // 重新进入点燃步骤时退出沉浸连放，恢复正常结果卡
+    setFreeMode(false);         // 重新进入点燃步骤时退出自由连放
     resultCard.hidden = true;
     launchStage.classList.remove("firing");
     if(peekBtn) peekBtn.style.display = "none";
     var bases = state.selected.some(function(id){ return BY_ID[id].type==="base"; });
     var hint = "";
     if(!bases){ hint = "⚠️ 配方缺少基础药，预计会哑火（冒股青烟）。"; }
-    else if(state.mix<40){ hint = "⚠️ 搅拌不足（不到 1 个完整来回），花朵会比较稀疏。"; }
-    else if(state.mix>135){ hint = "🌀 过度搅拌，神秘效果待机中！"; }
+    else if(state.mix<40){ hint = "⚠️ 搅拌不足（进度不到 27%），花朵会比较稀疏。"; }
+    else if(state.mix>135){ hint = "🌀 过度搅拌（进度超过 90%），神秘效果待机中！"; }
     else { hint = "🔥 点击下方按钮点燃引线，退后一步看它升空。"; }
     launchHint.textContent = hint;
+  }
+
+  // 自由连放开关：开启后在点燃页任意位置单击即从桶口放一枚
+  function setFreeMode(on){
+    on = !!on;
+    if(state.freeMode === on){
+      // 即使状态未变，也把 UI 同步一遍，避免类/文案与实际状态脱节
+      launchStage.classList.toggle("free", on);
+      return;
+    }
+    state.freeMode = on;
+    launchStage.classList.toggle("free", on);
+    var btn = $("btnFree");
+    if(btn){
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", String(on));
+      btn.textContent = on ? "🎯 自由连放（已开）" : "🎯 自由连放";
+    }
+    if(on){
+      // 进入自由连放：先按当前配方算好结果，进入点火常驻态
+      ensureAudio();
+      var r = parseRecipe();
+      state.recipe = r;
+      achNewIds = achUnlock(r);
+      startFx();
+      fx.style.display = "block";
+      launchStage.classList.add("firing");
+      launchHint.textContent = "🎯 自由连放中：在屏幕任意位置单击，就从桶里放一朵！";
+    } else {
+      // 退出：清空现场、复位状态
+      cancelAnimationFrame(animId);
+      particles.length = 0; shells.length = 0; delayed.length = 0;
+      fxRunning = false;
+      fx.style.display = "none";
+      launchStage.classList.remove("firing");
+      state.launched = false;
+      resultCard.hidden = true;
+      if(peekBtn) peekBtn.style.display = "none";
+    }
   }
   function launch(){
     if(state.launched) return;
@@ -3112,25 +3403,66 @@
     haptic(18);
     var r = parseRecipe();
     state.recipe = r;
+    // 图鉴记录：本次燃放真正触发/绽放出来后，才解锁对应成就
+    achNewIds = achUnlock(r);
     launchStage.classList.add("firing");
+    if(state.freeMode){
+      // 自由连放：按钮也当作"在默认高度放一朵"，同样受限流约束
+      state.launched = false;   // 允许下次继续点
+      if(!freeRateOk()) return;
+      launchHint.textContent = "🎯 自由连放中：在屏幕任意位置单击，就从桶里放一朵！";
+      startFx();
+      fireFromTube();
+      return;
+    }
     launchHint.textContent = "点燃引线，后退一步……";
-    // 计算筒口位置
+    startFx();
+    fireFromTube();
+  }
+  // 从烟花筒口发射一枚弹体；targetX/targetY 为空时按默认高度垂直升空
+  function fireFromTube(targetX, targetY){
+    var r = state.recipe;
+    if(!r){ return; }
     var tubeEl = launchStage.querySelector(".launch-tube");
+    if(!tubeEl){ return; }
     var rect = tubeEl.getBoundingClientRect();
     var originX = rect.left + rect.width/2;
     var originY = rect.top + rect.height * TUBE_MOUTH_RATIO;
-    startFx();
     if(r.dud){
-      // 哑火：不升空，冒烟
       playFizz();
-      delayed.push({t:fxT+0.9, fn:function(){
-        spawnDudSmoke(originX, originY);
-      }});
-    } else {
-      shells.push(new Shell(originX, originY, originY - window.innerHeight*0.3, r.colors[0]||"#fff", r.params));
-      playWhistle(1.0);
+      delayed.push({t:fxT+0.9, fn:function(){ spawnDudSmoke(originX, originY); }});
+      return;
     }
+    // 目标高度：默认升到视口上方 30%；自由连放时用点击点的 Y
+    var ty = (targetY === undefined || targetY === null)
+      ? originY - window.innerHeight*0.3
+      : targetY;
+    shells.push(new Shell(originX, originY, ty, r.colors[0]||"#fff", r.params, targetX));
+    playWhistle(1.0);
   }
+
+  // 连点限流：间隔过近或同屏弹体过多时返回 false
+  function freeRateOk(){
+    var now = performance.now();
+    if(now - freeLastFire < FREE_MIN_GAP) return false;
+    if(shells.length >= FREE_MAX_SHELLS) return false;
+    freeLastFire = now;
+    return true;
+  }
+
+  // 自由连放：点击点燃页任意位置就放一枚
+  function freeFire(e){
+    if(!state.freeMode) return;
+    // 点在按钮/卡片等交互元素上时不算（否则开关按钮会自己触发燃放）
+    var t = e.target;
+    if(t && t.closest && t.closest("button, .card, dialog, a, input, select, textarea")) return;
+    if(!freeRateOk()) return;
+    if(!fxRunning){ startFx(); }
+    // 落点限制在画面上半部，保证有绽放空间
+    var ty = Math.min(Math.max(e.clientY, vh*0.12), vh*0.6);
+    fireFromTube(e.clientX, ty);
+  }
+
   function spawnDudSmoke(x,y){
     for(var i=0;i<26;i++){
       var ang = Math.PI/2 + (Math.random()-0.5)*1.2;
@@ -3153,9 +3485,10 @@
     if(rcBody) rcBody.scrollTop = 0;
     $("rcRibbon").textContent = r.dud ? "燃放失败" : "今夜绽放";
     $("rcName").textContent = r.name;
+    var mixPct = Math.min(100, Math.round(r.mix/150*100));   // 与搅拌进度条同一换算口径
     $("rcSub").textContent = r.dud
       ? "引线烧完，只冒了一股青烟……"
-      : (r.style==="mystery" ? "神秘力量，结果不可预测" : "配方 · 火候 "+Math.round(r.mix)+"° · 压实 "+(r.pack==="light"?"轻压":r.pack==="tight"?"紧压":"适中"));
+      : (r.style==="mystery" ? "神秘力量，结果不可预测" : "配方 · 搅拌 "+mixPct+"% · 压实 "+(r.pack==="light"?"轻压":r.pack==="tight"?"紧压":"适中"));
     var stats = [
       {k:"星体数量", v:r.params.count},
       {k:"爆裂速度", v:Math.round(r.params.speed)+" px/s"},
@@ -3171,9 +3504,24 @@
       return '<span class="fx-ing-seg">' + (idx===0 ? "原料：" : '<span class="fx-ing-dot">·</span>')
         + ingIcon(i.id) + " " + i.name + '</span>';
     });
-    ingSegs.push('<span class="fx-ing-seg tail">搅拌 ' + Math.round(r.mix) + '°</span>');
+    ingSegs.push('<span class="fx-ing-seg tail">搅拌 ' + mixPct + '%</span>');
     ingSegs.push('<span class="fx-ing-seg tail">压实 ' + (r.pack==="light"?"轻压":r.pack==="tight"?"紧压":"适中") + '</span>');
     $("rcIngredients").innerHTML = ingSegs.join("");
+    // 图鉴新收录提示：只在本次有新的解锁时出现
+    var rcNew = $("rcNew");
+    if(rcNew){
+      if(achNewIds.length){
+        var names = achNewIds.map(function(id){
+          var a = ACHIEVEMENTS.filter(function(x){ return x.id===id; })[0];
+          return a ? (a.ico+" "+a.name) : id;
+        }).join("、");
+        rcNew.innerHTML = "🆕 图鉴新收录：" + names;
+        rcNew.hidden = false;
+      } else {
+        rcNew.hidden = true;
+        rcNew.innerHTML = "";
+      }
+    }
     // 滚动到结果卡
     try{ resultCard.scrollIntoView({behavior: reducedMotion?"auto":"smooth", block:"nearest"}); }catch(e){}
   }
@@ -3196,6 +3544,93 @@
     if(n===3){ enterPack(); }
     if(n===4){ enterLaunch(); }
     window.scrollTo({top:0, behavior: reducedMotion?"auto":"smooth"});
+  }
+
+  /* ============ 弹层：烟花图鉴（成就式收集） ============ */
+  // 已解锁 id 集合：localStorage 持久化，读写失败时退化为内存态，不影响主流程
+  var achUnlocked = (function(){
+    try{
+      var raw = localStorage.getItem(ACH_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){ return []; }
+  })();
+  var achNewIds = [];   // 本次燃放新解锁的 id，用于结果卡「新收录」角标
+
+  function achSave(){
+    try{ localStorage.setItem(ACH_KEY, JSON.stringify(achUnlocked)); }catch(e){}
+  }
+  function achHas(id){ return achUnlocked.indexOf(id) >= 0; }
+
+  // 判定一次配方解锁了哪些成就；返回新解锁的 id 列表
+  function achUnlock(r){
+    var got = [];
+    function take(id){
+      if(!achHas(id) && got.indexOf(id) < 0){
+        achUnlocked.push(id);
+        got.push(id);
+      }
+    }
+    ACHIEVEMENTS.forEach(function(a){
+      if(a.group === "shape"){
+        if(!r.dud && r.style === a.style) take(a.id);
+      } else if(a.group === "color"){
+        if(!r.dud && r.colorName === a.colorName) take(a.id);
+      } else {
+        var f = r.flags || {};
+        if(a.id === "hd_dud"          && r.dud)              take(a.id);
+        if(a.id === "hd_copper_fail"  && f.copperFail)        take(a.id);
+        if(a.id === "hd_sodium_cover" && !r.dud && f.sodiumCover) take(a.id);
+        if(a.id === "hd_tight_double" && f.tightDouble)       take(a.id);
+        if(a.id === "hd_overmix"      && !r.dud && f.overMix) take(a.id);
+        if(a.id === "hd_no_color"     && f.noColor)           take(a.id);
+        if(a.id === "hd_four"         && f.fourIngs)          take(a.id);
+        // 虹彩猎手：用满 4 个原料做出彩虹（比普通彩虹更难的变体）
+        if(a.id === "hd_rainbow_kill" && !r.dud && r.style === "rainbow" && r.flags.fourIngs) take(a.id);
+      }
+    });
+    if(got.length){ achSave(); }
+    return got;
+  }
+
+  function achProgress(){
+    return { got: achUnlocked.length, total: ACHIEVEMENTS.length };
+  }
+
+  function renderAlbum(){
+    var body = $("albumBody");
+    if(!body) return;
+    var html = "", p = achProgress();
+    html += '<div class="album-progress"><div class="ap-bar"><span style="width:'+
+            Math.round(p.got/Math.max(1,p.total)*100)+'%"></span></div>'+
+            '<div class="ap-txt">已收录 <b>'+p.got+'</b> / '+p.total+'</div></div>';
+    ACH_GROUPS.forEach(function(g){
+      var list = ACHIEVEMENTS.filter(function(a){ return a.group === g.id; });
+      var gotN = list.filter(function(a){ return achHas(a.id); }).length;
+      html += '<div class="album-group">'+
+              '<h3>'+g.title+'<span class="ag-count">'+gotN+'/'+list.length+'</span></h3>'+
+              '<p class="ag-desc">'+g.desc+'</p>'+
+              '<div class="album-grid">';
+      list.forEach(function(a){
+        var on = achHas(a.id);
+        var isNew = achNewIds.indexOf(a.id) >= 0;
+        html += '<div class="album-item'+(on?' on':'')+'">'+
+                '<div class="ai-ico">'+(on ? a.ico : "❔")+'</div>'+
+                '<div class="ai-name">'+(on ? a.name : "未收录")+'</div>'+
+                (isNew ? '<span class="ai-new">NEW</span>' : '')+
+                '<div class="ai-hint">'+(on ? "已收录 · "+(a.hint||"") : (a.hint||"继续探索"))+'</div>'+
+                '</div>';
+      });
+      html += '</div></div>';
+    });
+    html += '<button type="button" class="btn ghost album-reset" id="albumReset">🧹 清空图鉴记录</button>';
+    body.innerHTML = html;
+    var rb = $("albumReset");
+    if(rb) rb.addEventListener("click", function(){
+      if(!window.confirm("确定要清空全部图鉴收录记录吗？此操作不可撤销。")) return;
+      achUnlocked = []; achNewIds = []; achSave();
+      renderAlbum();
+    });
   }
 
   /* ============ 弹层：炼金手札 ============ */
@@ -3244,21 +3679,20 @@
     $("btnBack3").addEventListener("click", function(){ goStep(3); });
     // 点燃
     $("btnLaunch").addEventListener("click", launch);
-    $("btnAgain").addEventListener("click", function(){
-      // 进入沉浸连放模式：回到点燃引信页面，之后再次点燃不再弹结果卡
+    // 自由连放：开关 + 点燃页任意位置单击发射
+    $("btnFree").addEventListener("click", function(){ setFreeMode(!state.freeMode); });
+    launchStage.addEventListener("pointerdown", freeFire);
+    // 「再放一次」与「关闭」行为一致：进入沉浸连放，回到点燃引信页面
+    function backToLaunch(){
       state.continuous = true;
       state.launched = false;
       resultCard.hidden = true;
       launchStage.classList.remove("firing");
       launchHint.textContent = "🔁 沉浸连放模式：点「点燃引线」连续绽放，不再打断。";
       updatePeek();
-    });
-    $("btnClose").addEventListener("click", function(){
-      // 关闭结果卡：收起弹窗，回到放烟花界面（可再次点燃）
-      resultCard.hidden = true;
-      state.launched = false;
-      updatePeek();
-    });
+    }
+    $("btnAgain").addEventListener("click", backToLaunch);
+    $("btnClose").addEventListener("click", backToLaunch);
     $("btnPeek").addEventListener("click", function(){
       // 查看本次效果：在连放中临时弹出结果卡
       showResult();
@@ -3285,6 +3719,14 @@
     });
     $("journalClose").addEventListener("click", function(){ jd.close(); });
     jd.addEventListener("click", function(e){ if(e.target===jd){ jd.close(); } });
+    // 图鉴
+    var ad = $("albumDialog");
+    $("btnAlbum").addEventListener("click", function(){
+      renderAlbum();
+      ad.showModal();
+    });
+    $("albumClose").addEventListener("click", function(){ ad.close(); });
+    ad.addEventListener("click", function(e){ if(e.target===ad){ ad.close(); } });
     // 音效开关
     var bs = $("btnSound");
     bs.addEventListener("click", function(){
