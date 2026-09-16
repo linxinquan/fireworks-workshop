@@ -1,0 +1,1097 @@
+  :root{
+    --canvas-bg-0:#070b22;
+    --canvas-bg-1:#101a45;
+    --canvas-bg-2:#1b2a63;
+    --ink:#f7ecd9;
+    --ink-dim:#c9bfa8;
+    --ink-faint:#8d8aa0;
+    --wood-0:#2b2118;
+    --wood-1:#3d2f22;
+    --wood-2:#4e3c2b;
+    --wood-line:#251c14;
+    --accent:#ffd166;
+    --accent-ink:#3a2a08;
+    --danger:#ff5d6c;
+    --ok:#51d88a;
+    --ring:#ffd166;
+    --r-sm:10px;
+    --r-md:18px;
+    --r-lg:26px;
+    /* 夜色琉璃 Night Glass：半透明白边界 + 135° 受光 + 发光语义 */
+    --glass-line:rgba(255,255,255,.13);
+    --glass-line-strong:rgba(255,255,255,.24);
+    --glass-bg:linear-gradient(150deg,rgba(255,255,255,.065),rgba(255,255,255,.015));
+    --hl:inset 0 1px 0 rgba(255,255,255,.16);
+    --magic:#b388ff;
+    --magic-soft:#e0aaff;
+    --glow-amber:0 0 22px rgba(255,183,3,.35);
+    --shadow-soft:0 8px 24px rgba(0,0,0,.35);
+    --shadow-pop:0 14px 40px rgba(0,0,0,.5);
+    --font-ui:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --font-hand:"Comic Sans MS","Chalkboard SE","PingFang SC","Microsoft YaHei",cursive,sans-serif;
+    --space-1:8px;
+    --space-2:14px;
+    --space-3:22px;
+    --space-4:34px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;overscroll-behavior:none}
+  body{
+    font-family:var(--font-ui);
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--canvas-bg-0) 0%,var(--canvas-bg-1) 55%,var(--canvas-bg-2) 100%);
+    min-height:100vh;
+    min-height:100dvh;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* 手机端：拖动搅拌/点击卡片时不选中文字、不弹长按菜单 */
+  #app,.mix-stage,.mix-zone,.ing-card,.pack-option,.steps,.hud-btn,.btn,.spoon,.bowl-visual{
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  }
+  button{font-family:inherit;cursor:pointer}
+  /* 基线：Chrome 61 无 :focus-visible，先给 :focus 样式，保证键盘焦点可见 */
+  button:focus,a:focus,input:focus{
+    outline:3px solid var(--ring);
+    outline-offset:2px;
+    border-radius:6px;
+  }
+  /* 增强：支持 :focus-visible 的内核上，只在键盘操作时显示焦点环 */
+  button:focus-visible,a:focus-visible,input:focus-visible{
+    outline:3px solid var(--ring);
+    outline-offset:2px;
+    border-radius:6px;
+  }
+  button:focus:not(:focus-visible),a:focus:not(:focus-visible),input:focus:not(:focus-visible){outline:none}
+
+  /* 夜空背景 */
+  #sky{
+    position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;
+    z-index:0;display:block;pointer-events:none;
+  }
+  .ground{
+    position:fixed;left:0;right:0;bottom:0;height:24vh;
+    z-index:0;pointer-events:none;
+    background:
+      radial-gradient(120% 90% at 50% 110%, rgba(255,209,102,.12), transparent 60%),
+      linear-gradient(180deg, rgba(6,9,26,0) 0%, rgba(8,11,30,.55) 55%, rgba(5,7,20,.9) 100%);
+  }
+
+  #app{
+    position:relative;z-index:1;
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;flex-direction:column;
+    max-width:1120px;margin:0 auto;
+    /* 顶部留出状态栏安全区：
+       模拟器注入 --safe-area-inset-top，真机用 env()，两者用 var() 组合取值；
+       基础留白取 32px（14px 视觉呼吸 + 18px 与容器操作栏错开，真机下不再压住顶栏按钮）；
+       最前面那条固定值是无变量环境（如旧内核/无 viewport-fit 时）的兜底。
+       注意不能用 max() —— Chrome 61 不支持 max()，整条声明会被丢弃。 */
+    padding:32px 14px 60px;
+    padding-top:calc(32px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
+    padding-right:14px;
+    padding-bottom:60px;
+    /* 基线回退：Chrome 61 丢弃 clamp() 那行，保留这条固定值 */
+    padding-left:14px;
+    padding-left:clamp(14px,4vw,34px);
+  }
+
+  /* 顶栏 */
+  header{
+    display:flex;align-items:center;gap:var(--space-2);
+    flex-wrap:wrap;
+    padding:10px 0 6px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    margin-right:auto;
+  }
+  .brand .logo{
+    width:42px;height:42px;flex:none;
+    display:grid;place-items:center;
+    border-radius:14px;
+    /* 辉光是语义：logo 是全页第一强调点，给一枚克制的琥珀环境光 */
+    filter:drop-shadow(0 4px 14px rgba(255,183,3,.3));
+  }
+  .brand .logo svg{width:100%;height:100%;display:block}
+  .brand h1{
+    margin:0;font-size:22px;
+    font-size:clamp(20px,4.4vw,28px);
+    letter-spacing:.06em;
+    font-weight:800;
+    text-shadow:0 2px 0 rgba(0,0,0,.35);
+  }
+  .brand .sub{
+    font-size:12px;color:var(--ink-dim);
+    margin-top:2px;
+  }
+  .hud-btns{display:flex;gap:8px}
+  .hud-btn{
+    border:1px solid var(--glass-line);
+    background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.04));
+    color:var(--ink);
+    font-size:13px;
+    padding:8px 12px;
+    border-radius:999px;
+    box-shadow:var(--hl);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .hud-btn:hover{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.07))}
+  .hud-btn:active{transform:scale(.96)}
+
+  /* 步骤条 */
+  .steps{
+    display:flex;align-items:center;justify-content:center;
+    gap:4px;margin:18px 0 20px;padding:0;list-style:none;
+    flex-wrap:wrap;
+  }
+  .steps li{
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;color:var(--ink-faint);
+    user-select:none;
+  }
+  .step-dot{
+    width:30px;height:30px;border-radius:50%;
+    display:grid;place-items:center;
+    background:rgba(255,255,255,.08);
+    border:2px solid rgba(255,255,255,.18);
+    font-size:14px;font-weight:700;
+    transition:all .25s ease;
+  }
+  .steps li .step-label{white-space:nowrap;padding-right:4px}
+  .steps li.done .step-dot{background:#3c5f45;border-color:#7fd08a;color:#cff7d6}
+  .steps li.done .step-label{color:var(--ink-dim)}
+  .steps li.active .step-dot{
+    background:linear-gradient(135deg,#ffe9ad,#ffb703);border-color:#fff1c4;color:var(--accent-ink);
+    box-shadow:0 0 0 4px rgba(255,209,102,.18),0 0 18px rgba(255,209,102,.4);
+  }
+  .steps li.active .step-label{color:var(--ink);font-weight:700}
+  .step-conn{
+    width:26px;height:2px;border-radius:2px;
+    background:rgba(255,255,255,.16);margin:0 2px;
+  }
+  .steps li.done + .step-conn{background:#7fd08a}
+
+  /* 场景 */
+  .scene{
+    display:none;
+    animation:sceneIn .35s ease both;
+  }
+  .scene.show{display:block}
+  @keyframes sceneIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  .workbench{
+    position:relative;
+    /* 夜色琉璃：木纹台面 → 深夜玻璃面板，边界是光不是墨 */
+    background:var(--glass-bg),linear-gradient(180deg,#10173c,#0a0f2a);
+    border:1px solid var(--glass-line);
+    border-radius:var(--r-lg);
+    box-shadow:var(--shadow-pop), var(--hl);
+    padding:22px;
+    padding:clamp(16px,3vw,30px);
+  }
+  .workbench::before{
+    content:"";position:absolute;left:12px;right:12px;top:0;height:1px;
+    background:linear-gradient(90deg,transparent 6%,rgba(255,255,255,.24) 50%,transparent 94%);
+  }
+  .step-head{
+    display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .step-head h2{margin:0;font-size:20px;font-size:clamp(18px,3.2vw,24px);font-weight:800}
+  .step-head p{margin:0;font-size:13px;color:var(--ink-dim)}
+
+  .panel-note{
+    /* 不要用 flex：会把内联的 <b> / <svg class="ico"> 拆成独立 flex 项，整段文字被挤成竖条 */
+    display:block;
+    background:rgba(255,209,102,.1);
+    border:1px solid rgba(255,209,102,.28);
+    color:#ffe9b3;border-radius:var(--r-sm);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+    padding:10px 14px;font-size:13px;line-height:1.6;
+  }
+  .panel-note.warn{background:rgba(255,93,108,.1);border-color:rgba(255,93,108,.35);color:#ffb9c1}
+  .panel-note.ok{background:rgba(81,216,138,.1);border-color:rgba(81,216,138,.35);color:#b8f0cf}
+
+  /* 选料 */
+  .pick-layout{
+    display:grid;gap:20px;
+    grid-template-columns:1fr 240px;
+    align-items:start;
+  }
+  .rack h3{margin:0 0 12px;font-size:15px;color:var(--ink-dim);font-weight:600}
+  .rack-grid{
+    display:grid;gap:9px;
+    grid-template-columns:repeat(auto-fill,minmax(138px,1fr));
+  }
+  /* 原料卡：图标在上居中放大，名称/说明/标签在下；尺寸与原来相仿 */
+  .ing-card{
+    position:relative;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-areas:"emoji" "name" "desc" "tags";
+    justify-items:center;align-content:start;
+    row-gap:4px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-line);
+    border-radius:12px;
+    box-shadow:var(--hl);
+    padding:11px 8px 9px;
+    text-align:center;color:var(--ink);
+    transition:transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .2s ease;
+  }
+  /* 分类配色：基础药(琥珀) / 着色剂(青) / 花型剂(紫) —— 顶部色条 + 分类标签同色，做 UI 区分 */
+  .ing-card.cat-base{--cat:#ffce5c}
+  .ing-card.cat-color{--cat:#5ad1ff}
+  .ing-card.cat-shape{--cat:#c08bff}
+  .ing-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    border-radius:12px 12px 0 0;background:var(--cat);opacity:.92;
+  }
+  .ing-card:hover{transform:translateY(-2px);border-color:var(--glass-line-strong)}
+  .ing-card:active{transform:scale(.97)}
+  /* 原料图标（统一风格 SVG，见文末「原料图标集」）
+     注意：<svg> 没写宽高会回落到 300×150，所以 .ico 必须自带尺寸 */
+  .ico{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;flex:none}
+  .ing-card .ing-ico{grid-area:emoji;width:44px;height:44px}
+  .ing-card .ing-name{
+    grid-area:name;font-weight:700;font-size:13px;line-height:1.25;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+  }
+  .ing-card .ing-desc{
+    grid-area:desc;font-size:10.5px;color:var(--ink-dim);line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .ing-card .ing-tags{
+    grid-area:tags;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;
+    overflow:hidden;margin-top:1px;
+  }
+  .tag{
+    font-size:9.5px;padding:1px 6px;border-radius:999px;white-space:nowrap;
+    background:rgba(255,255,255,.1);color:var(--ink-dim);
+  }
+  .tag.real{background:rgba(81,216,138,.15);color:#a9eec4}
+  .tag.magic{background:rgba(255,209,102,.14);color:#ffe4a1}
+  .tag.type{background:rgba(140,150,255,.16);color:#c6ccff}
+  /* 分类标签按分类配色，强化区分 */
+  .ing-card.cat-base .tag.type{background:rgba(255,206,92,.18);color:#ffe6a6}
+  .ing-card.cat-color .tag.type{background:rgba(90,209,255,.16);color:#cdeeff}
+  .ing-card.cat-shape .tag.type{background:rgba(192,139,255,.18);color:#e3d2ff}
+  .ing-card.selected{
+    border-color:rgba(255,209,102,.65);
+    background:linear-gradient(150deg, rgba(255,209,102,.16), rgba(255,209,102,.04));
+    box-shadow:0 0 0 1px rgba(255,209,102,.22),0 0 20px rgba(255,209,102,.16),
+               inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .ing-card .check{
+    position:absolute;top:-5px;right:-5px;
+    width:17px;height:17px;border-radius:50%;
+    display:none;place-items:center;
+    background:linear-gradient(135deg,#ffe9ad,#ffb703);color:var(--accent-ink);
+    font-size:10px;font-weight:900;
+    box-shadow:0 0 0 2px rgba(10,15,40,.9),0 0 10px rgba(255,183,3,.45);
+  }
+  .ing-card.selected .check{display:grid}
+  .ing-card:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+
+  /* 配方碗 */
+  .bowl-panel{
+    background:rgba(0,0,0,.25);
+    border:1px solid var(--glass-line);
+    border-radius:var(--r-md);
+    box-shadow:var(--hl);
+    padding:14px;
+    position:sticky;top:14px;
+  }
+  .bowl-panel h3{margin:0 0 10px;font-size:15px;color:var(--ink-dim);font-weight:600}
+  .bowl-visual{
+    height:120px;border-radius:14px;
+    display:flex;align-items:flex-end;justify-content:center;
+    background:radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.05), transparent 70%);
+  }
+  .bowl{
+    position:relative;width:150px;height:74px;
+  }
+  .bowl svg{width:100%;height:100%;display:block}
+  /* 用 left/right 撑满碗宽再居中：只写 left:50% 会让元素可用宽度只剩半碗，文字被迫换行 */
+  .bowl .mix-display{
+    position:absolute;left:0;right:0;top:20px;
+    display:flex;gap:2px;flex-wrap:wrap;justify-content:center;align-items:flex-start;
+    font-size:20px;line-height:1;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));
+  }
+  .bowl .mix-display span{display:inline-block}
+  .bowl .mix-display .ico{width:23px;height:23px;vertical-align:middle}
+  .bowl .mix-display .empty-txt{font-size:11px;color:var(--ink-faint);width:100%;text-align:center;padding-top:4px}
+  /* 投料动画：原料从上方落进碗里 */
+  @keyframes dropIn{
+    0%{transform:translateY(-30px) scale(.45) rotate(-16deg);opacity:0}
+    55%{transform:translateY(2px) scale(1.22) rotate(6deg);opacity:1}
+    100%{transform:translateY(0) scale(1) rotate(0)}
+  }
+  @keyframes bowlBump{
+    0%{transform:scale(1)}
+    35%{transform:scale(1.055)}
+    100%{transform:scale(1)}
+  }
+  .bowl .mix-display span.drop{animation:dropIn .42s cubic-bezier(.22,.9,.32,1.3) both}
+  .bowl.bump{animation:bowlBump .34s ease-out}
+  .bowl-panel .bowl-hint small{display:none}
+  .bowl-panel .bowl-hint{font-size:12px;color:var(--ink-faint);margin-top:10px;line-height:1.6}
+  .bowl-panel .count{font-weight:700;color:var(--ink)}
+
+  .next-bar{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    margin-top:18px;
+  }
+  .next-bar .panel-note{flex:1;min-width:220px;margin:0}
+  .btn{
+    border:none;border-radius:999px;
+    padding:12px 26px;font-size:15px;font-weight:800;
+    color:var(--accent-ink);
+    background:linear-gradient(135deg,#ffe9ad,#ffd166 45%,#ffb703);
+    box-shadow:var(--glow-amber),0 6px 18px rgba(0,0,0,.35),
+               inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 6px rgba(122,79,0,.22);
+    transition:transform .12s ease, box-shadow .18s ease, filter .15s ease;
+    letter-spacing:.04em;
+  }
+  .btn:hover{filter:brightness(1.06);box-shadow:0 0 30px rgba(255,183,3,.48),0 6px 18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 6px rgba(122,79,0,.22)}
+  .btn:active{transform:translateY(1px) scale(.98);box-shadow:0 0 12px rgba(255,183,3,.3),0 3px 10px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.55)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:0 3px 10px rgba(0,0,0,.3)}
+  .btn.ghost{
+    background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+    color:var(--ink);
+    box-shadow:var(--hl);border:1px solid var(--glass-line-strong);
+  }
+  .btn.ghost:hover{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.07))}
+  .btn.small{padding:9px 18px;font-size:13px}
+  .btn.danger{background:linear-gradient(135deg,#ff8a96,#ff5d6c);box-shadow:0 0 18px rgba(255,93,108,.35),0 6px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.4);color:#fff}
+  .btn.danger:active{box-shadow:0 0 10px rgba(255,93,108,.28),0 3px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.4)}
+
+  /* 搅拌 */
+  .mix-layout{
+    display:grid;gap:20px;
+    grid-template-columns:1fr 300px;
+    align-items:center;
+  }
+  .mix-stage{
+    position:relative;touch-action:none;
+    user-select:none;-webkit-user-select:none;
+    background:radial-gradient(120% 90% at 50% 20%, rgba(255,255,255,.05), transparent 70%);
+    border-radius:var(--r-lg);
+    min-height:330px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  /* 碗与进度条共用一个定宽列容器：
+     宽度只由这一个容器决定，因此两者必然同宽、同轴；
+     容器整体在搅拌区居中，搅拌棒挂进碗里跟随碗定位，不会错位 */
+  .mix-col{
+    width:300px;max-width:100%;
+    width:min(300px,100%);
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .mix-stage .big-bowl{
+    position:relative;width:100%;height:200px;
+  }
+  /* 只作用于碗本体那张 SVG：不能用 .big-bowl > svg ——
+     搅拌棒 .spoon 也是 .big-bowl 的直接子元素，会被一起撑成整碗大小而错位 */
+  .big-bowl > svg.bowl-svg{width:100%;height:100%;display:block}
+  .big-bowl .mix-zone{
+    position:absolute;left:50%;top:52px;transform:translateX(-50%);
+    width:120px;height:74px;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    font-size:34px;letter-spacing:2px;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));
+    will-change:transform;
+  }
+  /* 搅拌棒相对碗定位（不是相对 stage）：碗在列容器里的位置变化时它自动跟随，
+     水平永远落在碗中轴，垂直落在碗口内（与原料显示区 mix-zone 的 top 对齐） */
+  .spoon{
+    position:absolute;left:50%;top:56px;
+    width:56px;height:56px;margin-left:-28px;margin-top:-28px;
+    z-index:2;pointer-events:none;
+    transform-origin:50% 80%;
+    filter:drop-shadow(0 3px 3px rgba(0,0,0,.4));
+    will-change:transform;
+  }
+  /* 新手引导：浮在碗上方，手指左右滑动演示"按住拖动"，开始搅拌后淡出 */
+  .mix-guide{
+    position:absolute;left:50%;top:14px;transform:translateX(-50%);
+    z-index:4;pointer-events:none;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:8px 14px;border-radius:var(--r-md);
+    background:rgba(8,12,32,.62);
+    border:1px solid rgba(255,209,102,.35);
+    box-shadow:0 6px 20px rgba(0,0,0,.45);
+    /* 模糊仅作增强：基线用上面那条不透明底色的半透明背景，端上不支持模糊也能读清 */
+    -webkit-backdrop-filter:blur(4px);
+    backdrop-filter:blur(4px);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .mix-guide.hide{opacity:0;transform:translateX(-50%) translateY(-8px)}
+  .mix-guide .mg-text{
+    font-size:13px;font-weight:700;color:#ffe6a8;letter-spacing:.02em;white-space:nowrap;
+  }
+  .mix-guide .mg-hand{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    width:96px;height:26px;
+  }
+  .mix-guide .mg-finger{
+    position:relative;z-index:2;font-size:22px;line-height:1;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));
+    animation:mgSwipe 1.6s ease-in-out infinite;
+  }
+  .mix-guide .mg-track{
+    position:absolute;left:0;right:0;top:50%;height:2px;transform:translateY(-50%);
+    background:linear-gradient(90deg,transparent,rgba(255,209,102,.65),transparent);
+    border-radius:999px;
+  }
+  @keyframes mgSwipe{
+    0%,100%{transform:translateX(-26px)}
+    50%{transform:translateX(26px)}
+  }
+  /* 用户一旦开始搅拌（拖动了搅拌棒），引导立即隐去 */
+  .mix-stage.mixing .mix-guide{opacity:0;transform:translateX(-50%) translateY(-8px)}
+
+  /* 进度条：宽度撑满列容器（即与碗同宽），下方留出与碗的间隙 */
+  .mix-progress{
+    width:100%;
+    margin-top:26px;              /* 与碗之间留出间隙 */
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  /* 进度条 + 右侧百分比：把数字放到条外，避免与色块互相干扰 */
+  .progress-bar{
+    position:relative;width:100%;height:14px;
+    background:rgba(255,255,255,.12);
+    border:1px solid var(--glass-line);
+    border-radius:999px;overflow:hidden;
+  }
+  .progress-fill{
+    position:absolute;left:0;top:0;bottom:0;width:0;
+    background:var(--accent);border-radius:999px;
+    transition:width .12s linear, background .2s linear;
+  }
+  /* 百分比数字：随填充条一起移动，贴在色块末端内侧 */
+  .progress-pct{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    font-size:10.5px;font-weight:800;color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.9);
+    pointer-events:none;letter-spacing:.02em;
+  }
+  .mix-status{
+    font-size:13px;color:var(--ink-dim);text-align:center;
+    max-width:100%;line-height:1.6;
+  }
+  .mix-status strong{color:var(--accent)}
+  .mix-side h3{margin:0 0 8px;font-size:16px}
+  .mix-side .recipe-list{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:6px}
+  .mix-side .recipe-list li{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.06);
+    border-radius:var(--r-sm);
+    padding:8px 12px;font-size:13px;
+  }
+  .mix-side .recipe-list .r-ico{width:19px;height:19px}
+  .mix-tip{font-size:12.5px;color:var(--ink-faint);line-height:1.7}
+  .mix-tip b{color:var(--ink-dim)}
+
+  /* 装填 */
+  .pack-layout{
+    display:grid;gap:24px;
+    grid-template-columns:210px 1fr;
+    align-items:center;
+  }
+  .pack-stage{
+    background:rgba(0,0,0,.25);
+    border:1px solid var(--glass-line);
+    border-radius:var(--r-md);
+    box-shadow:var(--hl);
+    padding:16px;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .pack-stage h3{margin:0;font-size:15px;color:var(--ink-dim)}
+  /* 烟花筒：SVG 精绘（细长比例 + 纸质光影 + 金箍 + 开口内壁） */
+  .tube-wrap{
+    position:relative;width:52px;height:132px;margin:4px 0 8px;
+  }
+  .tube{position:absolute;top:0;right:0;bottom:0;left:0}
+  .tube svg{width:100%;height:100%;display:block;overflow:visible}
+  /* 引线顶端火花 */
+  .tube .spark{transform-box:fill-box;transform-origin:50% 50%;opacity:.9}
+  @keyframes sparkPulse{0%,100%{opacity:.45;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+  #step-launch.firing .tube .spark{animation:sparkPulse .32s ease-in-out infinite}
+  /* 装填后，筒口浮现星体 */
+  .tube .load{opacity:0;transform:translateY(-10px);transition:opacity .5s ease .1s, transform .5s cubic-bezier(.34,1.3,.64,1) .1s}
+  .pack-stage.packed .tube .load{opacity:1;transform:translateY(0)}
+  .pack-stage .packed-mark{
+    font-size:13px;color:var(--ok);font-weight:700;
+    opacity:0;transition:opacity .3s ease;
+  }
+  .pack-stage.packed .packed-mark{opacity:1}
+  .pack-options{display:flex;flex-direction:column;gap:12px}
+  .pack-option{
+    display:flex;gap:12px;align-items:flex-start;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-line);
+    border-radius:var(--r-md);
+    padding:12px 14px;text-align:left;color:var(--ink);
+    transition:border-color .15s ease, background .15s ease, box-shadow .2s ease;
+  }
+  .pack-option:hover{border-color:var(--glass-line-strong)}
+  .pack-option.sel{
+    border-color:rgba(255,209,102,.65);
+    background:linear-gradient(150deg, rgba(255,209,102,.14), rgba(255,209,102,.03));
+    box-shadow:0 0 0 1px rgba(255,209,102,.2),0 0 18px rgba(255,209,102,.14),var(--hl);
+  }
+  .pack-option .po-emoji{font-size:24px}
+  .pack-option .po-title{font-weight:800;font-size:14px;display:block}
+  .pack-option .po-desc{font-size:12px;color:var(--ink-dim);margin-top:3px;line-height:1.5}
+  .pack-option .po-tag{
+    display:inline-block;margin-left:8px;font-size:10.5px;padding:1px 7px;border-radius:999px;
+    background:rgba(255,209,102,.2);color:#ffe4a1;
+  }
+
+  /* 点燃 · 沉浸式夜空 */
+  #step-launch{position:relative;overflow:hidden;min-height:420px;background:transparent}
+  .riverside{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0}
+  .riverside svg{width:100%;height:100%;display:block}
+  .launch-hint{
+    position:absolute;left:0;right:0;
+    top:18px;
+    top:calc(18px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
+    text-align:center;z-index:3;
+    font-size:13px;color:rgba(247,236,217,.8);
+    text-shadow:0 1px 6px rgba(0,0,0,.7);
+    pointer-events:none;letter-spacing:.03em;
+  }
+  .launch-tube{
+    position:absolute;left:50%;bottom:calc(11vh + 14px);transform:translateX(-50%);
+    width:54px;height:138px;z-index:2;
+    transform-origin:50% 100%;
+    transition:transform .3s ease;
+  }
+  .launch-tube .muzzle-glow{
+    position:absolute;top:-3.3%;left:50%;transform:translateX(-50%);
+    width:69%;height:18%;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,240,180,.95), rgba(255,170,60,.55) 55%, transparent 75%);
+    opacity:0;transition:opacity .15s ease;
+    filter:blur(2px);z-index:1;
+  }
+  #step-launch.firing .muzzle-glow{opacity:1;animation:muzzlePulse .12s linear infinite alternate}
+  @keyframes muzzlePulse{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.25)}}
+  #step-launch.firing .launch-tube{transform:translate(-50%,4px) rotate(-1.5deg)}
+  .launch-controls{
+    position:absolute;left:50%;bottom:20px;
+    bottom:20px;
+    bottom:calc(20px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+    transform:translateX(-50%);z-index:3;
+    display:flex;gap:9px;align-items:center;justify-content:center;
+    max-width:calc(100% - 20px);flex-wrap:wrap;
+    transition:opacity .25s ease;
+  }
+  /* 最后一页按钮统一收小，避免挤在一起 */
+  .launch-controls .btn{padding:9px 15px;font-size:13px;letter-spacing:.02em}
+  /* 「查看本次效果」与其它按钮同排：作为控制条内的普通按钮，
+     由 hidden 属性控制显隐（不占位），不再用 fixed 浮层叠加。 */
+  .peek-btn{padding:9px 15px;font-size:13px}
+  /* 显式声明 display 的按钮会覆盖 hidden 属性自带的 display:none，这里强制隐藏 */
+  .peek-btn[hidden]{display:none !important}
+  /* 结果卡右上角的关闭叉：每张卡（含首次）都显示，点它与「再放一次」一致 —— 收起卡片并进入沉浸连放 */
+  .card-close{
+    position:absolute;top:8px;right:10px;z-index:3;
+    width:30px;height:30px;padding:0;line-height:28px;text-align:center;
+    font-size:22px;font-weight:700;color:#fff;
+    background:rgba(0,0,0,.28);border:none;border-radius:50%;cursor:pointer;
+    transition:background .15s ease;
+  }
+  .card-close:hover{background:rgba(0,0,0,.5)}
+  #step-launch.firing .launch-controls{opacity:0;pointer-events:none}
+  /* 自由连放：点火常驻时控制区必须仍然可见可点（否则关不掉），只弱化不隐藏 */
+  #step-launch.free .launch-controls{opacity:1;pointer-events:auto}
+  #step-launch.free .launch-controls .btn{opacity:.72}
+  #step-launch.free .launch-controls .btn:hover{opacity:1}
+  /* 自由连放开/关的状态色：开启时按钮走强调色，一眼可辨 */
+  #btnFree.on{
+    color:var(--accent);
+    border-color:rgba(255,209,102,.55);
+    background:rgba(255,209,102,.14);
+    opacity:1 !important;
+  }
+  /* 结果卡浮层：放完后从底部浮出，不遮挡夜空主体
+     注意 overflow 必须保持 visible —— 否则 top:-14px 的 ribbon 会被滚动容器按 padding box 剪掉一半；
+     真正的滚动交给内层 .card-body。 */
+  #step-launch .card{
+    position:absolute;left:50%;bottom:18px;
+    bottom:calc(18px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+    transform:translateX(-50%);
+    width:600px;max-width:calc(100vw - 28px);
+    width:min(600px,calc(100vw - 28px));
+    /* 高度上限：扣掉顶部状态栏 + 底部安全区 + 上下留白，
+       避免卡片长高后顶到状态栏（沉浸模式下 #step-launch 是铺满全屏的）
+       基线回退：Chrome 61 不支持 dvh，先用 vh 那条 */
+    max-height:calc(100vh - 88px);
+    max-height:calc(100vh - 88px - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+    display:flex;flex-direction:column;
+    overflow:visible;
+    z-index:6;margin:0;padding:20px;
+    animation:cardUp .4s ease both;
+  }
+  /* hidden 属性必须真的生效：上面 .card 的 display:flex 会盖掉 UA 默认的 [hidden]{display:none}，
+     否则第 4 步「点燃」之前就会浮出一张空白结果卡，正好压住点燃按钮（实测 elementFromPoint 命中 card-body）。 */
+  #step-launch .card[hidden]{display:none}
+  #step-launch .card .card-body{
+    min-height:0;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+  }
+  #step-launch .card .fx-name{font-size:30px;font-size:clamp(26px,4.5vw,38px)}
+  @keyframes cardUp{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
+  /* 沉浸模式：隐藏顶栏、步骤条与页脚，点燃场景铺满全屏 */
+  body.immersive header,body.immersive .steps,body.immersive .footer-note{display:none}
+  body.immersive #app{max-width:none;padding:0}
+  /* 场景铺满全屏；安全区由内部各元素自己避让
+     （绝对定位子元素相对 padding box 定位，这里加 padding 会与它们的 top/bottom 叠加，
+      所以容器不加内边距，改由 .launch-hint / .launch-controls / 结果卡 各自留出安全区） */
+  body.immersive #step-launch{
+    position:fixed;top:0;right:0;bottom:0;left:0;
+    border-radius:0;z-index:5;min-height:0;
+  }
+  @media (max-height:560px){
+    .launch-tube{width:42px;height:108px;bottom:calc(6vh + 52px)}
+    #step-launch .card{padding:16px}
+    .launch-controls{bottom:10px;bottom:calc(10px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));gap:7px}
+    .launch-controls .btn{padding:8px 11px;font-size:12px;white-space:nowrap}
+  }
+
+  /* 配方卡：夜色琉璃 —— 玻璃表面 + 半透明白边 + 顶部 1px 高光线 */
+  .card{
+    position:relative;
+    background:var(--glass-bg),linear-gradient(180deg,#141b42,#0c1128);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:var(--r-lg);
+    padding:22px;
+    box-shadow:var(--shadow-pop), var(--hl);
+    color:var(--ink);
+  }
+  .card::before{
+    content:"";position:absolute;left:14px;right:14px;top:0;height:1px;
+    background:linear-gradient(90deg,transparent 6%,rgba(255,255,255,.28) 50%,transparent 94%);
+    pointer-events:none;
+  }
+  .card .ribbon{
+    position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,#ffe9ad,#ffd166 45%,#ffb703);
+    color:var(--accent-ink);
+    font-size:13px;font-weight:800;
+    padding:7px 22px;border-radius:999px;
+    box-shadow:0 0 16px rgba(255,183,3,.45),0 4px 12px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.55);
+    white-space:nowrap;
+  }
+  .card .fx-name{
+    font-family:var(--font-hand);
+    font-size:34px;
+    font-size:clamp(28px,5vw,42px);
+    margin:16px 0 6px;text-align:center;letter-spacing:.04em;
+    background:linear-gradient(120deg,#ffd166,#ff9f1c,#ff5d8f,#b388ff,#4cc9f0);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+  }
+  .card .fx-sub{text-align:center;color:var(--ink-dim);font-size:14px;margin-bottom:14px}
+  .card .fx-stats{
+    display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    margin:14px 0;
+  }
+  .fx-stat{
+    background:rgba(255,255,255,.06);border-radius:var(--r-sm);
+    padding:10px;text-align:center;
+  }
+  .fx-stat .fs-k{font-size:11px;color:var(--ink-faint)}
+  .fx-stat .fs-v{font-size:16px;font-weight:800;margin-top:3px}
+  .card .fx-note{
+    font-size:13px;color:var(--ink-dim);line-height:1.7;
+    background:rgba(255,255,255,.05);
+    border-left:3px solid var(--accent);
+    border-radius:6px;padding:10px 12px;margin:14px 0;
+  }
+  .card .fx-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  /* 底部原料行：改成可换行的 flex 行，避免「压实 适中」被从中间断成两行；
+     分隔符一律绑在内容片段内部（而不是自己当一项），换行时才不会留下孤立的「｜」 */
+  .card .fx-ingredients{
+    display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+    gap:1px 2px;
+    font-size:12px;color:var(--ink-faint);text-align:center;margin-top:14px;line-height:1.7;
+  }
+  .card .fx-ingredients .fx-ing-seg{white-space:nowrap}
+  .card .fx-ingredients .fx-ing-dot{margin:0 5px 0 2px;color:rgba(255,255,255,.22)}
+  .card .fx-ingredients .fx-ing-seg.tail{
+    border-left:1px solid rgba(255,255,255,.18);
+    margin-left:8px;padding-left:9px;
+  }
+  .card .fx-ingredients .ico{width:17px;height:17px;vertical-align:-.28em;margin-right:1px}
+  .panel-note .ico{width:16px;height:16px;vertical-align:-.28em;margin-right:1px}
+  .card.fail .fx-name{background:linear-gradient(120deg,#9aa0b0,#5c6270);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+
+  /* 弹层 */
+  dialog{
+    border:1px solid rgba(255,255,255,.15);border-radius:var(--r-lg);
+    background:var(--glass-bg),linear-gradient(180deg,#141b42,#0c1128);
+    color:var(--ink);
+    padding:0;width:680px;max-width:94vw;
+    width:min(680px,94vw);
+    max-height:86vh;max-height:86dvh;overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    box-shadow:0 0 44px rgba(179,136,255,.14),var(--shadow-pop);
+  }
+  dialog::backdrop{background:rgba(4,6,18,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .dlg-inner{padding:26px 24px 24px;padding:26px clamp(18px,4vw,30px) 24px}
+  .dlg-inner h2{margin:0 0 6px;font-size:22px}
+  .dlg-inner .dlg-sub{color:var(--ink-dim);font-size:13px;margin-bottom:16px;line-height:1.6}
+  .dlg-close{
+    float:right;border:none;background:rgba(255,255,255,.08);color:var(--ink);
+    width:34px;height:34px;border-radius:50%;font-size:16px;margin:-6px -6px 0 0;
+  }
+  .dlg-close:hover{background:rgba(255,255,255,.18)}
+  .journal-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .journal-item{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    border-radius:var(--r-sm);padding:10px;
+  }
+  .journal-item .j-head{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px}
+  .journal-item .j-head .j-ico{width:24px;height:24px}
+  .journal-item .j-fact{font-size:11.5px;color:var(--ink-dim);line-height:1.55;margin-top:6px}
+  .journal-item .j-type{font-size:10px;margin-top:6px;display:inline-block}
+  .journal-note{
+    margin-top:16px;font-size:12px;color:var(--ink-faint);line-height:1.8;
+    border-top:1px solid rgba(255,255,255,.12);padding-top:14px;
+  }
+  .journal-note a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+  .journal-note a:visited{color:#e6b45a}
+
+  /* ===== 烟花图鉴（成就式收集） ===== */
+  .album-progress{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:18px;
+  }
+  .album-progress .ap-bar{
+    flex:1;height:10px;border-radius:999px;overflow:hidden;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);
+  }
+  .album-progress .ap-bar span{
+    display:block;height:100%;width:0;
+    background:linear-gradient(90deg,#ffd166,#b388ff);
+    transition:width .45s cubic-bezier(.22,.9,.32,1);
+  }
+  .album-progress .ap-txt{font-size:12.5px;color:var(--ink-dim);white-space:nowrap}
+  .album-progress .ap-txt b{color:var(--accent);font-size:15px}
+  .album-group{margin-bottom:20px}
+  .album-group h3{
+    margin:0 0 4px;font-size:16px;display:flex;align-items:center;gap:8px;
+  }
+  .album-group .ag-count{
+    font-size:11px;font-weight:700;color:var(--ink-dim);
+    background:rgba(255,255,255,.09);border-radius:999px;padding:2px 9px;
+  }
+  .album-group .ag-desc{font-size:12px;color:var(--ink-faint);margin:0 0 10px;line-height:1.6}
+  .album-grid{display:grid;gap:9px;grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+  .album-item{
+    position:relative;text-align:center;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    border-radius:var(--r-sm);padding:12px 8px 10px;
+    filter:grayscale(1);opacity:.5;transition:all .25s ease;
+  }
+  .album-item.on{
+    filter:none;opacity:1;
+    background:linear-gradient(160deg,rgba(255,209,102,.14),rgba(179,136,255,.1));
+    border-color:rgba(255,209,102,.4);
+    box-shadow:0 0 16px rgba(255,209,102,.12);
+  }
+  .album-item .ai-ico{font-size:26px;line-height:1}
+  .album-item .ai-name{font-size:13px;font-weight:800;margin-top:6px}
+  .album-item .ai-hint{
+    font-size:10.5px;color:var(--ink-faint);line-height:1.5;margin-top:5px;
+  }
+  .album-item.on .ai-hint{color:var(--ink-dim)}
+  .album-item .ai-new{
+    position:absolute;top:-6px;right:-5px;
+    font-size:9px;font-weight:800;letter-spacing:.5px;
+    background:linear-gradient(135deg,#ff5d6c,#ffb703);color:#fff;
+    padding:2px 6px;border-radius:999px;
+    box-shadow:0 2px 8px rgba(255,93,108,.5);
+  }
+  .album-reset{margin-top:4px;font-size:12.5px}
+
+  /* 结果卡：图鉴新收录 */
+  .card .fx-new{
+    margin-top:10px;padding:9px 11px;border-radius:var(--r-sm);
+    font-size:12.5px;line-height:1.6;
+    background:linear-gradient(135deg,rgba(255,209,102,.16),rgba(179,136,255,.12));
+    border:1px solid rgba(255,209,102,.35);
+    color:#ffe6a8;
+  }
+
+  .footer-note{
+    text-align:center;color:var(--ink-faint);font-size:12px;
+    margin-top:26px;line-height:1.8;
+  }
+  .footer-note a{color:#a9b3d9;text-decoration:underline;text-underline-offset:3px}
+
+  /* ============ 移动端适配 ============ */
+  @media (max-width:820px){
+    .pick-layout,.mix-layout,.pack-layout{grid-template-columns:1fr}
+    .bowl-panel{position:static}
+    /* 手机上搅拌碗优先：说明与配方列表沉到下方，避免手指要操作时碗在屏幕外 */
+    .mix-layout .mix-stage{order:-1}
+    .mix-layout .mix-side{order:0}
+  }
+  @media (max-width:640px){
+    #app{padding-left:12px;padding-right:12px;padding-bottom:32px}
+    /* 顶栏压成一行，把垂直空间让给游戏本体 */
+    header{padding:2px 0;gap:8px;flex-wrap:nowrap}
+    .brand{gap:8px;min-width:0;overflow:hidden}
+    .brand .logo{width:34px;height:34px;border-radius:11px}
+    /* 顶栏是 nowrap：品牌名过长时截断，优先保证右侧按钮完整可用 */
+    .brand h1{
+      font-size:17px;letter-spacing:.03em;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+    }
+    .brand .sub{display:none}
+    .hud-btns{gap:6px;flex:none;min-width:0}
+    /* 手机端：三个按钮只留图标，避免顶栏与状态栏、品牌名互相挤压 */
+    .hud-btn{
+      padding:0;width:34px;height:34px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:16px;line-height:1;white-space:nowrap;
+    }
+    .hud-btn .hb-txt{display:none}
+    .hud-btn .hb-ico{font-size:16px}
+    .album-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+    .album-item{padding:10px 6px 9px}
+    .album-item .ai-ico{font-size:22px}
+    .album-item .ai-name{font-size:12px}
+    .album-item .ai-hint{font-size:10px}
+    /* 步骤条收紧 */
+    .steps{margin:10px 0 12px;gap:2px}
+    .steps .step-label{display:none}
+    .step-dot{width:26px;height:26px;font-size:12px;border-width:2px}
+    .step-conn{width:14px}
+    /* 标题与说明收紧 */
+    .step-head{flex-direction:column;align-items:flex-start;gap:3px;margin-bottom:10px}
+    .step-head h2{font-size:16px}
+    .step-head p{font-size:12px;line-height:1.5}
+    .workbench{padding:12px;border-radius:var(--r-md)}
+    /* 按钮：文字不换行、触控够大、自动均分 */
+    .btn{padding:12px 18px;font-size:14px;white-space:nowrap;letter-spacing:.02em}
+    .btn.small{padding:9px 14px;font-size:12.5px}
+    .next-bar{gap:10px;margin-top:12px;align-items:stretch}
+    .next-bar .panel-note{flex:1 1 100%;min-width:0;font-size:12px;padding:9px 12px}
+    .next-bar .btn{flex:1 1 auto;min-width:0;display:flex;justify-content:center}
+    /* 选料：原料架三列紧凑卡 */
+    .rack h3{font-size:13.5px;margin-bottom:8px}
+    .rack h3 span{display:none}
+    .rack-grid{grid-template-columns:repeat(3,1fr);gap:7px}
+    .ing-card{
+      display:grid;grid-template-columns:1fr;justify-items:center;
+      column-gap:0;row-gap:3px;
+      padding:9px 6px 8px;border-radius:11px;
+    }
+    .ing-card .ing-ico{width:38px;height:38px}
+    .ing-card .ing-name{font-size:12px;text-align:center;padding-right:0}
+    .ing-card .ing-desc{font-size:10px;line-height:1.35;text-align:center;-webkit-line-clamp:2}
+    .ing-card .ing-tags{justify-content:center;gap:3px}
+    .ing-card .tag{font-size:9px;padding:1px 5px}
+    .ing-card .check{width:16px;height:16px;font-size:9px}
+    /* 选料：碗吸附在底部，投料后能直接看到原料落进碗里 */
+    .pick-layout{display:block}
+    .bowl-panel{
+      position:sticky;bottom:8px;z-index:6;
+      margin-top:12px;padding:8px 12px 7px;
+      display:flex;align-items:center;gap:11px;
+      background:linear-gradient(180deg,rgba(16,23,60,.96),rgba(9,13,34,.99));
+      border:1px solid rgba(255,209,102,.35);
+      border-radius:var(--r-md);
+      box-shadow:0 0 24px rgba(255,183,3,.14),0 -8px 26px rgba(0,0,0,.55),
+                 inset 0 1px 0 rgba(255,255,255,.14);
+    }
+    .bowl-panel h3{display:none}
+    .bowl-panel .bowl-visual{flex:none;height:auto;background:none;display:block}
+    .bowl-panel .bowl{width:112px;height:56px}
+    .bowl-panel .bowl .mix-display{top:16px;gap:1px;font-size:16px}
+    .bowl-panel .bowl .mix-display .ico{width:19px;height:19px}
+    .bowl-panel .bowl .mix-display .empty-txt{font-size:10.5px;padding-top:1px}
+    .bowl-panel .bowl-hint{margin-top:0;flex:1;min-width:0;font-size:12.5px;line-height:1.45;white-space:normal}
+    .bowl-panel .bowl-hint .hint-sub{display:block;font-size:10.5px;color:var(--ink-faint);margin-top:1px}
+    /* 搅拌：碗在上、进度条在下，操作时两者都在视口内
+       注意：进度条在移动端改为流式布局，必须清掉桌面端为绝对定位预留的 padding-bottom，
+       否则内容整体被顶偏、看起来没居中 */
+    .mix-stage{flex-direction:column;justify-content:center;align-items:center;gap:16px;min-height:0;padding:14px 12px 12px}
+    .mix-stage .big-bowl{width:248px;max-width:100%;width:min(248px,100%);height:176px}
+    .big-bowl .mix-zone{top:46px;font-size:30px}
+    .spoon{top:49px;width:50px;height:50px;margin-left:-25px;margin-top:-25px}
+    /* 与碗同宽同轴：用同一个宽度公式，居中由 .mix-stage 的 align-items 保证 */
+    .mix-progress{width:248px;max-width:100%;width:min(248px,100%);margin-top:14px;align-items:center;gap:5px}
+    .progress-bar{width:100%;height:13px}
+    .progress-pct{font-size:10px;right:7px}
+    .mix-status{width:100%;max-width:100%;text-align:center;font-size:12px;line-height:1.55}
+    /* 引导层在小屏收紧，别挡住碗 */
+    .mix-guide{top:6px;padding:6px 11px;gap:4px}
+    .mix-guide .mg-text{font-size:11.5px}
+    .mix-guide .mg-hand{width:78px;height:22px}
+    .mix-guide .mg-finger{font-size:18px}
+    @keyframes mgSwipe{
+      0%,100%{transform:translateX(-20px)}
+      50%{transform:translateX(20px)}
+    }
+    .mix-side h3{font-size:14px}
+    .mix-side .recipe-list{gap:5px}
+    .mix-side .recipe-list li{padding:7px 10px;font-size:12.5px}
+    .mix-tip{font-size:11.5px}
+    /* 装填：筒更小，消除大片空白 */
+    .pack-stage{padding:12px 12px 10px;gap:6px}
+    .pack-stage h3{font-size:13.5px}
+    .tube-wrap{width:36px;height:92px;margin:2px 0 6px}
+    .pack-options{gap:9px}
+    .pack-option{padding:10px 12px;gap:10px}
+    .pack-option .po-emoji{font-size:20px}
+    .pack-option .po-title{font-size:13px}
+    .pack-option .po-desc{font-size:11.5px}
+    /* 点燃 */
+    .launch-tube{width:48px;height:122px;bottom:calc(10vh + 12px)}
+    .launch-hint{padding:0 18px;font-size:12px;line-height:1.6}
+    /* 三个按钮：收小并允许换行，宁可行高紧凑也不重叠 */
+    .launch-controls{gap:7px;width:calc(100% - 20px);justify-content:center;align-items:center}
+    .launch-controls .btn{flex:0 1 auto;min-width:0;padding:9px 11px;font-size:12px;white-space:nowrap}
+    /* 结果卡 */
+    #step-launch .card{padding:16px 14px}
+    #step-launch .card .fx-name{font-size:26px}
+    .card .ribbon{font-size:12px;padding:6px 18px}
+    .card .fx-stats{grid-template-columns:repeat(3,1fr);gap:6px}
+    .fx-stat{padding:8px 4px}
+    .fx-stat .fs-k{font-size:10px}
+    .fx-stat .fs-v{font-size:14px;margin-top:2px}
+    .card .fx-note{font-size:12px;padding:9px 11px}
+    .card .fx-ingredients{font-size:11px}
+    .card .fx-actions{gap:8px}
+    .card .fx-actions .btn{flex:1 1 auto}
+    dialog{width:94vw}
+    .dlg-inner{padding:20px 16px 18px}
+    .journal-grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+  }
+  /* 手机横屏 / 矮屏：压缩竖向占位 */
+  @media (max-height:520px){
+    .mix-stage{min-height:230px;gap:6px}
+    .mix-progress{margin-top:8px}
+    .big-bowl{height:160px}
+    .big-bowl .mix-zone{top:42px}
+    .bowl-visual{height:92px}
+    .tube-wrap{width:36px;height:92px}
+  }
+
+  /* 结果卡：矮视口（横屏手机 / 小窗口）逐级压缩，尽量一屏看全、不出现滚动 */
+  @media (max-height:660px){
+    #step-launch .card{padding:15px 15px 13px}
+    #step-launch .card .fx-name{font-size:23px;margin:11px 0 4px}
+    .card .fx-sub{font-size:13px;margin-bottom:10px}
+    .card .fx-stats{margin:10px 0;gap:6px}
+    .fx-stat{padding:7px 4px}
+    .card .fx-note{font-size:12px;line-height:1.55;padding:8px 10px;margin:10px 0}
+    .card .fx-actions{gap:8px}
+    .card .fx-actions .btn{padding:10px 16px;font-size:13.5px}
+    .card .fx-ingredients{margin-top:9px;font-size:11.5px;line-height:1.5;gap:1px 6px}
+    .card .fx-ingredients .ico{width:15px;height:15px}
+  }
+  @media (max-height:470px){
+    #step-launch .card{padding:12px 12px 10px}
+    #step-launch .card .fx-name{font-size:21px;margin:8px 0 3px}
+    .card .ribbon{font-size:11px;padding:5px 16px;top:-12px}
+    .card .fx-sub{font-size:12px;margin-bottom:7px}
+    .card .fx-stats{margin:8px 0}
+    .card .fx-note{font-size:11.5px;line-height:1.5;padding:7px 9px;margin:8px 0}
+    .card .fx-actions .btn{padding:9px 14px;font-size:13px}
+    .card .fx-ingredients{margin-top:7px;font-size:11px;line-height:1.45}
+  }
+
+  @media print{
+    #sky,.ground,header,.hud-btns{display:none!important}
+    body{background:#fff;color:#111}
+    .workbench{box-shadow:none;border-color:#999;background:#fff}
+    .scene{display:block!important}
+    .btn,.next-bar{display:none!important}
+    .panel-note{border-color:#999;background:#f5f5f5;color:#333}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important;transition:none!important}
+    .scene{animation:none}
+  }
+
+  /* ==========================================================================
+     Flex gap 基线层（Chrome 61 兼容）
+     Chrome 61 的 Flexbox 不支持 gap（只有 Grid 支持），gap 声明会被静默忽略，
+     元素会紧贴在一起。这里为 flex 容器补一份「子项 margin」基线，保证旧内核
+     下仍有正确间距；支持的内核由 JS 行为检测（detectFlexGap）在 <html> 上
+     加 .supports-flex-gap 后切回 gap，并清除 margin。
+     注意：只覆盖真正需要可见间距的容器，避免 margin 影响首尾对齐。
+     ========================================================================== */
+
+  /* 顶栏按钮组（横向） */
+  .hud-btns > * + *{margin-left:8px}
+  .supports-flex-gap .hud-btns > * + *{margin-left:0}
+  .supports-flex-gap .hud-btns{column-gap:8px}
+
+  /* 结果卡操作按钮（横向，可换行，用 gap 表达列间距） */
+  .card .fx-actions > * + *{margin-left:10px}
+  .supports-flex-gap .card .fx-actions > * + *{margin-left:0}
+  .supports-flex-gap .card .fx-actions{column-gap:10px}
+
+  /* 装填方式选项卡（纵向） */
+  .pack-options > * + *{margin-top:12px}
+  .supports-flex-gap .pack-options > * + *{margin-top:0}
+  .supports-flex-gap .pack-options{row-gap:12px}
+
+  /* 配方清单（纵向） */
+  .mix-side .recipe-list > * + *{margin-top:6px}
+  .supports-flex-gap .mix-side .recipe-list > * + *{margin-top:0}
+  .supports-flex-gap .mix-side .recipe-list{row-gap:6px}
+
+  /* 手札条目标题行（横向） */
+  .journal-item .j-head > * + *{margin-left:8px}
+  .supports-flex-gap .journal-item .j-head > * + *{margin-left:0}
+  .supports-flex-gap .journal-item .j-head{column-gap:8px}
+
+  /* 步骤条（横向，间距很小） */
+  .steps > * + *{margin-left:2px}
+  .supports-flex-gap .steps > * + *{margin-left:0}
+  .supports-flex-gap .steps{column-gap:2px}
+
+  /* 底部导航条（横向） */
+  .next-bar > * + *{margin-left:10px}
+  .supports-flex-gap .next-bar > * + *{margin-left:0}
+  .supports-flex-gap .next-bar{column-gap:10px}
+
+  /* 点燃页控制条（横向，可换行）：
+     基线端用 margin，并在窄屏收紧，避免 4 个按钮（点燃/自由连放/查看效果/重新装填）放不下 */
+  .launch-controls > * + *{margin-left:9px}
+  .supports-flex-gap .launch-controls > * + *{margin-left:0}
+  .supports-flex-gap .launch-controls{column-gap:9px}
+  @media (max-width:640px){
+    .launch-controls > * + *{margin-left:7px}
+    .supports-flex-gap .launch-controls > * + *{margin-left:0}
+    .supports-flex-gap .launch-controls{column-gap:7px}
+  }
+
+  /* 原料卡标签（横向，可换行） */
+  .ing-card .ing-tags > * + *{margin-left:4px}
+  .supports-flex-gap .ing-card .ing-tags > * + *{margin-left:0}
+  .supports-flex-gap .ing-card .ing-tags{column-gap:4px}
+
+  /* 原料选择区标头（横向，可换行） */
+  .step-head > * + *{margin-left:12px}
+  .supports-flex-gap .step-head > * + *{margin-left:0}
+  .supports-flex-gap .step-head{column-gap:12px}
+  @media (max-width:640px){
+    .step-head{flex-direction:column;align-items:flex-start}
+    .step-head > * + *{margin-left:0;margin-top:3px}
+    .supports-flex-gap .step-head > * + *{margin-top:0;margin-left:0}
+    .supports-flex-gap .step-head{row-gap:3px;column-gap:0}
+  }
